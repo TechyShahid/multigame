@@ -1,70 +1,80 @@
-# 🧩 Zen Sudoku Pro
+# 🕹️ MultiGame Arcade
 
-A modern, responsive, and feature-rich 9x9 Sudoku web application built with pure HTML5, CSS3, and Modular ES6+ JavaScript. Features procedural board generation with unique solutions, candidate pencil notes, smart educational hints, career statistics, and ambient Web Audio sound effects.
+A collection of beautiful, premium browser games — all built with pure HTML5, CSS3, and Modular ES6+ JavaScript. No frameworks, no build steps, no dependencies.
 
 🚀 **Live Demo:** [https://techyshahid.github.io/multigame/](https://techyshahid.github.io/multigame/)
 
 ---
 
-## 📸 Screenshots
+## 🎮 Games
 
-### Midnight Dark (Default Theme)
-![Zen Sudoku Desktop Dark Theme](screenshots/desktop-dark.png)
+### 🧩 Zen Sudoku Pro
+
+A modern, responsive, and feature-rich 9×9 Sudoku web app with procedural board generation (unique solutions), candidate pencil notes, smart educational hints, career statistics, ambient Web Audio sound effects, and PvP multiplayer.
+
+**[▶ Play Zen Sudoku](https://techyshahid.github.io/multigame/sudoku/)**
+
+#### Highlights
+
+- **⚔️ Player vs Player (PvP) Modes**:
+  - **Local Turn Battle (Pass & Play)**: Two players take turns on a shared board with scoring, combos, and an optional shot-clock.
+  - **Online 1v1 Race (WebRTC PeerJS)**: Zero-backend peer-to-peer real-time race via 5-letter Room Codes.
+- **Procedural Generation & Solver**: Backtracking algorithm with unique solution guarantees across 5 difficulty levels (Beginner → Expert).
+- **Candidate Notes**: 3×3 mini-grid inside empty cells with one-click **Auto-Fill Candidates** and automatic peer note cleanup.
+- **Smart Educational Hints**: Step-by-step logical deductions (Naked Singles, Hidden Singles, conflict detection).
+- **Dual Input Modes**: Cell First or Digit First for rapid board filling.
+- **Single-Screen Mobile Layout**: `100dvh` dynamic height — zero vertical scrolling on mobile.
+- **Web Audio API**: Synthesized clicks, pencil scribbles, error buzzes, and victory fanfares with zero external audio files.
+- **Confetti Cannon**: Canvas particle system celebrating puzzle completion.
+- **Career Statistics**: Games played, win rate, best time, average time, and win streaks per difficulty via `localStorage`.
+- **Custom Board & Solver**: Input or solve custom 81-character puzzle strings.
+- **3 Visual Themes**: Midnight Dark, Porcelain Light, Matrix Emerald.
+- **Printable**: Clean `@media print` stylesheet for paper puzzle sheets.
 
 ---
 
-### Multiple Visual Themes
+### 🍬 Candy Crush
+
+A sweet match-3 puzzle game with special candies, cascading combos, and 30 levels of sugary fun.
+
+**[▶ Play Candy Crush](https://techyshahid.github.io/multigame/candy-crush/)**
+
+#### Highlights
+
+- **30 Levels** of progressively challenging match-3 gameplay.
+- **Special Candies**: Striped, wrapped, and color bombs with spectacular chain reactions.
+- **Cascading Combos**: Gravity-driven chain matches for massive scores.
+- **Beautiful Animations**: Smooth swaps, explosions, and particle effects.
+- **Responsive Design**: Plays great on desktop and mobile.
+
+---
+
+## 📸 Screenshots
+
+### Zen Sudoku — Midnight Dark (Default Theme)
+![Zen Sudoku Desktop Dark Theme](screenshots/desktop-dark.png)
+
+### Zen Sudoku — Multiple Visual Themes
 | Porcelain Light | Matrix Emerald |
 | :---: | :---: |
 | ![Porcelain Light Theme](screenshots/desktop-light.png) | ![Matrix Emerald Theme](screenshots/desktop-emerald.png) |
 
----
-
-### Mobile Experience & Dashboards
+### Zen Sudoku — Mobile & Dashboards
 | Single-Screen Mobile Layout | Career Statistics |
 | :---: | :---: |
 | ![Mobile Layout (390x844)](screenshots/mobile-layout.png) | ![Career Statistics Modal](screenshots/career-stats.png) |
 
----
-
-### Player vs Player (PvP) Mode
+### Zen Sudoku — PvP Mode
 | PvP Mode Selector | Local Turn Battle (Live Duel) |
 | :---: | :---: |
 | ![PvP Mode Selector](screenshots/pvp-mode-selector.png) | ![Local Turn Battle Duel](screenshots/pvp-local-battle.png) |
 
----
-
-### Settings & Customization
+### Zen Sudoku — Settings & Customization
 ![Settings Modal](screenshots/settings-modal.png)
 
 ---
 
-## ✨ Features
-
-- **⚔️ Player vs Player (PvP) Modes**:
-  - **Local Turn Battle (Pass & Play)**: Two players take turns placing numbers on a shared board. Earn points (+50 pts) for correct moves and combo bonuses (+150 pts) for completing entire rows, columns, or 3×3 boxes. Penalties for mistakes (-30 pts). Optional turn shot-clock (15s, 30s, 60s, or unlimited).
-  - **Online 1v1 Race (WebRTC PeerJS)**: Zero-backend peer-to-peer real-time race. Challenge a friend across two devices with a 5-letter Room Code or copyable link. Solve the exact same puzzle simultaneously with real-time opponent progress bars and instant victory detection.
-- **Procedural Generation & Solver**: Backtracking algorithm with unique solution guarantees across 5 difficulty levels:
-  - **Beginner**: 50 clues
-  - **Easy**: 40 clues
-  - **Medium**: 33 clues
-  - **Hard**: 28 clues
-  - **Expert**: 24 clues
-- **Candidate Notes**: 3×3 mini-grid inside empty cells for candidate numbers, complete with one-click **Auto-Fill Candidates** and automatic peer note cleanup upon placing correct digits.
-- **Smart Educational Hints**: Analyzes the board and explains step-by-step logical deductions (**Naked Singles**, **Hidden Singles**, conflict detection) rather than simply revealing an answer.
-- **Dual Input Modes**:
-  - **Cell First**: Select a cell, then tap a number.
-  - **Digit First**: Select a number, then rapidly tap multiple cells across the board.
-- **Single-Screen Mobile Layout**: Designed with `100dvh` dynamic height to fit the entire board, header, controls, and keypad above the fold on mobile screens with zero vertical scrolling.
-- **Web Audio API**: Crisp synthesizer sounds for clicks, pencil scribbles, error buzzes, and celebratory victory fanfares with zero external audio dependencies.
-- **Confetti Cannon**: High-performance canvas particle system celebrating puzzle completion.
-- **Career Statistics**: Tracks games played, win rate, best time, average time, and win streaks per difficulty level via `localStorage`.
-- **Custom Board & Solver**: Allows inputting or solving custom 81-character puzzle strings.
-- **Printable**: Clean `@media print` stylesheet for physical paper puzzle sheets.
-
----
-
-## ⌨️ Keyboard Shortcuts
+## ⌨️ Keyboard Shortcuts (Sudoku)
 
 | Key | Action |
 | :--- | :--- |
@@ -76,6 +86,33 @@ A modern, responsive, and feature-rich 9x9 Sudoku web application built with pur
 | `Ctrl` + `Z` / `U` | Undo move |
 | `Ctrl` + `Y` | Redo move |
 | `Space` / `P` | Pause / Resume |
+
+---
+
+## 📁 Project Structure
+
+```
+multigame/
+├── index.html          ← Game hub / landing page
+├── README.md
+├── sudoku/
+│   ├── index.html
+│   ├── style.css
+│   └── js/
+│       ├── app.js
+│       ├── audio.js
+│       ├── confetti.js
+│       ├── pvp-local.js
+│       ├── pvp-online.js
+│       ├── storage.js
+│       └── sudoku-engine.js
+├── candy-crush/
+│   ├── index.html
+│   ├── style.css
+│   └── js/
+│       └── app.js
+└── screenshots/
+```
 
 ---
 
