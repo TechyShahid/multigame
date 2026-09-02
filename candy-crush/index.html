@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Candy Crush — A beautiful match-3 puzzle game with special candies, cascading combos, and 30 levels of sugary fun." />
+  <title>Candy Crush — Sweet Match-3 Puzzle</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Background candy particles -->
+  <div id="bg-particles" class="bg-particles" aria-hidden="true"></div>
+
+  <!-- Screen flash overlay -->
+  <div id="screen-flash-overlay"></div>
+
+  <div class="app-wrapper">
+
+    <!-- ======================== -->
+    <!-- SCREEN: Start / Level Map -->
+    <!-- ======================== -->
+    <div id="screen-start" class="screen screen-active">
+      <div class="start-container">
+        <div class="logo-section">
+          <div class="logo-candy-wrapper">
+            <span class="logo-candy c0">🍬</span>
+            <span class="logo-candy c1">🍭</span>
+            <span class="logo-candy c2">⭐</span>
+            <span class="logo-candy c3">🍬</span>
+          </div>
+          <h1 class="game-title">
+            <span class="title-candy">Candy</span>
+            <span class="title-crush">Crush</span>
+          </h1>
+          <p class="game-subtitle">Sweet Match-3 Puzzle</p>
+        </div>
+
+        <div class="level-map-section">
+          <div class="level-map-header">
+            <h2>Select Level</h2>
+            <div class="total-stars-badge">
+              <span class="star-icon">⭐</span>
+              <span id="total-stars-count">0</span>
+              <span class="star-max">/ 90</span>
+            </div>
+          </div>
+
+          <div id="level-map" class="level-map">
+            <!-- Level buttons rendered by JS -->
+          </div>
+        </div>
+
+        <div class="start-footer">
+          <div class="sound-toggles">
+            <button id="btn-sfx-toggle" class="icon-btn" aria-label="Toggle sound effects" title="Sound Effects">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"></path>
+              </svg>
+            </button>
+            <button id="btn-music-toggle" class="icon-btn" aria-label="Toggle music" title="Music">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================== -->
+    <!-- SCREEN: Game Board -->
+    <!-- ======================== -->
+    <div id="screen-game" class="screen">
+      <!-- Game Header / HUD -->
+      <header class="game-header">
+        <button id="btn-back" class="icon-btn" aria-label="Back to levels">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+
+        <div class="hud-bar">
+          <div class="hud-item hud-level">
+            <span class="hud-label" id="level-number">Level 1</span>
+            <span class="hud-value" id="level-name">Sweet Start</span>
+          </div>
+
+          <div class="hud-item hud-score">
+            <span class="hud-label">Score</span>
+            <span class="hud-value" id="score-value">0</span>
+          </div>
+
+          <div class="hud-item hud-moves">
+            <span class="hud-label">Moves</span>
+            <span class="hud-value" id="moves-value">30</span>
+          </div>
+
+          <div class="hud-item hud-target">
+            <span class="hud-label">Target</span>
+            <span class="hud-value" id="target-value">1000</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Progress Bar -->
+      <div class="progress-container">
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+          <div class="progress-star progress-star-1">⭐</div>
+          <div class="progress-star progress-star-2">⭐</div>
+          <div class="progress-star progress-star-3">⭐</div>
+        </div>
+      </div>
+
+      <!-- Combo Text -->
+      <div id="combo-text" class="combo-text" aria-hidden="true"></div>
+
+      <!-- Game Board -->
+      <div class="board-wrapper">
+        <div id="game-board" class="game-board"></div>
+      </div>
+
+      <!-- Shuffle hint -->
+      <div id="shuffle-msg" class="shuffle-msg hidden">
+        <span>No moves available!</span>
+        <button id="btn-shuffle" class="btn btn-glow">Shuffle Board</button>
+      </div>
+    </div>
+
+    <!-- ======================== -->
+    <!-- MODAL: Level Complete -->
+    <!-- ======================== -->
+    <div id="modal-victory" class="modal-overlay">
+      <div class="modal glass-panel modal-victory">
+        <div class="confetti-container" id="confetti-container"></div>
+        <h2 class="modal-title victory-title">Level Complete!</h2>
+        <div id="victory-stars" class="victory-stars"></div>
+        <div class="victory-score">
+          <span class="label">Score</span>
+          <span class="value" id="victory-score">0</span>
+        </div>
+        <div class="modal-actions">
+          <button id="btn-next-level" class="btn btn-primary btn-glow">Next Level</button>
+          <button id="btn-victory-replay" class="btn btn-secondary">Replay</button>
+          <button id="btn-victory-menu" class="btn btn-ghost">Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================== -->
+    <!-- MODAL: Game Over -->
+    <!-- ======================== -->
+    <div id="modal-gameover" class="modal-overlay">
+      <div class="modal glass-panel modal-gameover">
+        <h2 class="modal-title gameover-title">Out of Moves!</h2>
+        <p class="gameover-subtitle">So close! Try again?</p>
+        <div class="gameover-score">
+          <span class="label">Score</span>
+          <span class="value" id="gameover-score">0</span>
+        </div>
+        <div class="modal-actions">
+          <button id="btn-gameover-retry" class="btn btn-primary btn-glow">Try Again</button>
+          <button id="btn-gameover-menu" class="btn btn-ghost">Menu</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- App Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
