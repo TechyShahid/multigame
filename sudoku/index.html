@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Zen Sudoku — Modern, beautiful, and intelligent Sudoku game with procedural puzzle generation, candidate notes, smart hints, and statistics." />
+  <title>Zen Sudoku — Master the 9x9 Grid</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Confetti Canvas overlay for game victory -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-container">
+    <!-- Top App Navigation Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+            <path d="M3 9h18M3 15h18M9 3v18M15 3v18"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>ZEN SUDOKU</h1>
+          <span class="brand-subtitle">Pro Edition</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- New Game Dropdown -->
+        <div class="dropdown-wrapper">
+          <button id="btn-new-game-dropdown" class="btn btn-primary" aria-label="Start a new game">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            <span>New Game</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </button>
+          <div id="difficulty-menu" class="dropdown-menu">
+            <button class="dropdown-item" data-diff="beginner">
+              <span class="diff-title">Beginner</span>
+              <span class="diff-desc">50 clues • Relaxed</span>
+            </button>
+            <button class="dropdown-item" data-diff="easy">
+              <span class="diff-title">Easy</span>
+              <span class="diff-desc">40 clues • Casual</span>
+            </button>
+            <button class="dropdown-item active" data-diff="medium">
+              <span class="diff-title">Medium</span>
+              <span class="diff-desc">33 clues • Standard</span>
+            </button>
+            <button class="dropdown-item" data-diff="hard">
+              <span class="diff-title">Hard</span>
+              <span class="diff-desc">28 clues • Challenging</span>
+            </button>
+            <button class="dropdown-item" data-diff="expert">
+              <span class="diff-title">Expert</span>
+              <span class="diff-desc">24 clues • Master</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" id="btn-custom-board-trigger">
+              <span class="diff-title">Custom / Solver</span>
+              <span class="diff-desc">Input your own puzzle</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PvP Mode Button -->
+        <button id="btn-pvp-mode" class="btn btn-pvp" title="Player vs Player" aria-label="Player vs Player">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m14.5 17.5-11.5-11.5 3-3 11.5 11.5z"></path>
+            <path d="m13 19 6-6"></path>
+            <path d="m16 16 4 4"></path>
+            <path d="m19 21 2-2"></path>
+          </svg>
+          <span class="pvp-btn-text">PvP</span>
+        </button>
+
+        <!-- Quick Action Buttons (Desktop) -->
+        <button id="btn-stats" class="btn btn-icon desktop-only" title="Statistics" aria-label="Open Statistics">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 20V10M12 20V4M6 20v-6"></path>
+          </svg>
+        </button>
+
+        <button id="btn-rules" class="btn btn-icon desktop-only" title="How to Play" aria-label="How to Play">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </button>
+
+        <button id="btn-settings" class="btn btn-icon desktop-only" title="Settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
+        <button id="btn-sound-toggle" class="btn btn-icon" title="Toggle Sound" aria-label="Toggle Sound">
+          <svg class="sound-on-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg class="sound-off-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <button id="btn-theme-toggle" class="btn btn-icon" title="Switch Theme" aria-label="Switch Theme">
+          <svg class="theme-icon theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="theme-icon theme-sun hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="theme-icon theme-emerald-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </button>
+
+        <!-- Mobile More Menu Dropdown -->
+        <div class="dropdown-wrapper mobile-only">
+          <button id="btn-mobile-menu" class="btn btn-icon" title="Menu" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="1"></circle>
+              <circle cx="12" cy="5" r="1"></circle>
+              <circle cx="12" cy="19" r="1"></circle>
+            </svg>
+          </button>
+          <div id="mobile-menu-dropdown" class="dropdown-menu">
+            <button class="dropdown-item" id="btn-mobile-pvp">
+              <span class="diff-title">⚔️ Player vs Player</span>
+              <span class="diff-desc">Local Duel & Online Race</span>
+            </button>
+            <button class="dropdown-item" id="btn-mobile-stats">
+              <span class="diff-title">Career Statistics</span>
+              <span class="diff-desc">Win rates & best times</span>
+            </button>
+            <button class="dropdown-item" id="btn-mobile-rules">
+              <span class="diff-title">How to Play</span>
+              <span class="diff-desc">Rules & keyboard shortcuts</span>
+            </button>
+            <button class="dropdown-item" id="btn-mobile-settings">
+              <span class="diff-title">Settings</span>
+              <span class="diff-desc">Assistance, sound & themes</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" id="btn-mobile-custom">
+              <span class="diff-title">Custom / Solver</span>
+              <span class="diff-desc">Input your own puzzle</span>
+            </button>
+            <button class="dropdown-item" id="btn-mobile-auto-notes">
+              <span class="diff-title">Auto-Fill Candidates</span>
+              <span class="diff-desc">Fill valid pencil notes</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Game Board Container -->
+    <main class="game-main">
+      <!-- Solo Status Bar -->
+      <section id="solo-status-bar" class="game-status-bar">
+        <div class="status-item diff-tag">
+          <span class="status-label">Difficulty</span>
+          <span id="current-diff-badge" class="status-value highlight">Medium</span>
+        </div>
+
+        <div class="status-item mistakes-box" id="mistakes-container">
+          <span class="status-label">Mistakes</span>
+          <span id="mistakes-badge" class="status-value">0 / 3</span>
+        </div>
+
+        <div class="status-item score-box">
+          <span class="status-label">Score</span>
+          <span id="score-badge" class="status-value">1,000</span>
+        </div>
+
+        <div class="status-item timer-box">
+          <span class="status-label">Time</span>
+          <div class="timer-wrapper">
+            <span id="timer-display" class="status-value mono">00:00</span>
+            <button id="btn-pause" class="btn-pause" title="Pause Game" aria-label="Pause Game">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="6" y="4" width="4" height="16"></rect>
+                <rect x="14" y="4" width="4" height="16"></rect>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PvP Local Battle HUD -->
+      <section id="pvp-local-hud" class="game-status-bar pvp-local-hud hidden">
+        <div class="pvp-player-card p1-card active" id="pvp-p1-card">
+          <div class="pvp-player-header">
+            <span class="pvp-dot p1-dot"></span>
+            <span class="pvp-name">Player 1</span>
+          </div>
+          <div class="pvp-score" id="pvp-p1-score">0 pts</div>
+          <span class="pvp-sub" id="pvp-p1-cells">0 cells</span>
+        </div>
+
+        <div class="pvp-center-clock">
+          <span class="pvp-turn-label" id="pvp-turn-indicator">P1 Turn</span>
+          <div class="pvp-shot-clock mono" id="pvp-shot-clock">30s</div>
+          <button id="btn-exit-pvp-local" class="btn-pvp-exit" title="Exit Battle">Exit</button>
+        </div>
+
+        <div class="pvp-player-card p2-card" id="pvp-p2-card">
+          <div class="pvp-player-header">
+            <span class="pvp-dot p2-dot"></span>
+            <span class="pvp-name">Player 2</span>
+          </div>
+          <div class="pvp-score" id="pvp-p2-score">0 pts</div>
+          <span class="pvp-sub" id="pvp-p2-cells">0 cells</span>
+        </div>
+      </section>
+
+      <!-- PvP Online Race HUD -->
+      <section id="pvp-online-hud" class="game-status-bar pvp-online-hud hidden">
+        <div class="pvp-race-item">
+          <div class="pvp-race-header">
+            <span class="pvp-race-name highlight">You</span>
+            <span class="pvp-race-pct mono" id="pvp-my-pct">0%</span>
+          </div>
+          <div class="pvp-bar-track">
+            <div class="pvp-bar-fill my-fill" id="pvp-my-bar" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="pvp-vs-badge">
+          <span>VS</span>
+          <button id="btn-exit-pvp-online" class="btn-pvp-exit" title="Leave Match">Exit</button>
+        </div>
+
+        <div class="pvp-race-item">
+          <div class="pvp-race-header">
+            <span class="pvp-race-name opponent">Opponent</span>
+            <span class="pvp-race-pct mono" id="pvp-opp-pct">0%</span>
+          </div>
+          <div class="pvp-bar-track">
+            <div class="pvp-bar-fill opp-fill" id="pvp-opp-bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Smart Hint Banner -->
+      <div id="hint-banner" class="hint-banner hidden">
+        <div class="hint-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="9" y1="18" x2="15" y2="18"></line>
+            <line x1="10" y1="22" x2="14" y2="22"></line>
+            <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+          </svg>
+        </div>
+        <div class="hint-content">
+          <div id="hint-text" class="hint-text">Naked Single deduction available</div>
+        </div>
+        <button id="btn-apply-hint" class="btn btn-sm btn-accent">Apply</button>
+        <button id="btn-close-hint" class="btn-close-hint" aria-label="Dismiss hint">×</button>
+      </div>
+
+      <!-- Sudoku Board & Pause Overlay -->
+      <div class="board-wrapper">
+        <div id="sudoku-grid" class="sudoku-grid" role="grid" aria-label="Sudoku Board 9 by 9">
+          <!-- 81 Cells dynamically constructed by JavaScript -->
+        </div>
+
+        <!-- Pause Overlay -->
+        <div id="pause-overlay" class="pause-overlay hidden">
+          <div class="pause-content">
+            <div class="pause-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+              </svg>
+            </div>
+            <h2>Game Paused</h2>
+            <p>Take a breath and resume when ready</p>
+            <button id="btn-resume" class="btn btn-primary btn-lg">Resume Game</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Controls Bar (Undo, Erase, Notes, Hint) -->
+      <section class="game-controls">
+        <button id="btn-undo" class="control-btn" title="Undo (Z)" aria-label="Undo move">
+          <div class="control-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 7v6h6"></path>
+              <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+            </svg>
+          </div>
+          <span class="control-label">Undo</span>
+        </button>
+
+        <button id="btn-redo" class="control-btn" title="Redo (Y)" aria-label="Redo move">
+          <div class="control-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 7v6h-6"></path>
+              <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"></path>
+            </svg>
+          </div>
+          <span class="control-label">Redo</span>
+        </button>
+
+        <button id="btn-erase" class="control-btn" title="Erase (Backspace/Del)" aria-label="Erase cell">
+          <div class="control-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 20H7L3 14c-1-1.5-1-3 0-4.5L7 4h13a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2Z"></path>
+              <line x1="18" y1="9" x2="12" y2="15"></line>
+              <line x1="12" y1="9" x2="18" y2="15"></line>
+            </svg>
+          </div>
+          <span class="control-label">Erase</span>
+        </button>
+
+        <button id="btn-notes" class="control-btn" title="Pencil Notes (N)" aria-label="Toggle pencil notes mode">
+          <div class="control-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+            </svg>
+            <span id="notes-badge" class="badge-mini">OFF</span>
+          </div>
+          <span class="control-label">Notes</span>
+        </button>
+
+        <button id="btn-hint" class="control-btn" title="Smart Hint (H)" aria-label="Get a smart hint">
+          <div class="control-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v1M12 21v1M4.22 4.22l.71.71M18.36 18.36l.71.71M1 12h1M21 12h1M4.22 19.78l.71-.71M18.36 5.64l.71-.71"></path>
+              <circle cx="12" cy="12" r="5"></circle>
+            </svg>
+          </div>
+          <span class="control-label">Hint</span>
+        </button>
+
+        <button id="btn-auto-notes" class="control-btn" title="Auto Fill Candidates" aria-label="Auto Fill Candidates">
+          <div class="control-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <span class="control-label">Auto-Notes</span>
+        </button>
+      </section>
+
+      <!-- Keypad with Remaining Count Badges -->
+      <section class="game-keypad" id="game-keypad" aria-label="Number Input Pad">
+        <button class="keypad-btn" data-num="1">
+          <span class="key-digit">1</span>
+          <span class="key-count" data-count-for="1">9</span>
+        </button>
+        <button class="keypad-btn" data-num="2">
+          <span class="key-digit">2</span>
+          <span class="key-count" data-count-for="2">9</span>
+        </button>
+        <button class="keypad-btn" data-num="3">
+          <span class="key-digit">3</span>
+          <span class="key-count" data-count-for="3">9</span>
+        </button>
+        <button class="keypad-btn" data-num="4">
+          <span class="key-digit">4</span>
+          <span class="key-count" data-count-for="4">9</span>
+        </button>
+        <button class="keypad-btn" data-num="5">
+          <span class="key-digit">5</span>
+          <span class="key-count" data-count-for="5">9</span>
+        </button>
+        <button class="keypad-btn" data-num="6">
+          <span class="key-digit">6</span>
+          <span class="key-count" data-count-for="6">9</span>
+        </button>
+        <button class="keypad-btn" data-num="7">
+          <span class="key-digit">7</span>
+          <span class="key-count" data-count-for="7">9</span>
+        </button>
+        <button class="keypad-btn" data-num="8">
+          <span class="key-digit">8</span>
+          <span class="key-count" data-count-for="8">9</span>
+        </button>
+        <button class="keypad-btn" data-num="9">
+          <span class="key-digit">9</span>
+          <span class="key-count" data-count-for="9">9</span>
+        </button>
+      </section>
+
+      <!-- Secondary Input Mode Options -->
+      <div class="input-mode-bar">
+        <div class="mode-toggle">
+          <span class="mode-label">Input Style:</span>
+          <button id="btn-mode-cell" class="btn-pill active" title="Select cell first, then tap digit">Cell First</button>
+          <button id="btn-mode-digit" class="btn-pill" title="Select digit first, then tap cells to place">Digit First</button>
+        </div>
+        <button id="btn-print-puzzle" class="btn-text-action" title="Print puzzle sheet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Print Puzzle
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Victory / Game Completed Modal -->
+  <div id="modal-victory" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-victory-card">
+      <div class="victory-header">
+        <div class="trophy-icon">🏆</div>
+        <h2>Splendid Victory!</h2>
+        <p class="subtitle">You have conquered the grid.</p>
+      </div>
+
+      <div class="victory-stats-grid">
+        <div class="vstat-item">
+          <span class="vstat-label">Difficulty</span>
+          <span id="vstat-diff" class="vstat-value highlight">Medium</span>
+        </div>
+        <div class="vstat-item">
+          <span class="vstat-label">Total Time</span>
+          <span id="vstat-time" class="vstat-value mono">05:24</span>
+        </div>
+        <div class="vstat-item">
+          <span class="vstat-label">Mistakes</span>
+          <span id="vstat-mistakes" class="vstat-value">1</span>
+        </div>
+        <div class="vstat-item">
+          <span class="vstat-label">Final Score</span>
+          <span id="vstat-score" class="vstat-value highlight">1,450</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-victory-new" class="btn btn-primary btn-lg">Play Another</button>
+        <button id="btn-victory-share" class="btn btn-secondary">Share Score</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Over (3 Mistakes) Modal -->
+  <div id="modal-gameover" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-icon text-danger">⚠️</div>
+      <h2>Game Over</h2>
+      <p>You have reached the limit of 3 mistakes.</p>
+      <div class="modal-actions vertical">
+        <button id="btn-gameover-revive" class="btn btn-primary">Continue in Casual Mode</button>
+        <button id="btn-gameover-restart" class="btn btn-secondary">Restart Puzzle</button>
+        <button id="btn-gameover-new" class="btn btn-secondary">New Puzzle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Modal -->
+  <div id="modal-stats" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h2>Career Statistics</h2>
+        <button class="modal-close" data-close-modal="modal-stats">×</button>
+      </div>
+
+      <div class="stats-tabs">
+        <button class="stats-tab active" data-stats-tab="beginner">Beginner</button>
+        <button class="stats-tab" data-stats-tab="easy">Easy</button>
+        <button class="stats-tab" data-stats-tab="medium">Medium</button>
+        <button class="stats-tab" data-stats-tab="hard">Hard</button>
+        <button class="stats-tab" data-stats-tab="expert">Expert</button>
+      </div>
+
+      <div class="stats-content">
+        <div class="stats-metric-grid">
+          <div class="metric-card">
+            <span class="metric-num" id="stat-played">0</span>
+            <span class="metric-label">Games Played</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-num" id="stat-winrate">0%</span>
+            <span class="metric-label">Win Rate</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-num mono" id="stat-best-time">--:--</span>
+            <span class="metric-label">Best Time</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-num mono" id="stat-avg-time">--:--</span>
+            <span class="metric-label">Average Time</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-num" id="stat-streak">0</span>
+            <span class="metric-label">Current Streak</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-num" id="stat-best-streak">0</span>
+            <span class="metric-label">Best Streak</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-reset-stats" class="btn btn-danger-ghost">Reset All Stats</button>
+        <button class="btn btn-secondary" data-close-modal="modal-stats">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="modal-settings" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="modal-close" data-close-modal="modal-settings">×</button>
+      </div>
+
+      <div class="settings-list">
+        <!-- Theme selection -->
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-title">Visual Theme</span>
+            <span class="setting-desc">Select your color scheme</span>
+          </div>
+          <select id="setting-theme-select" class="custom-select">
+            <option value="dark">Midnight Dark</option>
+            <option value="light">Porcelain Light</option>
+            <option value="emerald">Matrix Emerald</option>
+          </select>
+        </div>
+
+        <!-- Sound switch -->
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-title">Sound Effects</span>
+            <span class="setting-desc">Soft audio clicks and victory fanfares</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="set-sound" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Highlight duplicates -->
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-title">Highlight Conflicts</span>
+            <span class="setting-desc">Instantly mark conflicting numbers in red</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="set-duplicates" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Highlight peers -->
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-title">Highlight Row, Column & Box</span>
+            <span class="setting-desc">Subtle background illumination for current cell peers</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="set-peers" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Highlight identical numbers -->
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-title">Highlight Matching Numbers</span>
+            <span class="setting-desc">Highlight identical numbers across the entire board</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="set-same-numbers" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Auto-remove notes -->
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-title">Auto-Remove Notes</span>
+            <span class="setting-desc">Automatically clear candidate pencil marks in peers</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="set-auto-remove" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- 3-Mistake Challenge Limit -->
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-title">Mistake Limit (3 Strikes)</span>
+            <span class="setting-desc">Game ends after 3 mistakes. Disable for casual play.</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="set-mistake-limit" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-close-modal="modal-settings">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- How to Play / Rules Modal -->
+  <div id="modal-rules" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h2>How to Play Sudoku</h2>
+        <button class="modal-close" data-close-modal="modal-rules">×</button>
+      </div>
+
+      <div class="rules-body">
+        <div class="rule-section">
+          <h3>The Objective</h3>
+          <p>Fill the 9×9 grid so that every row, column, and 3×3 square box contains the numbers from <strong>1 to 9</strong> without repetition.</p>
+        </div>
+
+        <div class="rule-cards">
+          <div class="rule-card">
+            <div class="rule-icon">1️⃣</div>
+            <h4>Rows & Columns</h4>
+            <p>Each horizontal row and vertical column must contain every digit 1 through 9 exactly once.</p>
+          </div>
+          <div class="rule-card">
+            <div class="rule-icon">⏹️</div>
+            <h4>3×3 Boxes</h4>
+            <p>Each of the nine 3×3 sub-grids outlined in thick borders must also contain 1 through 9.</p>
+          </div>
+          <div class="rule-card">
+            <div class="rule-icon">✏️</div>
+            <h4>Pencil Notes</h4>
+            <p>Press <kbd>N</kbd> or click <strong>Notes</strong> to scribble candidate digits when a cell has multiple possibilities.</p>
+          </div>
+        </div>
+
+        <div class="rule-section">
+          <h3>Keyboard Shortcuts</h3>
+          <ul class="shortcuts-list">
+            <li><kbd>1</kbd> - <kbd>9</kbd> : Enter number / candidate</li>
+            <li><kbd>Arrow Keys</kbd> / <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> : Navigate cells</li>
+            <li><kbd>Delete</kbd> / <kbd>Backspace</kbd> : Erase cell</li>
+            <li><kbd>N</kbd> : Toggle pencil notes mode</li>
+            <li><kbd>H</kbd> : Get a smart hint</li>
+            <li><kbd>Ctrl</kbd> + <kbd>Z</kbd> / <kbd>U</kbd> : Undo</li>
+            <li><kbd>Ctrl</kbd> + <kbd>Y</kbd> : Redo</li>
+            <li><kbd>Space</kbd> / <kbd>P</kbd> : Pause game</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-close-modal="modal-rules">Got it!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Puzzle / Solver Modal -->
+  <div id="modal-custom" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h2>Custom Board & Solver</h2>
+        <button class="modal-close" data-close-modal="modal-custom">×</button>
+      </div>
+
+      <div class="custom-body">
+        <p>Paste an 81-character puzzle string (using digits 1-9 and 0 or '.' for blanks), or click "Load Empty Grid" to enter numbers manually.</p>
+        <textarea id="custom-puzzle-input" class="custom-textarea" placeholder="Example: 003020600900305001001806400008102900700000008006708200002609500800203009005010300" rows="3"></textarea>
+
+        <div class="custom-actions">
+          <button id="btn-load-custom-string" class="btn btn-primary">Load & Play</button>
+          <button id="btn-solve-custom-string" class="btn btn-secondary">Solve Puzzle</button>
+          <button id="btn-clear-custom-board" class="btn btn-danger-ghost">Clear Board</button>
+        </div>
+        <div id="custom-error-msg" class="custom-error hidden"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close-modal="modal-custom">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PvP Mode Selector Modal -->
+  <div id="modal-pvp-select" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h2>⚔️ Player vs Player Mode</h2>
+        <button class="modal-close" data-close-modal="modal-pvp-select">×</button>
+      </div>
+
+      <div class="pvp-modes-grid">
+        <!-- Local Pass & Play Mode Card -->
+        <div class="pvp-mode-card">
+          <div class="pvp-mode-icon">📱</div>
+          <h3>Local Turn Battle</h3>
+          <p class="pvp-mode-desc">Pass & play on this device. Take turns placing numbers. Earn combo points for completing rows, columns, and 3x3 boxes!</p>
+          
+          <div class="pvp-mode-settings">
+            <div class="pvp-setting-row">
+              <label>Turn Shot Clock:</label>
+              <select id="pvp-shot-clock-select" class="custom-select">
+                <option value="15">15 Seconds (Speed)</option>
+                <option value="30" selected>30 Seconds (Standard)</option>
+                <option value="60">60 Seconds (Relaxed)</option>
+                <option value="0">No Timer (Casual)</option>
+              </select>
+            </div>
+            <div class="pvp-setting-row">
+              <label>Difficulty:</label>
+              <select id="pvp-local-diff-select" class="custom-select">
+                <option value="easy">Easy (Casual Duel)</option>
+                <option value="medium" selected>Medium (Standard)</option>
+                <option value="hard">Hard (Pro Battle)</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="button" id="btn-start-local-pvp" class="btn btn-primary btn-full">Start Local Duel</button>
+        </div>
+
+        <!-- Online 1v1 Race Card -->
+        <div class="pvp-mode-card">
+          <div class="pvp-mode-icon">🌐</div>
+          <h3>Online 1v1 Race</h3>
+          <p class="pvp-mode-desc">Challenge a friend across two devices. Race on the exact same board in real-time with zero-latency WebRTC peer connections!</p>
+
+          <div class="pvp-online-actions">
+            <button type="button" id="btn-open-online-host" class="btn btn-accent btn-full">Create Match Room</button>
+            <div class="pvp-divider"><span>OR</span></div>
+            <div class="pvp-join-box">
+              <input type="text" id="input-join-code" class="custom-input" placeholder="Room Code (e.g. ZEN42)" maxlength="6" />
+              <button type="button" id="btn-join-online-room" class="btn btn-secondary">Join</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal="modal-pvp-select">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PvP Online Lobby Modal -->
+  <div id="modal-pvp-online-lobby" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Online 1v1 Lobby</h2>
+        <button class="modal-close" data-close-modal="modal-pvp-online-lobby">×</button>
+      </div>
+
+      <div class="lobby-content">
+        <div class="lobby-code-box">
+          <span class="lobby-code-label">Room Code</span>
+          <div class="lobby-code-display" id="lobby-code-display">-----</div>
+          <p class="lobby-code-hint">Share this code or link with your friend to join!</p>
+        </div>
+
+        <div class="lobby-actions">
+          <button id="btn-copy-room-link" class="btn btn-primary btn-full">📋 Copy Room Link</button>
+        </div>
+
+        <div class="lobby-status-box">
+          <div class="loading-spinner"></div>
+          <span id="lobby-status-text">Waiting for opponent to connect...</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-cancel-lobby" class="btn btn-secondary" data-close-modal="modal-pvp-online-lobby">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PvP Match Result Modal -->
+  <div id="modal-pvp-result" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-victory-card">
+      <div class="victory-header">
+        <div class="trophy-icon" id="pvp-result-icon">🏆</div>
+        <h2 id="pvp-result-title">Player 1 Victorious!</h2>
+        <p class="subtitle" id="pvp-result-subtitle">Supreme mastery of the numbers.</p>
+      </div>
+
+      <div class="pvp-result-scores">
+        <div class="pvp-result-col p1-col">
+          <h4 id="pvp-res-p1-name">Player 1</h4>
+          <div class="pvp-res-score" id="pvp-res-p1-score">0 pts</div>
+          <span class="pvp-res-sub" id="pvp-res-p1-sub">0 cells captured</span>
+        </div>
+        <div class="pvp-vs-sep">VS</div>
+        <div class="pvp-result-col p2-col">
+          <h4 id="pvp-res-p2-name">Player 2</h4>
+          <div class="pvp-res-score" id="pvp-res-p2-score">0 pts</div>
+          <span class="pvp-res-sub" id="pvp-res-p2-sub">0 cells captured</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-pvp-rematch" class="btn btn-primary btn-lg">Rematch</button>
+        <button id="btn-pvp-exit-solo" class="btn btn-secondary">Solo Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Modular Scripts -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
