@@ -799,12 +799,53 @@ class SudokuApp {
     // New game dropdown toggle
     this.dom.btnNewGameDropdown.addEventListener('click', (e) => {
       e.stopPropagation();
+      const mobileMenu = document.getElementById('mobile-menu-dropdown');
+      if (mobileMenu) mobileMenu.classList.remove('show');
       this.dom.difficultyMenu.classList.toggle('show');
     });
+
+    // Mobile More Menu
+    const mobileMenuBtn = document.getElementById('btn-mobile-menu');
+    const mobileMenuDropdown = document.getElementById('mobile-menu-dropdown');
+    if (mobileMenuBtn && mobileMenuDropdown) {
+      mobileMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.dom.difficultyMenu.classList.remove('show');
+        mobileMenuDropdown.classList.toggle('show');
+      });
+
+      document.getElementById('btn-mobile-stats')?.addEventListener('click', () => {
+        mobileMenuDropdown.classList.remove('show');
+        this.openStatsModal();
+      });
+
+      document.getElementById('btn-mobile-rules')?.addEventListener('click', () => {
+        mobileMenuDropdown.classList.remove('show');
+        this.dom.modalRules.classList.remove('hidden');
+      });
+
+      document.getElementById('btn-mobile-settings')?.addEventListener('click', () => {
+        mobileMenuDropdown.classList.remove('show');
+        this.openSettingsModal();
+      });
+
+      document.getElementById('btn-mobile-custom')?.addEventListener('click', () => {
+        mobileMenuDropdown.classList.remove('show');
+        this.dom.modalCustom.classList.remove('hidden');
+      });
+
+      document.getElementById('btn-mobile-auto-notes')?.addEventListener('click', () => {
+        mobileMenuDropdown.classList.remove('show');
+        this.autoFillCandidates();
+      });
+    }
 
     document.addEventListener('click', (e) => {
       if (!this.dom.btnNewGameDropdown.contains(e.target) && !this.dom.difficultyMenu.contains(e.target)) {
         this.dom.difficultyMenu.classList.remove('show');
+      }
+      if (mobileMenuBtn && !mobileMenuBtn.contains(e.target) && !mobileMenuDropdown.contains(e.target)) {
+        mobileMenuDropdown.classList.remove('show');
       }
     });
 

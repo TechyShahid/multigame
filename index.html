@@ -74,14 +74,14 @@
           </div>
         </div>
 
-        <!-- Quick Action Buttons -->
-        <button id="btn-stats" class="btn btn-icon" title="Statistics" aria-label="Open Statistics">
+        <!-- Quick Action Buttons (Desktop) -->
+        <button id="btn-stats" class="btn btn-icon desktop-only" title="Statistics" aria-label="Open Statistics">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 20V10M12 20V4M6 20v-6"></path>
           </svg>
         </button>
 
-        <button id="btn-rules" class="btn btn-icon" title="How to Play" aria-label="How to Play">
+        <button id="btn-rules" class="btn btn-icon desktop-only" title="How to Play" aria-label="How to Play">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -89,7 +89,7 @@
           </svg>
         </button>
 
-        <button id="btn-settings" class="btn btn-icon" title="Settings" aria-label="Settings">
+        <button id="btn-settings" class="btn btn-icon desktop-only" title="Settings" aria-label="Settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -129,6 +129,40 @@
             <polyline points="2 12 12 17 22 12"></polyline>
           </svg>
         </button>
+
+        <!-- Mobile More Menu Dropdown -->
+        <div class="dropdown-wrapper mobile-only">
+          <button id="btn-mobile-menu" class="btn btn-icon" title="Menu" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="1"></circle>
+              <circle cx="12" cy="5" r="1"></circle>
+              <circle cx="12" cy="19" r="1"></circle>
+            </svg>
+          </button>
+          <div id="mobile-menu-dropdown" class="dropdown-menu">
+            <button class="dropdown-item" id="btn-mobile-stats">
+              <span class="diff-title">Career Statistics</span>
+              <span class="diff-desc">Win rates & best times</span>
+            </button>
+            <button class="dropdown-item" id="btn-mobile-rules">
+              <span class="diff-title">How to Play</span>
+              <span class="diff-desc">Rules & keyboard shortcuts</span>
+            </button>
+            <button class="dropdown-item" id="btn-mobile-settings">
+              <span class="diff-title">Settings</span>
+              <span class="diff-desc">Assistance, sound & themes</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" id="btn-mobile-custom">
+              <span class="diff-title">Custom / Solver</span>
+              <span class="diff-desc">Input your own puzzle</span>
+            </button>
+            <button class="dropdown-item" id="btn-mobile-auto-notes">
+              <span class="diff-title">Auto-Fill Candidates</span>
+              <span class="diff-desc">Fill valid pencil notes</span>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
