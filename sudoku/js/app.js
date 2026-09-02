@@ -8,6 +8,7 @@ import { StorageManager } from './storage.js';
 import { ConfettiCannon } from './confetti.js';
 import { PvPLocalBattle } from './pvp-local.js';
 import { PvPOnlineRace } from './pvp-online.js';
+import { Haptics } from './haptics.js';
 
 class SudokuApp {
   constructor() {
@@ -417,6 +418,7 @@ class SudokuApp {
 
     this.selectedCell = { row, col };
     this.audio.playClick();
+    Haptics.light();
     this.updateHighlights();
   }
 
@@ -454,10 +456,12 @@ class SudokuApp {
     if (this.gameMode === 'pvp-local' && this.pvpLocal) {
       if (!isCorrect) {
         this.audio.playError();
+        Haptics.error();
         this.pvpLocal.processMove(row, col, digit, false, this.currentGrid);
         return;
       }
       this.audio.playClick();
+      Haptics.success();
       this.currentGrid[row][col] = digit;
       this.notesGrid[row][col].clear();
       this.pvpLocal.processMove(row, col, digit, true, this.currentGrid);
@@ -469,6 +473,7 @@ class SudokuApp {
 
     if (!isCorrect) {
       this.audio.playError();
+      Haptics.error();
       this.mistakes++;
       this.score = Math.max(0, this.score - 40);
       this.updateMistakesUI();
@@ -480,6 +485,7 @@ class SudokuApp {
       }
     } else {
       this.audio.playClick();
+      Haptics.success();
       this.score += 25;
       this.updateScoreUI();
     }
@@ -543,6 +549,7 @@ class SudokuApp {
     }
 
     this.audio.playNote();
+    Haptics.medium();
     this.historyStack.push({
       type: 'note',
       row,
@@ -573,6 +580,7 @@ class SudokuApp {
     if (prevVal === 0 && prevNotes.size === 0) return; // Already empty
 
     this.audio.playErase();
+    Haptics.light();
     this.currentGrid[row][col] = 0;
     this.notesGrid[row][col].clear();
 
@@ -1006,6 +1014,7 @@ class SudokuApp {
     this.isWon = true;
     this.stopTimer();
     this.audio.playVictory();
+    Haptics.victory();
     this.confetti.start(5000);
 
     // Save career statistics
@@ -1028,6 +1037,7 @@ class SudokuApp {
     this.isGameOver = true;
     this.stopTimer();
     this.audio.playError();
+    Haptics.gameOver();
     StorageManager.recordGameLoss(this.difficulty);
     StorageManager.clearActiveGame();
     this.dom.modalGameOver.classList.remove('hidden');

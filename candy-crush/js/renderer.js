@@ -5,6 +5,7 @@
 
 import { CANDY_TYPES, SPECIAL_TYPES } from './levels.js';
 import { Audio } from './audio.js';
+import { Haptics } from './haptics.js';
 
 // Candy visual representations using SVG shapes
 const CANDY_SHAPES = [
@@ -198,6 +199,7 @@ export class Renderer {
     cellEl.classList.add('candy-selected');
     this.selectedCell = cell;
     Audio.playSelect();
+    Haptics.light();
   }
 
   _onPointerMove(e) {
@@ -273,6 +275,7 @@ export class Renderer {
     cell2.classList.add('candy-swapping');
 
     Audio.playSwap();
+    Haptics.medium();
 
     await this._wait(250);
 
@@ -288,6 +291,7 @@ export class Renderer {
     if (!success) {
       // Animate swap back
       Audio.playInvalid();
+      Haptics.error();
       cell1.classList.add('candy-shake');
       cell2.classList.add('candy-shake');
       await this._wait(400);
@@ -318,6 +322,7 @@ export class Renderer {
 
     this.engine.onMatchFound = (matches, chainLevel, points) => {
       Audio.playMatch(chainLevel);
+      Haptics.pop();
 
       // Show floating score for each match
       for (const match of matches) {
@@ -354,12 +359,14 @@ export class Renderer {
 
     this.engine.onSpecialCreated = (spec) => {
       Audio.playSpecialCreate();
+      Haptics.special();
     };
 
     this.engine.onSpecialActivated = (activations) => {
       for (const act of activations) {
         if (act.special === SPECIAL_TYPES.COLOR_BOMB) {
           Audio.playColorBomb();
+          Haptics.special();
           this._screenFlash();
         } else {
           Audio.playSpecialActivate();
@@ -409,11 +416,13 @@ export class Renderer {
 
     this.engine.onCascade = (level) => {
       Audio.playCascade(level);
+      Haptics.combo(level);
     };
 
     this.engine.onLevelComplete = (score, stars) => {
       setTimeout(() => {
         Audio.playVictory();
+        Haptics.victory();
         this._showVictoryModal(score, stars);
       }, 600);
     };
@@ -421,6 +430,7 @@ export class Renderer {
     this.engine.onGameOver = (score) => {
       setTimeout(() => {
         Audio.playGameOver();
+        Haptics.gameOver();
         this._showGameOverModal(score);
       }, 600);
     };
