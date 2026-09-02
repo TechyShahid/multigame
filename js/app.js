@@ -6,6 +6,8 @@ import { SudokuEngine } from './sudoku-engine.js';
 import { AudioManager } from './audio.js';
 import { StorageManager } from './storage.js';
 import { ConfettiCannon } from './confetti.js';
+import { PvPLocalBattle } from './pvp-local.js';
+import { PvPOnlineRace } from './pvp-online.js';
 
 class SudokuApp {
   constructor() {
@@ -13,7 +15,11 @@ class SudokuApp {
     this.confetti = new ConfettiCannon(document.getElementById('confetti-canvas'));
     this.settings = StorageManager.loadSettings();
 
-    // Game state
+    // Game state & mode
+    this.gameMode = 'solo'; // 'solo' | 'pvp-local' | 'pvp-online'
+    this.pvpLocal = null;
+    this.pvpOnline = null;
+
     this.difficulty = 'medium';
     this.initialGrid = Array.from({ length: 9 }, () => Array(9).fill(0));
     this.solutionGrid = Array.from({ length: 9 }, () => Array(9).fill(0));
@@ -83,6 +89,13 @@ class SudokuApp {
       btnSettings: document.getElementById('btn-settings'),
       btnSoundToggle: document.getElementById('btn-sound-toggle'),
       btnThemeToggle: document.getElementById('btn-theme-toggle'),
+      btnPvP: document.getElementById('btn-pvp-mode'),
+      btnMobilePvP: document.getElementById('btn-mobile-pvp'),
+
+      // Status Bars & HUDs
+      soloStatusBar: document.getElementById('solo-status-bar'),
+      pvpLocalHud: document.getElementById('pvp-local-hud'),
+      pvpOnlineHud: document.getElementById('pvp-online-hud'),
 
       // Modals
       modalVictory: document.getElementById('modal-victory'),
@@ -91,12 +104,19 @@ class SudokuApp {
       modalSettings: document.getElementById('modal-settings'),
       modalRules: document.getElementById('modal-rules'),
       modalCustom: document.getElementById('modal-custom'),
+      modalPvPSelect: document.getElementById('modal-pvp-select'),
+      modalPvPOnlineLobby: document.getElementById('modal-pvp-online-lobby'),
+      modalPvPResult: document.getElementById('modal-pvp-result'),
 
       // Toast
       toastContainer: document.getElementById('toast-container')
     };
 
     this.init();
+  }
+
+  getEngine() {
+    return SudokuEngine;
   }
 
   init() {
@@ -107,6 +127,18 @@ class SudokuApp {
     this.buildBoardDOM();
     this.setupEventListeners();
     this.setupModals();
+    this.initPvPEngines();
+
+    // Check if user came from a shareable room link: ?room=CODE
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomFromUrl = urlParams.get('room');
+    if (roomFromUrl) {
+      setTimeout(() => {
+        document.getElementById('input-join-code').value = roomFromUrl.toUpperCase();
+        this.joinOnlineRoom(roomFromUrl);
+      }, 500);
+      return;
+    }
 
     // Check if there is an active saved game
     const saved = StorageManager.loadActiveGame();
@@ -171,35 +203,33 @@ class SudokuApp {
     this.showToast(`Generating ${SudokuEngine.DIFFICULTIES[diffKey]?.name} puzzle...`);
 
     // Procedural generation
-    setTimeout(() => {
-      const puzzle = SudokuEngine.generate(diffKey);
-      this.initialGrid = puzzle.initial.map(row => [...row]);
-      this.solutionGrid = puzzle.solution.map(row => [...row]);
-      this.currentGrid = puzzle.initial.map(row => [...row]);
-      this.notesGrid = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => new Set()));
+    const puzzle = SudokuEngine.generate(diffKey);
+    this.initialGrid = puzzle.initial.map(row => [...row]);
+    this.solutionGrid = puzzle.solution.map(row => [...row]);
+    this.currentGrid = puzzle.initial.map(row => [...row]);
+    this.notesGrid = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => new Set()));
 
-      this.selectedCell = null;
-      this.selectedDigit = null;
-      this.historyStack = [];
-      this.redoStack = [];
-      this.mistakes = 0;
-      this.score = 1000;
-      this.timerSeconds = 0;
-      this.isPaused = false;
-      this.isGameOver = false;
-      this.isWon = false;
-      this.activeHint = null;
+    this.selectedCell = null;
+    this.selectedDigit = null;
+    this.historyStack = [];
+    this.redoStack = [];
+    this.mistakes = 0;
+    this.score = 1000;
+    this.timerSeconds = 0;
+    this.isPaused = false;
+    this.isGameOver = false;
+    this.isWon = false;
+    this.activeHint = null;
 
-      this.hideHintBanner();
-      this.updateMistakesUI();
-      this.updateScoreUI();
-      this.renderBoard();
-      this.updateKeypadCounts();
-      this.startTimer();
-      this.saveCurrentGame();
+    this.hideHintBanner();
+    this.updateMistakesUI();
+    this.updateScoreUI();
+    this.renderBoard();
+    this.updateKeypadCounts();
+    this.startTimer();
+    this.saveCurrentGame();
 
-      StorageManager.recordGameStart(diffKey);
-    }, 20);
+    StorageManager.recordGameStart(diffKey);
   }
 
   /**
@@ -269,6 +299,13 @@ class SudokuApp {
           cellEl.classList.add('user-input');
           valSpan.textContent = currentVal;
           notesGrid.classList.add('hidden');
+
+          // PvP cell ownership badge
+          if (this.gameMode === 'pvp-local' && this.pvpLocal) {
+            const owner = this.pvpLocal.cellOwnership[r][c];
+            if (owner === 1) cellEl.classList.add('cell-p1');
+            else if (owner === 2) cellEl.classList.add('cell-p2');
+          }
 
           // Check if error conflict highlight is enabled
           if (this.settings.highlightDuplicates && currentVal !== this.solutionGrid[r][c]) {
@@ -412,6 +449,24 @@ class SudokuApp {
 
     // Check conflict against solution
     const isCorrect = digit === this.solutionGrid[row][col];
+
+    // Handle Local Turn Battle PvP
+    if (this.gameMode === 'pvp-local' && this.pvpLocal) {
+      if (!isCorrect) {
+        this.audio.playError();
+        this.pvpLocal.processMove(row, col, digit, false, this.currentGrid);
+        return;
+      }
+      this.audio.playClick();
+      this.currentGrid[row][col] = digit;
+      this.notesGrid[row][col].clear();
+      this.pvpLocal.processMove(row, col, digit, true, this.currentGrid);
+      this.renderBoard();
+      this.updateKeypadCounts();
+      this.checkGameCompletion();
+      return;
+    }
+
     if (!isCorrect) {
       this.audio.playError();
       this.mistakes++;
@@ -431,6 +486,10 @@ class SudokuApp {
 
     this.currentGrid[row][col] = digit;
     this.notesGrid[row][col].clear();
+
+    if (this.gameMode === 'pvp-online' && this.pvpOnline) {
+      this.updateOnlineProgress();
+    }
 
     // Auto-remove notes in peers if enabled
     const clearedPeerNotes = [];
@@ -690,9 +749,254 @@ class SudokuApp {
         }
       }
     }
+
+    if (this.gameMode === 'pvp-local' && this.pvpLocal) {
+      this.pvpLocal.stop();
+      this.showPvPWinner(this.pvpLocal.getWinner());
+      return true;
+    }
+
+    if (this.gameMode === 'pvp-online' && this.pvpOnline) {
+      this.pvpOnline.broadcastWin(this.timerSeconds, this.score);
+      this.showPvPWinner('you');
+      return true;
+    }
+
     // Victory!
     this.triggerVictory();
     return true;
+  }
+
+  /**
+   * Initialize PvP Local and Online Engines
+   */
+  initPvPEngines() {
+    this.pvpLocal = new PvPLocalBattle(this, {
+      shotClockSeconds: 30,
+      onStateChange: (state) => this.updatePvPLocalUI(state)
+    });
+
+    this.pvpOnline = new PvPOnlineRace(this, {
+      onConnected: ({ isHost, roomCode }) => {
+        this.dom.modalPvPOnlineLobby.classList.add('hidden');
+        this.showToast(`🎮 Opponent connected to Room ${roomCode}! Match starting...`);
+      },
+      onOpponentProgress: (data) => {
+        const oppBar = document.getElementById('pvp-opp-bar');
+        const oppPct = document.getElementById('pvp-opp-pct');
+        if (oppBar) oppBar.style.width = `${data.percent}%`;
+        if (oppPct) oppPct.textContent = `${data.percent}%`;
+      },
+      onOpponentWon: (data) => {
+        this.showPvPWinner('opponent', data);
+      },
+      onStatusChange: (status) => {
+        const text = document.getElementById('lobby-status-text');
+        if (text) text.textContent = status;
+      },
+      onError: (errMsg) => {
+        this.showToast(`Multiplayer error: ${errMsg}`);
+      }
+    });
+  }
+
+  /**
+   * Starts a Local Turn Battle (same device)
+   */
+  startLocalPvP(difficulty = 'medium', shotClockSeconds = 30) {
+    this.gameMode = 'pvp-local';
+    this.pvpLocal.shotClockSeconds = parseInt(shotClockSeconds, 10);
+
+    // Switch HUDs
+    this.dom.soloStatusBar.classList.add('hidden');
+    this.dom.pvpOnlineHud.classList.add('hidden');
+    this.dom.pvpLocalHud.classList.remove('hidden');
+    this.dom.modalPvPSelect.classList.add('hidden');
+
+    this.startNewGame(difficulty);
+    this.pvpLocal.start();
+    this.showToast('⚔️ Local Turn Battle Started! Player 1 goes first.');
+  }
+
+  /**
+   * Updates Local PvP HUD scoreboard and shot clock
+   */
+  updatePvPLocalUI(state) {
+    const p1Card = document.getElementById('pvp-p1-card');
+    const p2Card = document.getElementById('pvp-p2-card');
+    const turnLabel = document.getElementById('pvp-turn-indicator');
+    const shotClock = document.getElementById('pvp-shot-clock');
+
+    if (p1Card) p1Card.classList.toggle('active', state.activePlayer === 1);
+    if (p2Card) p2Card.classList.toggle('active', state.activePlayer === 2);
+
+    document.getElementById('pvp-p1-score').textContent = `${state.scores[1]} pts`;
+    document.getElementById('pvp-p2-score').textContent = `${state.scores[2]} pts`;
+    document.getElementById('pvp-p1-cells').textContent = `${state.cellsCaptured[1]} cells`;
+    document.getElementById('pvp-p2-cells').textContent = `${state.cellsCaptured[2]} cells`;
+
+    if (turnLabel) turnLabel.textContent = `P${state.activePlayer} Turn`;
+    if (shotClock) {
+      if (state.shotClockSeconds > 0) {
+        shotClock.textContent = `${state.remainingTurnTime}s`;
+        shotClock.classList.toggle('urgent', state.remainingTurnTime <= 5);
+      } else {
+        shotClock.textContent = '∞';
+        shotClock.classList.remove('urgent');
+      }
+    }
+  }
+
+  /**
+   * Host starts an Online 1v1 Room
+   */
+  async startOnlineHost() {
+    this.dom.modalPvPSelect.classList.add('hidden');
+    this.dom.modalPvPOnlineLobby.classList.remove('hidden');
+
+    const code = await this.pvpOnline.createRoom(this.difficulty);
+    document.getElementById('lobby-code-display').textContent = code;
+    document.getElementById('lobby-status-text').textContent = 'Waiting for opponent to connect...';
+  }
+
+  /**
+   * Guest joins an Online 1v1 Room with Room Code
+   */
+  async joinOnlineRoom(code) {
+    if (!code || code.trim().length < 3) {
+      this.showToast('Please enter a valid Room Code');
+      return;
+    }
+    this.dom.modalPvPSelect.classList.add('hidden');
+    this.dom.modalPvPOnlineLobby.classList.remove('hidden');
+    document.getElementById('lobby-code-display').textContent = code.trim().toUpperCase();
+    document.getElementById('lobby-status-text').textContent = `Connecting to Room ${code}...`;
+
+    await this.pvpOnline.joinRoom(code);
+  }
+
+  /**
+   * Launches synchronized multiplayer puzzle for both players
+   */
+  startMultiplayerPuzzle(puzzle) {
+    this.gameMode = 'pvp-online';
+    this.dom.modalPvPOnlineLobby.classList.add('hidden');
+
+    this.dom.soloStatusBar.classList.add('hidden');
+    this.dom.pvpLocalHud.classList.add('hidden');
+    this.dom.pvpOnlineHud.classList.remove('hidden');
+
+    this.initialGrid = puzzle.initial.map(row => [...row]);
+    this.solutionGrid = puzzle.solution.map(row => [...row]);
+    this.currentGrid = puzzle.initial.map(row => [...row]);
+    this.notesGrid = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => new Set()));
+    this.difficulty = puzzle.difficulty || 'medium';
+    this.mistakes = 0;
+    this.score = 1000;
+    this.timerSeconds = 0;
+    this.historyStack = [];
+    this.redoStack = [];
+
+    document.getElementById('pvp-my-bar').style.width = '0%';
+    document.getElementById('pvp-my-pct').textContent = '0%';
+    document.getElementById('pvp-opp-bar').style.width = '0%';
+    document.getElementById('pvp-opp-pct').textContent = '0%';
+
+    this.renderBoard();
+    this.updateKeypadCounts();
+    this.startTimer();
+    this.showToast('🏁 1v1 Race Started! First to solve wins!');
+  }
+
+  /**
+   * Broadcasts online race progress
+   */
+  updateOnlineProgress() {
+    const totalEmpty = 81 - this.initialGrid.flat().filter(x => x > 0).length;
+    let filled = 0;
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (this.initialGrid[r][c] === 0 && this.currentGrid[r][c] === this.solutionGrid[r][c]) {
+          filled++;
+        }
+      }
+    }
+    const percent = Math.min(100, Math.round((filled / totalEmpty) * 100));
+    document.getElementById('pvp-my-bar').style.width = `${percent}%`;
+    document.getElementById('pvp-my-pct').textContent = `${percent}%`;
+
+    this.pvpOnline.broadcastProgress(filled, totalEmpty, this.mistakes);
+  }
+
+  /**
+   * Exits PvP mode back to standard Solo play
+   */
+  exitPvPToSolo() {
+    if (this.pvpLocal) this.pvpLocal.stop();
+    if (this.pvpOnline) this.pvpOnline.cleanup();
+    this.gameMode = 'solo';
+
+    this.dom.pvpLocalHud.classList.add('hidden');
+    this.dom.pvpOnlineHud.classList.add('hidden');
+    this.dom.soloStatusBar.classList.remove('hidden');
+
+    this.startNewGame(this.difficulty);
+    this.showToast('Returned to Solo Zen Mode');
+  }
+
+  /**
+   * Shows PvP Winner Modal with scores and celebration
+   */
+  showPvPWinner(winner, stats = {}) {
+    this.stopTimer();
+    this.audio.playVictory();
+    this.confetti.start(5000);
+
+    const titleEl = document.getElementById('pvp-result-title');
+    const subtitleEl = document.getElementById('pvp-result-subtitle');
+    const p1Name = document.getElementById('pvp-res-p1-name');
+    const p2Name = document.getElementById('pvp-res-p2-name');
+    const p1Score = document.getElementById('pvp-res-p1-score');
+    const p2Score = document.getElementById('pvp-res-p2-score');
+    const p1Sub = document.getElementById('pvp-res-p1-sub');
+    const p2Sub = document.getElementById('pvp-res-p2-sub');
+
+    if (this.gameMode === 'pvp-local') {
+      if (winner === 1) {
+        titleEl.textContent = '🏆 Player 1 Victory!';
+        subtitleEl.textContent = 'Magnificent Sudoku tactics and scoring!';
+      } else if (winner === 2) {
+        titleEl.textContent = '🏆 Player 2 Victory!';
+        subtitleEl.textContent = 'Masterful Sudoku play and combos!';
+      } else {
+        titleEl.textContent = '🤝 Honorable Tie!';
+        subtitleEl.textContent = 'Both players fought to an equal draw!';
+      }
+
+      p1Name.textContent = 'Player 1';
+      p2Name.textContent = 'Player 2';
+      p1Score.textContent = `${this.pvpLocal.scores[1]} pts`;
+      p2Score.textContent = `${this.pvpLocal.scores[2]} pts`;
+      p1Sub.textContent = `${this.pvpLocal.cellsCaptured[1]} cells captured`;
+      p2Sub.textContent = `${this.pvpLocal.cellsCaptured[2]} cells captured`;
+    } else if (this.gameMode === 'pvp-online') {
+      if (winner === 'you') {
+        titleEl.textContent = '🥇 Victory! You Won!';
+        subtitleEl.textContent = `Completed in ${this.formatTime(this.timerSeconds)}! Ahead of your opponent!`;
+      } else {
+        titleEl.textContent = '🥈 Opponent Finished First!';
+        subtitleEl.textContent = 'Great match! Try a rematch to conquer the grid!';
+      }
+
+      p1Name.textContent = 'You';
+      p2Name.textContent = 'Opponent';
+      p1Score.textContent = `${this.score} pts`;
+      p2Score.textContent = stats.score ? `${stats.score} pts` : '--';
+      p1Sub.textContent = `Time: ${this.formatTime(this.timerSeconds)}`;
+      p2Sub.textContent = stats.timeSeconds ? `Time: ${this.formatTime(stats.timeSeconds)}` : 'Completed';
+    }
+
+    this.dom.modalPvPResult.classList.remove('hidden');
   }
 
   /**
@@ -1034,6 +1338,81 @@ class SudokuApp {
     this.dom.btnStats.addEventListener('click', () => this.openStatsModal());
     this.dom.btnRules.addEventListener('click', () => this.dom.modalRules.classList.remove('hidden'));
     this.dom.btnSettings.addEventListener('click', () => this.openSettingsModal());
+
+    // PvP Mode Open Buttons
+    this.dom.btnPvP?.addEventListener('click', () => {
+      this.dom.modalPvPSelect.classList.remove('hidden');
+    });
+    document.getElementById('btn-mobile-pvp')?.addEventListener('click', () => {
+      document.getElementById('mobile-menu-dropdown')?.classList.remove('show');
+      this.dom.modalPvPSelect.classList.remove('hidden');
+    });
+
+    // PvP Local Duel Start
+    document.getElementById('btn-start-local-pvp')?.addEventListener('click', () => {
+      const diff = document.getElementById('pvp-local-diff-select')?.value || 'medium';
+      const timer = document.getElementById('pvp-shot-clock-select')?.value || 30;
+      this.startLocalPvP(diff, timer);
+    });
+
+    // PvP Online Host & Join
+    document.getElementById('btn-open-online-host')?.addEventListener('click', () => {
+      this.startOnlineHost();
+    });
+
+    document.getElementById('btn-join-online-room')?.addEventListener('click', () => {
+      const code = document.getElementById('input-join-code')?.value;
+      this.joinOnlineRoom(code);
+    });
+
+    document.getElementById('input-join-code')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const code = document.getElementById('input-join-code')?.value;
+        this.joinOnlineRoom(code);
+      }
+    });
+
+    document.getElementById('btn-copy-room-link')?.addEventListener('click', () => {
+      if (!this.pvpOnline?.roomCode) return;
+      const roomUrl = `${window.location.origin}${window.location.pathname}?room=${this.pvpOnline.roomCode}`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(roomUrl);
+        this.showToast('📋 Room link copied to clipboard!');
+      } else {
+        this.showToast(`Share link: ${roomUrl}`);
+      }
+    });
+
+    // Exit PvP HUD buttons
+    document.getElementById('btn-exit-pvp-local')?.addEventListener('click', () => {
+      if (confirm('Exit Local Turn Battle and return to Solo mode?')) {
+        this.exitPvPToSolo();
+      }
+    });
+
+    document.getElementById('btn-exit-pvp-online')?.addEventListener('click', () => {
+      if (confirm('Leave online match and return to Solo mode?')) {
+        this.exitPvPToSolo();
+      }
+    });
+
+    // PvP Results Buttons
+    document.getElementById('btn-pvp-rematch')?.addEventListener('click', () => {
+      this.dom.modalPvPResult.classList.add('hidden');
+      this.confetti.stop();
+      if (this.gameMode === 'pvp-local') {
+        this.startLocalPvP(this.difficulty, this.pvpLocal.shotClockSeconds);
+      } else if (this.gameMode === 'pvp-online') {
+        this.pvpOnline.sendRematchRequest();
+        this.showToast('Rematch request sent to opponent!');
+      }
+    });
+
+    document.getElementById('btn-pvp-exit-solo')?.addEventListener('click', () => {
+      this.dom.modalPvPResult.classList.add('hidden');
+      this.confetti.stop();
+      this.exitPvPToSolo();
+    });
 
     // Modal close buttons
     document.querySelectorAll('[data-close-modal]').forEach(btn => {

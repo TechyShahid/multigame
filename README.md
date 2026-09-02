@@ -27,6 +27,13 @@ A modern, responsive, and feature-rich 9x9 Sudoku web application built with pur
 
 ---
 
+### Player vs Player (PvP) Mode
+| PvP Mode Selector | Local Turn Battle (Live Duel) |
+| :---: | :---: |
+| ![PvP Mode Selector](screenshots/pvp-mode-selector.png) | ![Local Turn Battle Duel](screenshots/pvp-local-battle.png) |
+
+---
+
 ### Settings & Customization
 ![Settings Modal](screenshots/settings-modal.png)
 
@@ -34,6 +41,9 @@ A modern, responsive, and feature-rich 9x9 Sudoku web application built with pur
 
 ## ✨ Features
 
+- **⚔️ Player vs Player (PvP) Modes**:
+  - **Local Turn Battle (Pass & Play)**: Two players take turns placing numbers on a shared board. Earn points (+50 pts) for correct moves and combo bonuses (+150 pts) for completing entire rows, columns, or 3×3 boxes. Penalties for mistakes (-30 pts). Optional turn shot-clock (15s, 30s, 60s, or unlimited).
+  - **Online 1v1 Race (WebRTC PeerJS)**: Zero-backend peer-to-peer real-time race. Challenge a friend across two devices with a 5-letter Room Code or copyable link. Solve the exact same puzzle simultaneously with real-time opponent progress bars and instant victory detection.
 - **Procedural Generation & Solver**: Backtracking algorithm with unique solution guarantees across 5 difficulty levels:
   - **Beginner**: 50 clues
   - **Easy**: 40 clues

@@ -74,6 +74,17 @@
           </div>
         </div>
 
+        <!-- PvP Mode Button -->
+        <button id="btn-pvp-mode" class="btn btn-pvp" title="Player vs Player" aria-label="Player vs Player">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m14.5 17.5-11.5-11.5 3-3 11.5 11.5z"></path>
+            <path d="m13 19 6-6"></path>
+            <path d="m16 16 4 4"></path>
+            <path d="m19 21 2-2"></path>
+          </svg>
+          <span class="pvp-btn-text">PvP</span>
+        </button>
+
         <!-- Quick Action Buttons (Desktop) -->
         <button id="btn-stats" class="btn btn-icon desktop-only" title="Statistics" aria-label="Open Statistics">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -140,6 +151,10 @@
             </svg>
           </button>
           <div id="mobile-menu-dropdown" class="dropdown-menu">
+            <button class="dropdown-item" id="btn-mobile-pvp">
+              <span class="diff-title">⚔️ Player vs Player</span>
+              <span class="diff-desc">Local Duel & Online Race</span>
+            </button>
             <button class="dropdown-item" id="btn-mobile-stats">
               <span class="diff-title">Career Statistics</span>
               <span class="diff-desc">Win rates & best times</span>
@@ -168,8 +183,8 @@
 
     <!-- Main Game Board Container -->
     <main class="game-main">
-      <!-- Status bar -->
-      <section class="game-status-bar">
+      <!-- Solo Status Bar -->
+      <section id="solo-status-bar" class="game-status-bar">
         <div class="status-item diff-tag">
           <span class="status-label">Difficulty</span>
           <span id="current-diff-badge" class="status-value highlight">Medium</span>
@@ -195,6 +210,61 @@
                 <rect x="14" y="4" width="4" height="16"></rect>
               </svg>
             </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PvP Local Battle HUD -->
+      <section id="pvp-local-hud" class="game-status-bar pvp-local-hud hidden">
+        <div class="pvp-player-card p1-card active" id="pvp-p1-card">
+          <div class="pvp-player-header">
+            <span class="pvp-dot p1-dot"></span>
+            <span class="pvp-name">Player 1</span>
+          </div>
+          <div class="pvp-score" id="pvp-p1-score">0 pts</div>
+          <span class="pvp-sub" id="pvp-p1-cells">0 cells</span>
+        </div>
+
+        <div class="pvp-center-clock">
+          <span class="pvp-turn-label" id="pvp-turn-indicator">P1 Turn</span>
+          <div class="pvp-shot-clock mono" id="pvp-shot-clock">30s</div>
+          <button id="btn-exit-pvp-local" class="btn-pvp-exit" title="Exit Battle">Exit</button>
+        </div>
+
+        <div class="pvp-player-card p2-card" id="pvp-p2-card">
+          <div class="pvp-player-header">
+            <span class="pvp-dot p2-dot"></span>
+            <span class="pvp-name">Player 2</span>
+          </div>
+          <div class="pvp-score" id="pvp-p2-score">0 pts</div>
+          <span class="pvp-sub" id="pvp-p2-cells">0 cells</span>
+        </div>
+      </section>
+
+      <!-- PvP Online Race HUD -->
+      <section id="pvp-online-hud" class="game-status-bar pvp-online-hud hidden">
+        <div class="pvp-race-item">
+          <div class="pvp-race-header">
+            <span class="pvp-race-name highlight">You</span>
+            <span class="pvp-race-pct mono" id="pvp-my-pct">0%</span>
+          </div>
+          <div class="pvp-bar-track">
+            <div class="pvp-bar-fill my-fill" id="pvp-my-bar" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="pvp-vs-badge">
+          <span>VS</span>
+          <button id="btn-exit-pvp-online" class="btn-pvp-exit" title="Leave Match">Exit</button>
+        </div>
+
+        <div class="pvp-race-item">
+          <div class="pvp-race-header">
+            <span class="pvp-race-name opponent">Opponent</span>
+            <span class="pvp-race-pct mono" id="pvp-opp-pct">0%</span>
+          </div>
+          <div class="pvp-bar-track">
+            <div class="pvp-bar-fill opp-fill" id="pvp-opp-bar" style="width: 0%"></div>
           </div>
         </div>
       </section>
@@ -642,6 +712,128 @@
 
       <div class="modal-footer">
         <button class="btn btn-secondary" data-close-modal="modal-custom">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PvP Mode Selector Modal -->
+  <div id="modal-pvp-select" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h2>⚔️ Player vs Player Mode</h2>
+        <button class="modal-close" data-close-modal="modal-pvp-select">×</button>
+      </div>
+
+      <div class="pvp-modes-grid">
+        <!-- Local Pass & Play Mode Card -->
+        <div class="pvp-mode-card">
+          <div class="pvp-mode-icon">📱</div>
+          <h3>Local Turn Battle</h3>
+          <p class="pvp-mode-desc">Pass & play on this device. Take turns placing numbers. Earn combo points for completing rows, columns, and 3x3 boxes!</p>
+          
+          <div class="pvp-mode-settings">
+            <div class="pvp-setting-row">
+              <label>Turn Shot Clock:</label>
+              <select id="pvp-shot-clock-select" class="custom-select">
+                <option value="15">15 Seconds (Speed)</option>
+                <option value="30" selected>30 Seconds (Standard)</option>
+                <option value="60">60 Seconds (Relaxed)</option>
+                <option value="0">No Timer (Casual)</option>
+              </select>
+            </div>
+            <div class="pvp-setting-row">
+              <label>Difficulty:</label>
+              <select id="pvp-local-diff-select" class="custom-select">
+                <option value="easy">Easy (Casual Duel)</option>
+                <option value="medium" selected>Medium (Standard)</option>
+                <option value="hard">Hard (Pro Battle)</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="button" id="btn-start-local-pvp" class="btn btn-primary btn-full">Start Local Duel</button>
+        </div>
+
+        <!-- Online 1v1 Race Card -->
+        <div class="pvp-mode-card">
+          <div class="pvp-mode-icon">🌐</div>
+          <h3>Online 1v1 Race</h3>
+          <p class="pvp-mode-desc">Challenge a friend across two devices. Race on the exact same board in real-time with zero-latency WebRTC peer connections!</p>
+
+          <div class="pvp-online-actions">
+            <button type="button" id="btn-open-online-host" class="btn btn-accent btn-full">Create Match Room</button>
+            <div class="pvp-divider"><span>OR</span></div>
+            <div class="pvp-join-box">
+              <input type="text" id="input-join-code" class="custom-input" placeholder="Room Code (e.g. ZEN42)" maxlength="6" />
+              <button type="button" id="btn-join-online-room" class="btn btn-secondary">Join</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal="modal-pvp-select">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PvP Online Lobby Modal -->
+  <div id="modal-pvp-online-lobby" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Online 1v1 Lobby</h2>
+        <button class="modal-close" data-close-modal="modal-pvp-online-lobby">×</button>
+      </div>
+
+      <div class="lobby-content">
+        <div class="lobby-code-box">
+          <span class="lobby-code-label">Room Code</span>
+          <div class="lobby-code-display" id="lobby-code-display">-----</div>
+          <p class="lobby-code-hint">Share this code or link with your friend to join!</p>
+        </div>
+
+        <div class="lobby-actions">
+          <button id="btn-copy-room-link" class="btn btn-primary btn-full">📋 Copy Room Link</button>
+        </div>
+
+        <div class="lobby-status-box">
+          <div class="loading-spinner"></div>
+          <span id="lobby-status-text">Waiting for opponent to connect...</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-cancel-lobby" class="btn btn-secondary" data-close-modal="modal-pvp-online-lobby">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PvP Match Result Modal -->
+  <div id="modal-pvp-result" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-victory-card">
+      <div class="victory-header">
+        <div class="trophy-icon" id="pvp-result-icon">🏆</div>
+        <h2 id="pvp-result-title">Player 1 Victorious!</h2>
+        <p class="subtitle" id="pvp-result-subtitle">Supreme mastery of the numbers.</p>
+      </div>
+
+      <div class="pvp-result-scores">
+        <div class="pvp-result-col p1-col">
+          <h4 id="pvp-res-p1-name">Player 1</h4>
+          <div class="pvp-res-score" id="pvp-res-p1-score">0 pts</div>
+          <span class="pvp-res-sub" id="pvp-res-p1-sub">0 cells captured</span>
+        </div>
+        <div class="pvp-vs-sep">VS</div>
+        <div class="pvp-result-col p2-col">
+          <h4 id="pvp-res-p2-name">Player 2</h4>
+          <div class="pvp-res-score" id="pvp-res-p2-score">0 pts</div>
+          <span class="pvp-res-sub" id="pvp-res-p2-sub">0 cells captured</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-pvp-rematch" class="btn btn-primary btn-lg">Rematch</button>
+        <button id="btn-pvp-exit-solo" class="btn btn-secondary">Solo Mode</button>
       </div>
     </div>
   </div>
