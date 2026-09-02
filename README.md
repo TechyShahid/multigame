@@ -1,30 +1,64 @@
-# Zen Sudoku Pro
+# 🧩 Zen Sudoku Pro
 
-A modern, responsive, and feature-rich 9x9 Sudoku web application with procedural board generation, intelligent hints, pencil candidate notes, multiple color schemes, and Web Audio sound synthesis.
+A modern, responsive, and feature-rich 9x9 Sudoku web application built with pure HTML5, CSS3, and Modular ES6+ JavaScript. Features procedural board generation with unique solutions, candidate pencil notes, smart educational hints, career statistics, and ambient Web Audio sound effects.
 
-Live Demo: [https://TechyShahid.github.io/multigame/](https://TechyShahid.github.io/multigame/)
-
----
-
-## Features
-
-- **Procedural Generation & Solver**: Fast backtracking generator with guaranteed unique solutions across 5 difficulty levels (Beginner, Easy, Medium, Hard, Expert).
-- **Candidate Notes**: 3x3 pencil marks inside cells with auto-fill and auto-clearing when numbers are placed.
-- **Intelligent Step-by-Step Hints**: Detects and explains logical deductions (Naked Singles, Hidden Singles, conflict resolution).
-- **Dual Input Modes**: Cell-first (select cell -> tap digit) and Digit-first (select digit -> tap multiple cells).
-- **Multiple Themes**: Midnight Dark, Porcelain Light, and Matrix Emerald.
-- **Web Audio API**: Crisp synthesizer sounds for clicks, notes, errors, and celebratory victory fanfare without external assets.
-- **Confetti Celebration**: Smooth 60fps canvas particle cannon on puzzle completion.
-- **Career Statistics**: Tracks games played, win rate, best time, average time, and streaks per difficulty level via LocalStorage.
-- **Printable**: Dedicated print stylesheet for clean physical paper puzzles.
+🚀 **Live Demo:** [https://techyshahid.github.io/multigame/](https://techyshahid.github.io/multigame/)
 
 ---
 
-## Keyboard Shortcuts
+## 📸 Screenshots
+
+### Midnight Dark (Default Theme)
+![Zen Sudoku Desktop Dark Theme](screenshots/desktop-dark.png)
+
+---
+
+### Multiple Visual Themes
+| Porcelain Light | Matrix Emerald |
+| :---: | :---: |
+| ![Porcelain Light Theme](screenshots/desktop-light.png) | ![Matrix Emerald Theme](screenshots/desktop-emerald.png) |
+
+---
+
+### Mobile Experience & Dashboards
+| Single-Screen Mobile Layout | Career Statistics |
+| :---: | :---: |
+| ![Mobile Layout (390x844)](screenshots/mobile-layout.png) | ![Career Statistics Modal](screenshots/career-stats.png) |
+
+---
+
+### Settings & Customization
+![Settings Modal](screenshots/settings-modal.png)
+
+---
+
+## ✨ Features
+
+- **Procedural Generation & Solver**: Backtracking algorithm with unique solution guarantees across 5 difficulty levels:
+  - **Beginner**: 50 clues
+  - **Easy**: 40 clues
+  - **Medium**: 33 clues
+  - **Hard**: 28 clues
+  - **Expert**: 24 clues
+- **Candidate Notes**: 3×3 mini-grid inside empty cells for candidate numbers, complete with one-click **Auto-Fill Candidates** and automatic peer note cleanup upon placing correct digits.
+- **Smart Educational Hints**: Analyzes the board and explains step-by-step logical deductions (**Naked Singles**, **Hidden Singles**, conflict detection) rather than simply revealing an answer.
+- **Dual Input Modes**:
+  - **Cell First**: Select a cell, then tap a number.
+  - **Digit First**: Select a number, then rapidly tap multiple cells across the board.
+- **Single-Screen Mobile Layout**: Designed with `100dvh` dynamic height to fit the entire board, header, controls, and keypad above the fold on mobile screens with zero vertical scrolling.
+- **Web Audio API**: Crisp synthesizer sounds for clicks, pencil scribbles, error buzzes, and celebratory victory fanfares with zero external audio dependencies.
+- **Confetti Cannon**: High-performance canvas particle system celebrating puzzle completion.
+- **Career Statistics**: Tracks games played, win rate, best time, average time, and win streaks per difficulty level via `localStorage`.
+- **Custom Board & Solver**: Allows inputting or solving custom 81-character puzzle strings.
+- **Printable**: Clean `@media print` stylesheet for physical paper puzzle sheets.
+
+---
+
+## ⌨️ Keyboard Shortcuts
 
 | Key | Action |
 | :--- | :--- |
-| `1` - `9` | Place number or candidate note |
+| `1` – `9` | Place number or candidate note |
 | `Arrow Keys` / `W` `A` `S` `D` | Navigate cells |
 | `Delete` / `Backspace` | Erase cell |
 | `N` | Toggle pencil notes mode |
@@ -35,9 +69,9 @@ Live Demo: [https://TechyShahid.github.io/multigame/](https://TechyShahid.github
 
 ---
 
-## Local Development
+## 🚀 Local Development
 
-No build dependencies or bundlers required. Simply serve using any static server:
+No build steps or bundlers required. Run with any local HTTP server:
 
 ```bash
 # Using Python
@@ -47,8 +81,10 @@ python3 -m http.server 8080
 npx serve .
 ```
 
+Open `http://localhost:8080` in your browser.
+
 ---
 
-## License
+## 📄 License
 
-MIT
+MIT © [Shahid Khan](https://github.com/TechyShahid)
