@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="MultiGame Arcade — Choose from a collection of beautiful, premium browser games including Zen Sudoku, Candy Crush, and Neon Pong." />
+  <meta name="description" content="MultiGame Arcade — Choose from a collection of beautiful, premium browser games including Zen Sudoku, Candy Crush, Neon Pong, and Neon Snake." />
   <title>MultiGame Arcade — Play Premium Browser Games</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -244,6 +244,10 @@
       background: linear-gradient(135deg, #071b26 0%, #0c142b 50%, #1f0b35 100%);
     }
 
+    .card-snake .card-preview-bg {
+      background: linear-gradient(135deg, #052614 0%, #081d1e 50%, #151838 100%);
+    }
+
     .card-preview-icon {
       position: relative;
       z-index: 2;
@@ -400,6 +404,7 @@
     .card-sudoku { --card-glow: rgba(99, 102, 241, 0.15); --tag-color: #818cf8; --play-bg: linear-gradient(135deg, #6366f1, #4f46e5); }
     .card-candy { --card-glow: rgba(236, 72, 153, 0.15); --tag-color: #f472b6; --play-bg: linear-gradient(135deg, #ec4899, #db2777); }
     .card-pong { --card-glow: rgba(6, 182, 212, 0.2); --tag-color: #06b6d4; --play-bg: linear-gradient(135deg, #06b6d4, #a855f7); }
+    .card-snake { --card-glow: rgba(34, 197, 94, 0.2); --tag-color: #22c55e; --play-bg: linear-gradient(135deg, #22c55e, #06b6d4); }
 
     /* ============= Footer ============= */
     .footer {
@@ -430,6 +435,7 @@
     .game-card:nth-child(1) { animation-delay: 0.08s; }
     .game-card:nth-child(2) { animation-delay: 0.16s; }
     .game-card:nth-child(3) { animation-delay: 0.24s; }
+    .game-card:nth-child(4) { animation-delay: 0.32s; }
 
     @keyframes cardReveal {
       to { opacity: 1; transform: translateY(0); }
@@ -674,6 +680,42 @@
             <span class="meta-item">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
               Solo Rally
+            </span>
+          </div>
+          <div class="card-play">
+            Play Now
+            <svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5V3z"/></svg>
+          </div>
+        </div>
+      </a>
+
+      <!-- Neon Snake -->
+      <a href="snake/" class="game-card card-snake" id="card-snake">
+        <div class="card-preview">
+          <div class="card-preview-bg"></div>
+          <span class="card-decor">🍏</span>
+          <span class="card-decor">⭐</span>
+          <span class="card-decor">⚡</span>
+          <span class="card-decor">🌀</span>
+          <span class="card-decor">💊</span>
+          <div class="card-preview-icon">🐍</div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag"><span class="tag-dot"></span> Arcade • Retro • Reflex</span>
+          <h2 class="card-title">Neon Snake</h2>
+          <p class="card-desc">Guide a growing cyber-serpent to consume energy orbs without crashing into walls or itself. Features 4 game modes, power-ups, maze obstacles, and synthesized audio.</p>
+          <div class="card-meta">
+            <span class="meta-item">
+              <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              4 Game Modes
+            </span>
+            <span class="meta-item">
+              <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Power-Ups & Portals
+            </span>
+            <span class="meta-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              Career Stats
             </span>
           </div>
           <div class="card-play">

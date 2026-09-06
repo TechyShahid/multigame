@@ -75,6 +75,35 @@ A thrilling, retro-futuristic arcade Pong game with responsive physics, ball spi
 
 ---
 
+### 🐍 Neon Snake
+
+A sleek, retro-futuristic arcade Snake game featuring interpolated 60 FPS movement, interactive power-ups, maze obstacles with wormhole portals, dynamic combo multipliers, and rich Web Audio synthesized audio.
+
+**[▶ Play Neon Snake](https://techyshahid.github.io/multigame/snake/)**
+
+#### Highlights
+
+- **4 Game Modes**:
+  - **Classic Snake**: Pure nostalgic arcade experience with speed scaling as length increases.
+  - **Arcade Power-Ups**: Dynamic special items including Golden Apples, Ghost Phase, Cryo Slow, Orb Magnet, and Tail Shrink Pills.
+  - **Maze & Portals**: 5 challenging arena maps (*Open Field*, *The Box*, *Crossroads*, *Twin Pillars*, and *Wormhole Portals*).
+  - **Time Attack**: High-intensity 90-second score frenzy with constant fruit spawns.
+- **Dynamic Arcade Power-Ups**:
+  - 🍏 **Neon Apple**: Standard food (+10 pts, grows +1 segment).
+  - ⭐ **Golden Star Orb**: Rare high-value bonus (+50 pts with circular countdown timer).
+  - 👻 **Ghost Phase**: Temporary invulnerability to safely pass through obstacles or your own tail (6s).
+  - ❄️ **Cryo Freeze**: Chills serpent velocity for pinpoint maneuvering precision.
+  - 🧲 **Orb Magnet**: Attracts nearby food towards the serpent head.
+  - 💊 **Tail Shrink**: Chops 4 segments off the tail for an emergency escape.
+- **Fluid Visuals & 4 Curated Themes**:
+  - High-DPI canvas rendering with smooth 60 FPS interpolated slithering, glowing body segments, directional cyber eyes, and animated tongue.
+  - 4 Themes: **Cyber Neon**, **Synthwave Sunset**, **1997 Nokia CRT** (with scanline overlay), and **Obsidian Ember**.
+- **Pure Web Audio API**: Ascending combo tones, golden fruit arpeggios, power-up hums, sub-bass crash explosions, and toggleable retro synth bassline.
+- **Comprehensive Controls**: Keyboard (`WASD`, `↑/↓/←/→`, `Space`, `P`, `M`), touch swipe gestures, and on-screen translucent D-pad.
+- **Career Statistics**: Lifetime games, max snake length, total orbs eaten, and high scores per mode stored via `localStorage`.
+
+---
+
 ## 📸 Screenshots
 
 ### Zen Sudoku — Midnight Dark (Default Theme)

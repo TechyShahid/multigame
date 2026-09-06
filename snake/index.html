@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="description" content="Neon Snake — Guide a growing cyber-serpent to consume energy orbs, dodge obstacles and laser walls, and claim high-score supremacy in this premium arcade game." />
+  <title>Neon Snake — MultiGame Arcade</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Orbitron:wght@500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-theme="neon">
+
+  <!-- Ambient lighting orbs -->
+  <div class="ambient-lighting" aria-hidden="true">
+    <div class="orb orb-left"></div>
+    <div class="orb orb-right"></div>
+  </div>
+
+  <!-- CRT scanline overlay -->
+  <div id="crt-overlay" aria-hidden="true"></div>
+
+  <div class="app-viewport">
+
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <a href="../" class="btn-arcade-back" title="Back to MultiGame Arcade" id="btn-back-arcade">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          <span class="back-text">Arcade</span>
+        </a>
+        <div class="logo-badge">
+          <span class="logo-icon">🐍</span>
+          <span class="title">NEON SNAKE</span>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <!-- Game Mode Selector -->
+        <select id="select-mode" class="mode-dropdown" aria-label="Game Mode">
+          <option value="classic">🍏 Classic</option>
+          <option value="arcade">⚡ Arcade Power</option>
+          <option value="maze">🌀 Maze & Portals</option>
+          <option value="timeattack">⏱️ Time Attack</option>
+        </select>
+
+        <!-- Visual Theme Dropdown -->
+        <select id="select-theme" class="theme-dropdown" aria-label="Visual Theme">
+          <option value="neon">⚡ Neon</option>
+          <option value="synthwave">🌅 Synthwave</option>
+          <option value="crt">📟 1997 CRT</option>
+          <option value="ember">🔥 Ember</option>
+        </select>
+
+        <!-- Settings button -->
+        <button id="btn-settings-open" class="icon-btn" title="Game Settings" aria-label="Game Settings">
+          ⚙️
+        </button>
+
+        <!-- Stats button -->
+        <button id="btn-stats-open" class="icon-btn" title="Career Statistics" aria-label="Career Statistics">
+          📊
+        </button>
+
+        <!-- Audio Toggles -->
+        <button id="btn-sfx-toggle" class="icon-btn active" title="Toggle Sound FX (M)" aria-label="Toggle Sound FX">
+          🔊
+        </button>
+        <button id="btn-music-toggle" class="icon-btn" title="Toggle Synthwave Beat" aria-label="Toggle Synthwave Beat">
+          🎵
+        </button>
+
+        <!-- Fullscreen toggle -->
+        <button id="btn-fullscreen" class="icon-btn" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+          ⛶
+        </button>
+
+        <!-- Pause button -->
+        <button id="btn-pause-toggle" class="icon-btn" title="Pause Match (Space / P)" aria-label="Pause Match">
+          ⏸️
+        </button>
+      </div>
+    </header>
+
+    <!-- Scoreboard HUD -->
+    <section class="hud-bar" aria-label="Scoreboard">
+      <div class="hud-stat">
+        <span class="hud-label">Score</span>
+        <span class="hud-val" id="hud-score">0</span>
+      </div>
+
+      <div class="hud-stat">
+        <span class="hud-label">Best</span>
+        <span class="hud-val" id="hud-high-score">0</span>
+      </div>
+
+      <div class="hud-stat">
+        <span class="hud-label">Length</span>
+        <span class="hud-val" id="hud-length">4</span>
+      </div>
+
+      <!-- Combo Indicator -->
+      <div class="combo-badge hidden" id="combo-badge">
+        <span>COMBO</span>
+        <span id="combo-val">×2</span>
+      </div>
+
+      <!-- Time Attack Timer -->
+      <div class="timeattack-hud hidden" id="timeattack-hud">
+        ⏱️ <span id="timeattack-val">1:30</span>
+      </div>
+    </section>
+
+    <!-- Active Power-up Progress Bar -->
+    <div class="powerup-banner hidden" id="powerup-hud">
+      <span id="powerup-name">⚡ TURBO BOOST</span>
+      <div class="powerup-bar">
+        <div class="powerup-bar-fill" id="powerup-bar-fill"></div>
+      </div>
+    </div>
+
+    <!-- Main Game Area -->
+    <main class="game-area">
+      <div class="canvas-container" id="canvas-container">
+        <canvas id="game-canvas"></canvas>
+
+        <!-- Start Overlay -->
+        <div class="overlay-screen" id="start-overlay">
+          <div style="font-size: 3rem;">🐍</div>
+          <h1>NEON SNAKE</h1>
+          <p>Guide your growing cyber serpent to consume energy orbs without crashing into walls or yourself.</p>
+          <button class="btn-primary" id="btn-start-game">
+            <span>▶ PLAY NOW</span>
+          </button>
+          <div class="controls-hint">
+            <span><span class="key-chip">↑ ↓ ← →</span> or <span class="key-chip">W A S D</span> to steer</span>
+            <span><span class="key-chip">Space</span> to pause</span>
+            <span>Swipe or D-Pad on mobile</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- On-Screen Virtual D-Pad for Mobile & Tablets -->
+      <div class="mobile-controls" id="mobile-controls" aria-label="Touch D-Pad">
+        <div class="dpad-container">
+          <button class="dpad-btn" id="dpad-up" aria-label="Up">▲</button>
+          <button class="dpad-btn" id="dpad-left" aria-label="Left">◀</button>
+          <button class="dpad-btn" id="dpad-right" aria-label="Right">▶</button>
+          <button class="dpad-btn" id="dpad-down" aria-label="Down">▼</button>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Game Over Modal -->
+  <div class="modal-overlay hidden" id="modal-gameover" role="dialog" aria-modal="true" aria-labelledby="gameover-title">
+    <div class="modal-content">
+      <div style="font-size: 2.5rem;">💥</div>
+      <h2 class="modal-title" id="gameover-title">GAME OVER</h2>
+      <p class="modal-subtitle" id="gameover-reason">Crashed into perimeter wall!</p>
+
+      <div id="gameover-high-notice" style="display: none; color: var(--accent-gold); font-weight: 700; font-size: 0.9rem;">
+        🏆 NEW HIGH SCORE!
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-box-label">Final Score</span>
+          <span class="stat-box-val" id="gameover-score">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-label">Final Length</span>
+          <span class="stat-box-val" id="gameover-length">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-label">Orbs Eaten</span>
+          <span class="stat-box-val" id="gameover-food">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-label">Best Record</span>
+          <span class="stat-box-val" id="hud-high-score-copy">--</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-restart-gameover">
+        🔄 PLAY AGAIN
+      </button>
+    </div>
+  </div>
+
+  <!-- Pause Modal -->
+  <div class="modal-overlay hidden" id="modal-pause" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div style="font-size: 2.5rem;">⏸️</div>
+      <h2 class="modal-title">MATCH PAUSED</h2>
+      <p class="modal-subtitle">Take a breather, neon pilot.</p>
+      <div style="display: flex; gap: 12px; justify-content: center; margin-top: 10px;">
+        <button class="btn-primary" id="btn-resume">▶ RESUME</button>
+        <button class="btn-secondary" id="btn-restart-pause">🔄 RESTART</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Career Statistics Modal -->
+  <div class="modal-overlay hidden" id="modal-stats" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <h2 class="modal-title">📊 CAREER STATS</h2>
+      <p class="modal-subtitle">Your all-time cyber serpent records</p>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-box-label">Games Played</span>
+          <span class="stat-box-val" id="stat-games-played">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-label">Max Length</span>
+          <span class="stat-box-val" id="stat-max-length">4</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-label">Classic Best</span>
+          <span class="stat-box-val" id="stat-high-classic">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-label">Arcade Best</span>
+          <span class="stat-box-val" id="stat-high-arcade">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-label">Maze Best</span>
+          <span class="stat-box-val" id="stat-high-maze">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-label">Time Attack Best</span>
+          <span class="stat-box-val" id="stat-high-timeattack">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-label">Energy Orbs</span>
+          <span class="stat-box-val" id="stat-total-food">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-label">Golden Stars</span>
+          <span class="stat-box-val" id="stat-total-golden">0</span>
+        </div>
+      </div>
+
+      <button class="btn-secondary" id="btn-stats-close">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay hidden" id="modal-settings" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <h2 class="modal-title">⚙️ GAME SETTINGS</h2>
+      <p class="modal-subtitle">Configure arena rules & difficulty</p>
+
+      <div class="settings-list">
+        <div class="setting-item">
+          <label for="setting-difficulty">Game Speed / Difficulty</label>
+          <select id="setting-difficulty">
+            <option value="chill">Chill (Casual)</option>
+            <option value="normal" selected>Normal (Classic)</option>
+            <option value="hard">Insane (Turbo)</option>
+            <option value="dynamic">Dynamic (Ramps up)</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label for="setting-map">Arena Layout</label>
+          <select id="setting-map">
+            <option value="open" selected>Open Arena</option>
+            <option value="box">The Box (Corner Blocks)</option>
+            <option value="cross">Crossroads</option>
+            <option value="pillars">Twin Pillars</option>
+            <option value="portals">Wormhole Portals</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label for="setting-walls">Solid Perimeter Walls</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-walls" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-settings-close">SAVE & CLOSE</button>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/audio.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
