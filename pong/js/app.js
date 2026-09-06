@@ -343,20 +343,20 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   updateMobileControlsMode();
 
-  // Slider drag handler helper
+  // Vertical slider drag handler helper
   function setupSliderTrack(trackEl, handleEl, isLeft) {
     if (!trackEl || !handleEl) return;
 
     function handleTrackMove(e) {
       const rect = trackEl.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const ratio = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
 
-      // Move visual puck
-      const trackWidth = rect.width;
-      const handleWidth = handleEl.offsetWidth || 48;
-      const leftPx = Math.max(0, Math.min(trackWidth - handleWidth, ratio * (trackWidth - handleWidth)));
-      handleEl.style.left = `${leftPx}px`;
+      // Move visual handle vertically
+      const trackHeight = rect.height;
+      const handleHeight = handleEl.offsetHeight || 30;
+      const topPx = Math.max(0, Math.min(trackHeight - handleHeight, ratio * (trackHeight - handleHeight)));
+      handleEl.style.top = `${topPx}px`;
 
       game.setPaddleNormalizedY(isLeft, ratio);
     }
@@ -383,6 +383,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function syncHandleFromPaddle(isLeft) {
+    const handle = isLeft ? handleP1 : handleP2;
+    const track = isLeft ? trackP1 : trackP2;
+    const paddle = isLeft ? game.paddleLeft : game.paddleRight;
+    if (!handle || !track || !paddle) return;
+
+    const ratio = Math.max(0, Math.min(1, (paddle.y - 35) / (game.courtHeight - 70)));
+    const trackHeight = track.clientHeight || 120;
+    const handleHeight = handle.offsetHeight || 30;
+    const topPx = Math.max(0, Math.min(trackHeight - handleHeight, ratio * (trackHeight - handleHeight)));
+    handle.style.top = `${topPx}px`;
+  }
+
   setupSliderTrack(trackP1, handleP1, true);
   setupSliderTrack(trackP2, handleP2, false);
 
@@ -396,9 +409,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const startAction = (e) => {
       e.preventDefault();
       game.movePaddleStep(isLeft, dir);
+      syncHandleFromPaddle(isLeft);
       if (repeatTimer) clearInterval(repeatTimer);
       repeatTimer = setInterval(() => {
         game.movePaddleStep(isLeft, dir);
+        syncHandleFromPaddle(isLeft);
       }, 70);
     };
 

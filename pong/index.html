@@ -254,17 +254,18 @@
       </div>
     </div>
 
-    <!-- Mobile Virtual Touch Controls (ergonomic touch area on phones) -->
+    <!-- Mobile Virtual Touch Controls (ergonomic vertical touch area on phones) -->
     <div class="mobile-controls-panel" id="mobile-controls">
       <!-- Player 1 Controls -->
       <div class="mobile-ctrl-group p1-ctrls" id="ctrls-p1">
         <div class="touch-slider-wrapper" id="touch-track-p1">
-          <div class="touch-slider-track">
-            <div class="touch-slider-handle" id="touch-handle-p1"></div>
+          <div class="touch-slider-track vertical-track">
+            <div class="track-center-line"></div>
+            <div class="touch-slider-handle vertical-handle" id="touch-handle-p1"></div>
           </div>
-          <span class="touch-slider-label">👆 SLIDE OR DRAG ON COURT</span>
+          <span class="touch-slider-label">↕ SLIDE PADDLE</span>
         </div>
-        <div class="touch-btn-pair">
+        <div class="touch-btn-pair vertical-btns">
           <button class="touch-action-btn" id="btn-touch-up-p1" aria-label="Move Up">▲</button>
           <button class="touch-action-btn" id="btn-touch-down-p1" aria-label="Move Down">▼</button>
         </div>
@@ -272,15 +273,16 @@
 
       <!-- Player 2 Controls (Active in Local 2P Mode) -->
       <div class="mobile-ctrl-group p2-ctrls hidden" id="ctrls-p2">
-        <div class="touch-btn-pair">
+        <div class="touch-btn-pair vertical-btns">
           <button class="touch-action-btn p2-btn" id="btn-touch-up-p2" aria-label="Player 2 Move Up">▲</button>
           <button class="touch-action-btn p2-btn" id="btn-touch-down-p2" aria-label="Player 2 Move Down">▼</button>
         </div>
         <div class="touch-slider-wrapper" id="touch-track-p2">
-          <div class="touch-slider-track p2-track">
-            <div class="touch-slider-handle p2-handle" id="touch-handle-p2"></div>
+          <div class="touch-slider-track vertical-track p2-track">
+            <div class="track-center-line"></div>
+            <div class="touch-slider-handle vertical-handle p2-handle" id="touch-handle-p2"></div>
           </div>
-          <span class="touch-slider-label">P2 SLIDE</span>
+          <span class="touch-slider-label">↕ P2 SLIDE</span>
         </div>
       </div>
     </div>
