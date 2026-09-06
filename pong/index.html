@@ -106,154 +106,153 @@
     <!-- Arena Court Container -->
     <main class="arena-wrapper" id="arena-container">
       <canvas id="pong-canvas"></canvas>
-
-      <!-- Match Start Modal -->
-      <div class="modal-overlay" id="modal-start">
-        <div class="modal-card">
-          <div class="modal-header">
-            <h2>START MATCH</h2>
-            <p>Select your game mode and arena rules</p>
-          </div>
-
-          <!-- Mode Select -->
-          <div class="config-group">
-            <span class="group-label">Game Mode</span>
-            <div class="pill-grid">
-              <button class="pill-btn mode-btn active" data-mode="1p" id="mode-1p">
-                <span class="icon">🤖</span>
-                <span>Solo vs AI</span>
-              </button>
-              <button class="pill-btn mode-btn" data-mode="2p" id="mode-2p">
-                <span class="icon">👥</span>
-                <span>Local 2P</span>
-              </button>
-              <button class="pill-btn mode-btn" data-mode="rally" id="mode-rally">
-                <span class="icon">🎯</span>
-                <span>Solo Rally</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- AI Difficulty -->
-          <div class="config-group" id="difficulty-section">
-            <span class="group-label">AI Difficulty</span>
-            <div class="pill-grid-4">
-              <button class="pill-btn diff-btn" data-diff="novice">Novice</button>
-              <button class="pill-btn diff-btn active" data-diff="pro">Pro</button>
-              <button class="pill-btn diff-btn" data-diff="master">Master</button>
-              <button class="pill-btn diff-btn" data-diff="cyber">Cyber</button>
-            </div>
-          </div>
-
-          <!-- Target Score -->
-          <div class="config-group" id="target-score-section">
-            <span class="group-label">First To</span>
-            <div class="pill-grid-score">
-              <button class="pill-btn score-btn" data-score="3">3 Pts</button>
-              <button class="pill-btn score-btn" data-score="5">5 Pts</button>
-              <button class="pill-btn score-btn active" data-score="7">7 Pts</button>
-              <button class="pill-btn score-btn" data-score="11">11 Pts</button>
-            </div>
-          </div>
-
-          <!-- Power-ups switch -->
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <span class="toggle-title">Arcade Power-Ups</span>
-              <span class="toggle-desc">Fireball, Shield, Expand, Multi-Ball</span>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="toggle-powerups" checked />
-              <span class="slider"></span>
-            </label>
-          </div>
-
-          <!-- Launch Button -->
-          <button class="btn-primary" id="btn-start-match">
-            <span>LAUNCH MATCH</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Pause Modal -->
-      <div class="modal-overlay hidden" id="modal-pause">
-        <div class="modal-card" style="max-width: 360px;">
-          <div class="modal-header">
-            <h2>MATCH PAUSED</h2>
-            <p>Take a breath</p>
-          </div>
-          <button class="btn-primary" id="btn-resume">RESUME</button>
-          <button class="btn-secondary" id="btn-restart">RESTART MATCH</button>
-          <button class="btn-secondary" id="btn-quit">QUIT TO MENU</button>
-        </div>
-      </div>
-
-      <!-- Game Over Modal -->
-      <div class="modal-overlay hidden" id="modal-gameover">
-        <div class="modal-card" style="max-width: 400px;">
-          <div class="modal-header">
-            <h2 id="gameover-title">VICTORY!</h2>
-            <p id="gameover-subtitle">A legendary performance</p>
-          </div>
-
-          <div style="text-align: center; margin: 4px 0;">
-            <div id="gameover-final-score" style="font-family: var(--font-display); font-size: 2.5rem; font-weight: 900; color: var(--p1-color);">
-              7 - 4
-            </div>
-          </div>
-
-          <div class="stats-grid">
-            <div class="stat-box">
-              <span class="stat-label">Longest Rally</span>
-              <span class="stat-value" id="stat-max-rally">14</span>
-            </div>
-            <div class="stat-box">
-              <span class="stat-label">Peak Speed</span>
-              <span class="stat-value" id="stat-top-speed">15.2 px/f</span>
-            </div>
-          </div>
-
-          <button class="btn-primary" id="btn-play-again">PLAY AGAIN</button>
-        </div>
-      </div>
-
-      <!-- Career Statistics Modal -->
-      <div class="modal-overlay hidden" id="modal-stats">
-        <div class="modal-card" style="max-width: 420px;">
-          <div class="modal-header">
-            <h2>CAREER STATS</h2>
-            <p>Your lifetime Pong achievements</p>
-          </div>
-
-          <div class="stats-grid">
-            <div class="stat-box">
-              <span class="stat-label">Matches Played</span>
-              <span class="stat-value" id="stat-played">0</span>
-            </div>
-            <div class="stat-box">
-              <span class="stat-label">Player Wins</span>
-              <span class="stat-value" id="stat-wins">0</span>
-            </div>
-            <div class="stat-box">
-              <span class="stat-label">Best Rally Record</span>
-              <span class="stat-value" id="stat-best-rally">0</span>
-            </div>
-            <div class="stat-box">
-              <span class="stat-label">Record Ball Speed</span>
-              <span class="stat-value" id="stat-record-speed">0</span>
-            </div>
-            <div class="stat-box" style="grid-column: span 2;">
-              <span class="stat-label">Rally Mode High Score</span>
-              <span class="stat-value" id="stat-high-rally" style="color: #fbbf24;">0</span>
-            </div>
-          </div>
-
-          <button class="btn-secondary" id="btn-stats-close">CLOSE</button>
-        </div>
-      </div>
-
     </main>
+
+    <!-- Match Start Modal (Global Overlay) -->
+    <div class="modal-overlay" id="modal-start">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>START MATCH</h2>
+          <p>Select your game mode and arena rules</p>
+        </div>
+
+        <!-- Mode Select -->
+        <div class="config-group">
+          <span class="group-label">Game Mode</span>
+          <div class="pill-grid">
+            <button class="pill-btn mode-btn active" data-mode="1p" id="mode-1p">
+              <span class="icon">🤖</span>
+              <span>Solo vs AI</span>
+            </button>
+            <button class="pill-btn mode-btn" data-mode="2p" id="mode-2p">
+              <span class="icon">👥</span>
+              <span>Local 2P</span>
+            </button>
+            <button class="pill-btn mode-btn" data-mode="rally" id="mode-rally">
+              <span class="icon">🎯</span>
+              <span>Solo Rally</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- AI Difficulty -->
+        <div class="config-group" id="difficulty-section">
+          <span class="group-label">AI Difficulty</span>
+          <div class="pill-grid-4">
+            <button class="pill-btn diff-btn" data-diff="novice">Novice</button>
+            <button class="pill-btn diff-btn active" data-diff="pro">Pro</button>
+            <button class="pill-btn diff-btn" data-diff="master">Master</button>
+            <button class="pill-btn diff-btn" data-diff="cyber">Cyber</button>
+          </div>
+        </div>
+
+        <!-- Target Score -->
+        <div class="config-group" id="target-score-section">
+          <span class="group-label">First To</span>
+          <div class="pill-grid-score">
+            <button class="pill-btn score-btn" data-score="3">3 Pts</button>
+            <button class="pill-btn score-btn" data-score="5">5 Pts</button>
+            <button class="pill-btn score-btn active" data-score="7">7 Pts</button>
+            <button class="pill-btn score-btn" data-score="11">11 Pts</button>
+          </div>
+        </div>
+
+        <!-- Power-ups switch -->
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-title">Arcade Power-Ups</span>
+            <span class="toggle-desc">Fireball, Shield, Expand, Multi-Ball</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-powerups" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Launch Button -->
+        <button class="btn-primary" id="btn-start-match">
+          <span>LAUNCH MATCH</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Pause Modal (Global Overlay) -->
+    <div class="modal-overlay hidden" id="modal-pause">
+      <div class="modal-card" style="max-width: 360px;">
+        <div class="modal-header">
+          <h2>MATCH PAUSED</h2>
+          <p>Take a breath</p>
+        </div>
+        <button class="btn-primary" id="btn-resume">RESUME</button>
+        <button class="btn-secondary" id="btn-restart">RESTART MATCH</button>
+        <button class="btn-secondary" id="btn-quit">QUIT TO MENU</button>
+      </div>
+    </div>
+
+    <!-- Game Over Modal (Global Overlay) -->
+    <div class="modal-overlay hidden" id="modal-gameover">
+      <div class="modal-card" style="max-width: 400px;">
+        <div class="modal-header">
+          <h2 id="gameover-title">VICTORY!</h2>
+          <p id="gameover-subtitle">A legendary performance</p>
+        </div>
+
+        <div style="text-align: center; margin: 4px 0;">
+          <div id="gameover-final-score" style="font-family: var(--font-main); font-size: 2.5rem; font-weight: 900; color: var(--p1-color);">
+            7 - 4
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-box">
+            <span class="stat-label">Longest Rally</span>
+            <span class="stat-value" id="stat-max-rally">14</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Peak Speed</span>
+            <span class="stat-value" id="stat-top-speed">15.2 px/f</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btn-play-again">PLAY AGAIN</button>
+      </div>
+    </div>
+
+    <!-- Career Statistics Modal (Global Overlay) -->
+    <div class="modal-overlay hidden" id="modal-stats">
+      <div class="modal-card" style="max-width: 420px;">
+        <div class="modal-header">
+          <h2>CAREER STATS</h2>
+          <p>Your lifetime Pong achievements</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-box">
+            <span class="stat-label">Matches Played</span>
+            <span class="stat-value" id="stat-played">0</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Player Wins</span>
+            <span class="stat-value" id="stat-wins">0</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Best Rally Record</span>
+            <span class="stat-value" id="stat-best-rally">0</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Record Ball Speed</span>
+            <span class="stat-value" id="stat-record-speed">0</span>
+          </div>
+          <div class="stat-box" style="grid-column: span 2;">
+            <span class="stat-label">Rally Mode High Score</span>
+            <span class="stat-value" id="stat-high-rally" style="color: #fbbf24;">0</span>
+          </div>
+        </div>
+
+        <button class="btn-secondary" id="btn-stats-close">CLOSE</button>
+      </div>
+    </div>
 
     <!-- Mobile Virtual Touch Controls (ergonomic touch area on phones) -->
     <div class="mobile-controls-panel" id="mobile-controls">

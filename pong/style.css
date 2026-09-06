@@ -289,10 +289,11 @@ html, body {
 }
 
 .score-val {
-  font-family: var(--font-display);
-  font-size: 2.4rem;
-  font-weight: 900;
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.3rem;
+  font-weight: 800;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .hud-player.left .score-val {
@@ -393,15 +394,18 @@ html, body {
 
 /* ============= Modal Overlays ============= */
 .modal-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(5, 5, 15, 0.82);
-  backdrop-filter: blur(14px);
-  padding: 20px;
+  background: rgba(5, 5, 15, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 20px 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
@@ -412,18 +416,21 @@ html, body {
 }
 
 .modal-card {
+  margin: auto;
   width: 100%;
-  max-width: 480px;
+  max-width: 440px;
   background: var(--bg-card);
   border: 1px solid var(--border-glass-hover);
-  border-radius: 28px;
-  padding: 32px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6),
+  border-radius: 24px;
+  padding: 24px 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7),
               0 0 30px rgba(168, 85, 247, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 14px;
   animation: modalScale 0.35s var(--ease-spring);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
 }
 
 @keyframes modalScale {
@@ -923,24 +930,76 @@ input:checked + .slider:before {
   /* 2x2 grid for difficulty & target score pills on phones */
   .pill-grid-4 {
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: 6px;
   }
 
   .pill-grid-score {
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: 6px;
+  }
+
+  .modal-overlay {
+    padding: 10px 8px;
+    align-items: flex-start;
+  }
+
+  .modal-card {
+    margin: 4px auto 14px;
+    padding: 16px 14px;
+    border-radius: 20px;
+    gap: 10px;
+    max-height: calc(100dvh - 16px);
+  }
+
+  .modal-header h2 {
+    font-size: 1.35rem;
+    letter-spacing: 1px;
+  }
+
+  .modal-header p {
+    font-size: 0.78rem;
+    margin-top: 2px;
+  }
+
+  .config-group {
+    gap: 5px;
+  }
+
+  .group-label {
+    font-size: 0.68rem;
+    letter-spacing: 1px;
   }
 
   .pill-btn {
-    min-height: 44px;
-    padding: 10px 8px;
-    font-size: 0.86rem;
+    min-height: 40px;
+    padding: 8px 4px;
+    font-size: 0.82rem;
+    border-radius: 10px;
+  }
+
+  .pill-btn span.icon {
+    font-size: 1.1rem;
+  }
+
+  .toggle-row {
+    padding: 8px 12px;
+    border-radius: 12px;
+  }
+
+  .toggle-title {
+    font-size: 0.82rem;
+  }
+
+  .toggle-desc {
+    font-size: 0.68rem;
   }
 
   .btn-primary {
-    padding: 15px 18px;
-    font-size: 1.02rem;
-    min-height: 48px;
+    padding: 12px 16px;
+    font-size: 0.98rem;
+    min-height: 44px;
+    border-radius: 14px;
+    margin-top: 2px;
   }
 }
 
