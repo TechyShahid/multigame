@@ -168,7 +168,7 @@ body::before {
 /* App Layout Container */
 .app-container {
   width: 100%;
-  max-width: 520px;
+  max-width: 540px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -189,12 +189,60 @@ body::before {
   justify-content: space-between;
   align-items: center;
   padding: 8px 0 16px;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-exit {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.btn-exit svg {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-exit:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-primary);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-exit:active {
+  transform: scale(0.95);
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .brand-icon {
@@ -1374,9 +1422,29 @@ kbd {
     padding: 4px 0 8px;
   }
 
+  .header-left {
+    gap: 6px;
+  }
+
+  .btn-exit {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: var(--radius-sm);
+  }
+
+  .btn-exit svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .brand {
+    gap: 6px;
+  }
+
   .brand-icon {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
 
   .brand-icon svg {
@@ -1385,7 +1453,7 @@ kbd {
   }
 
   .brand-text h1 {
-    font-size: 1.05rem;
+    font-size: 1rem;
   }
 
   .brand-subtitle {
