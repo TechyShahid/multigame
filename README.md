@@ -49,6 +49,32 @@ A sweet match-3 puzzle game with special candies, cascading combos, and 30 level
 
 ---
 
+### 🏓 Neon Pong
+
+A thrilling, retro-futuristic arcade Pong game with responsive physics, ball spin, dynamic power-ups, particle bursts, and rich Web Audio synthesized soundscapes.
+
+**[▶ Play Neon Pong](https://techyshahid.github.io/multigame/pong/)**
+
+#### Highlights
+
+- **3 Game Modes**:
+  - **Solo vs AI**: 4 distinct AI profiles (*Novice*, *Pro*, *Master*, and frame-perfect *Cyber*).
+  - **Local 2-Player**: Battle head-to-head on the same screen (W/S vs Arrow keys, or dual touch zones on mobile).
+  - **Solo Target Rally**: Breakout-style solo mode with destructible neon targets, bumper walls, and score multipliers.
+- **Dynamic Arcade Power-Ups**:
+  - 🔥 **Fireball**: Supercharged supersonic ball.
+  - 📏 **Paddle Expand**: Lengthens paddle for clutch saves.
+  - ❄️ **Slow-Mo**: Chills ball velocity for razor-sharp precision.
+  - 🛡️ **Goal Shield**: Defensive energy wall blocking one missed point.
+  - ⚡ **Multi-Ball**: Spawns multiple balls simultaneously for high-octane rallies.
+- **Realistic Physics & Ball Spin**: Imparts English based on paddle movement velocity and contact position.
+- **4 Visual Themes**: Cyberpunk Neon, Synthwave Sunset, 1972 CRT Green (with scanline overlay), and Electric Blue.
+- **Pure Web Audio API**: Ascending pitch paddle hits during long streaks, sub-bass goal explosions, and optional pulsing synthwave soundtrack.
+- **Comprehensive Controls**: Keyboard (`W/S`, `↑/↓`, `Space`, `Esc`), mouse tracking, and mobile touch zones.
+- **Career Statistics**: Lifetime matches played, player win rate, top ball speeds, and max rally records stored via `localStorage`.
+
+---
+
 ## 📸 Screenshots
 
 ### Zen Sudoku — Midnight Dark (Default Theme)
