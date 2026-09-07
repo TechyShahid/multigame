@@ -113,19 +113,21 @@ class App {
     const diffSelect = document.getElementById('setting-difficulty');
     if (diffSelect) diffSelect.value = savedDiff;
 
-    // Map
-    const savedMap = localStorage.getItem('snake_map') || 'open';
+    // Map (defaults to 'infinity' wrap arena where snake only dies by hitting itself)
+    const savedMap = localStorage.getItem('snake_map') || 'infinity';
     this.game.setMap(savedMap);
     const mapSelect = document.getElementById('setting-map');
     if (mapSelect) mapSelect.value = savedMap;
 
-    // Solid walls
+    // Solid walls (defaults to false for infinity arena)
     const savedWalls = localStorage.getItem('snake_walls');
     if (savedWalls !== null) {
       this.game.wallsSolid = savedWalls === 'true';
-      const wallCheck = document.getElementById('setting-walls');
-      if (wallCheck) wallCheck.checked = this.game.wallsSolid;
+    } else {
+      this.game.wallsSolid = savedMap !== 'infinity';
     }
+    const wallCheck = document.getElementById('setting-walls');
+    if (wallCheck) wallCheck.checked = this.game.wallsSolid;
 
     // Audio button states
     if (this.btnSfx) {
@@ -281,6 +283,16 @@ class App {
       btnRestartPause.addEventListener('click', () => this.startGame());
     }
 
+    // Quit buttons
+    const btnQuitGameOver = document.getElementById('btn-quit-gameover');
+    if (btnQuitGameOver) {
+      btnQuitGameOver.addEventListener('click', () => this.quitGame());
+    }
+    const btnQuitPause = document.getElementById('btn-quit-pause');
+    if (btnQuitPause) {
+      btnQuitPause.addEventListener('click', () => this.quitGame());
+    }
+
     // Stats modal
     const btnStatsOpen = document.getElementById('btn-stats-open');
     const btnStatsClose = document.getElementById('btn-stats-close');
@@ -313,8 +325,19 @@ class App {
     const settingMap = document.getElementById('setting-map');
     if (settingMap) {
       settingMap.addEventListener('change', (e) => {
-        this.game.setMap(e.target.value);
-        localStorage.setItem('snake_map', e.target.value);
+        const selectedMap = e.target.value;
+        this.game.setMap(selectedMap);
+        localStorage.setItem('snake_map', selectedMap);
+
+        // Auto-configure walls for infinity vs obstacle/classic arenas
+        if (selectedMap === 'infinity') {
+          this.game.wallsSolid = false;
+        } else {
+          this.game.wallsSolid = true;
+        }
+        localStorage.setItem('snake_walls', this.game.wallsSolid);
+        const wallCheck = document.getElementById('setting-walls');
+        if (wallCheck) wallCheck.checked = this.game.wallsSolid;
       });
     }
 
@@ -458,6 +481,22 @@ class App {
       if (this.hudPauseText) this.hudPauseText.textContent = 'PAUSE';
     }
     if (this.dpadPause) this.dpadPause.textContent = '⏸️';
+  }
+
+  quitGame() {
+    this.modalGameOver.classList.add('hidden');
+    this.modalPause.classList.add('hidden');
+    this.startOverlay.classList.remove('hidden');
+    this.game.state = 'MENU';
+    this.game.reset();
+    if (this.btnPause) this.btnPause.textContent = '⏸️';
+    if (this.btnHudPause) {
+      this.btnHudPause.classList.remove('paused');
+      if (this.hudPauseIcon) this.hudPauseIcon.textContent = '⏸️';
+      if (this.hudPauseText) this.hudPauseText.textContent = 'PAUSE';
+    }
+    if (this.dpadPause) this.dpadPause.textContent = '⏸️';
+    this.updateHUD();
   }
 
   updateHUD() {

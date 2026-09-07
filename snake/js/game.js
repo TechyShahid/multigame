@@ -22,8 +22,8 @@ class SnakeGame {
     // Game state
     this.state = 'MENU'; // MENU, PLAYING, PAUSED, GAMEOVER
     this.mode = 'classic'; // 'classic', 'arcade', 'maze', 'timeattack'
-    this.map = 'open'; // 'open', 'box', 'cross', 'pillars', 'portals'
-    this.wallsSolid = true;
+    this.map = 'infinity'; // 'infinity' (default no-walls wrap arena), 'open', 'box', 'cross', 'pillars', 'portals'
+    this.wallsSolid = false; // Infinity arena has wrap borders by default
     this.difficulty = 'normal'; // 'chill', 'normal', 'hard', 'dynamic'
 
     // Snake representation
@@ -78,7 +78,7 @@ class SnakeGame {
   setMode(modeName) {
     this.mode = modeName;
     if (modeName === 'maze') {
-      if (this.map === 'open') this.map = 'box';
+      if (this.map === 'infinity' || this.map === 'open') this.map = 'box';
     } else if (modeName === 'timeattack') {
       this.timeAttackRemaining = 90;
     }
@@ -106,7 +106,12 @@ class SnakeGame {
     const W = this.gridWidth;
     const H = this.gridHeight;
 
-    if (mapName === 'box') {
+    if (mapName === 'infinity') {
+      this.wallsSolid = false;
+    } else if (mapName === 'open') {
+      this.wallsSolid = true;
+    } else if (mapName === 'box') {
+      this.wallsSolid = true;
       // 4 corner barriers
       for (let i = 4; i <= 7; i++) {
         this.obstacles.push({ x: i, y: 4 });
@@ -402,6 +407,9 @@ class SnakeGame {
       }
     }
 
+    // Save snapshot of positions before moving
+    const oldSnake = this.snake.map(s => ({ x: s.x, y: s.y }));
+
     // Advance snake segments
     const newHead = {
       x: nextX,
@@ -418,11 +426,16 @@ class SnakeGame {
       this.snake.pop();
     }
 
-    // Update prev positions for smooth interpolation
+    // Update body segments so each segment smoothly glides toward its predecessor
     for (let i = 1; i < this.snake.length; i++) {
       const seg = this.snake[i];
-      seg.prevX = seg.x;
-      seg.prevY = seg.y;
+      const targetPos = oldSnake[i - 1];
+      const prevPos = i < oldSnake.length ? oldSnake[i] : oldSnake[oldSnake.length - 1];
+
+      seg.x = targetPos.x;
+      seg.y = targetPos.y;
+      seg.prevX = prevPos.x;
+      seg.prevY = prevPos.y;
     }
 
     // Check Food consumption
@@ -739,7 +752,23 @@ class SnakeGame {
     ctx.lineWidth = 1;
 
     // Outer boundary border
-    ctx.strokeRect(0.5, 0.5, gw * cs - 1, gh * cs - 1);
+    if (this.wallsSolid) {
+      ctx.save();
+      ctx.strokeStyle = colors.wall;
+      ctx.shadowColor = colors.wallGlow;
+      ctx.shadowBlur = 10;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(1, 1, gw * cs - 2, gh * cs - 2);
+      ctx.restore();
+    } else {
+      // Infinity Wrap Arena - subtle dashed border indicating open wrap-around perimeter
+      ctx.save();
+      ctx.setLineDash([6, 6]);
+      ctx.strokeStyle = colors.gridLine;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(0.5, 0.5, gw * cs - 1, gh * cs - 1);
+      ctx.restore();
+    }
 
     // Subtle inner grid dots or lines
     ctx.beginPath();
@@ -941,130 +970,182 @@ class SnakeGame {
     if (this.snake.length === 0) return;
 
     const cs = this.cellSize;
+    const gw = this.gridWidth;
+    const gh = this.gridHeight;
+    const totalW = gw * cs;
+    const totalH = gh * cs;
     const isGhost = this.activePowerUp && this.activePowerUp.type === 'ghost';
+    const canWrap = !this.wallsSolid || isGhost;
     const interp = Math.min(Math.max(this.interpolation, 0), 1);
 
     ctx.save();
+    // Clip to playing area so segments entering walls are cleanly clipped at borders
+    ctx.beginPath();
+    ctx.rect(0, 0, totalW, totalH);
+    ctx.clip();
+
+    // Helper to calculate render position(s) with smooth boundary wrapping
+    const getSegmentPositions = (seg) => {
+      let dx = seg.x - seg.prevX;
+      let dy = seg.y - seg.prevY;
+      let dirX = dx;
+      let dirY = dy;
+
+      if (dx === 1 - gw) dirX = 1;        // Wrapped right-to-left
+      else if (dx === gw - 1) dirX = -1;  // Wrapped left-to-right
+
+      if (dy === 1 - gh) dirY = 1;        // Wrapped bottom-to-top
+      else if (dy === gh - 1) dirY = -1;  // Wrapped top-to-bottom
+
+      const isWrapping = canWrap && (dx !== dirX || dy !== dirY);
+
+      if (!isWrapping) {
+        return [{
+          x: (seg.prevX + dirX * interp + 0.5) * cs,
+          y: (seg.prevY + dirY * interp + 0.5) * cs
+        }];
+      }
+
+      // 1. Exiting the boundary wall: smoothly continuing forward into the wall
+      const posA_x = (seg.prevX + dirX * interp + 0.5) * cs;
+      const posA_y = (seg.prevY + dirY * interp + 0.5) * cs;
+
+      // 2. Emerging from the opposing boundary wall: smoothly continuing forward into the board
+      const posB_x = (seg.x - dirX * (1 - interp) + 0.5) * cs;
+      const posB_y = (seg.y - dirY * (1 - interp) + 0.5) * cs;
+
+      return [
+        { x: posA_x, y: posA_y },
+        { x: posB_x, y: posB_y }
+      ];
+    };
 
     // Body segments (draw back-to-front so head is on top)
     for (let i = this.snake.length - 1; i >= 1; i--) {
       const seg = this.snake[i];
-      // Interpolate position
-      const curX = (seg.prevX + (seg.x - seg.prevX) * interp + 0.5) * cs;
-      const curY = (seg.prevY + (seg.y - seg.prevY) * interp + 0.5) * cs;
-
-      // Taper radius slightly towards tail
       const ratio = 1 - (i / this.snake.length) * 0.35;
       const r = cs * 0.4 * ratio;
+      const positions = getSegmentPositions(seg);
 
-      ctx.save();
-      if (isGhost) {
-        ctx.globalAlpha = 0.5 + 0.2 * Math.sin(performance.now() * 0.01 + i);
-        ctx.shadowColor = '#c084fc';
-        ctx.shadowBlur = 10;
-        ctx.fillStyle = '#a855f7';
-      } else {
-        ctx.shadowColor = i % 2 === 0 ? colors.body1 : colors.body2;
-        ctx.shadowBlur = i < 4 ? 10 : 4;
-        ctx.fillStyle = i % 2 === 0 ? colors.body1 : colors.body2;
+      for (const pos of positions) {
+        ctx.save();
+        const renderX = pos.x;
+        const renderY = pos.y;
+
+        if (isGhost) {
+          ctx.globalAlpha = 0.5 + 0.2 * Math.sin(performance.now() * 0.01 + i);
+          ctx.shadowColor = '#c084fc';
+          ctx.shadowBlur = 10;
+          ctx.fillStyle = '#a855f7';
+        } else {
+          ctx.shadowColor = i % 2 === 0 ? colors.body1 : colors.body2;
+          ctx.shadowBlur = i < 4 ? 10 : 4;
+          ctx.fillStyle = i % 2 === 0 ? colors.body1 : colors.body2;
+        }
+
+        ctx.beginPath();
+        ctx.arc(renderX, renderY, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Inner cyber core
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.beginPath();
+        ctx.arc(renderX, renderY, r * 0.45, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
       }
-
-      ctx.beginPath();
-      ctx.arc(curX, curY, r, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Inner cyber core
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-      ctx.beginPath();
-      ctx.arc(curX, curY, r * 0.45, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.restore();
     }
 
     // Snake Head
     const head = this.snake[0];
-    const headX = (head.prevX + (head.x - head.prevX) * interp + 0.5) * cs;
-    const headY = (head.prevY + (head.y - head.prevY) * interp + 0.5) * cs;
     const headRadius = cs * 0.45;
+    const headPositions = getSegmentPositions(head);
 
-    ctx.save();
-    if (isGhost) {
-      ctx.globalAlpha = 0.8;
-      ctx.shadowColor = '#e879f9';
-      ctx.shadowBlur = 18;
-      ctx.fillStyle = '#c084fc';
-    } else {
-      ctx.shadowColor = colors.headGlow;
-      ctx.shadowBlur = 18;
-      ctx.fillStyle = colors.head;
-    }
+    for (const pos of headPositions) {
+      const renderHeadX = pos.x;
+      const renderHeadY = pos.y;
 
-    // Rounded head base
-    ctx.beginPath();
-    ctx.arc(headX, headY, headRadius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Eyes facing direction
-    const eyeOffset = cs * 0.18;
-    const eyeForward = cs * 0.16;
-    let eye1X, eye1Y, eye2X, eye2Y;
-
-    if (this.direction.x === 1) { // Moving Right
-      eye1X = headX + eyeForward; eye1Y = headY - eyeOffset;
-      eye2X = headX + eyeForward; eye2Y = headY + eyeOffset;
-    } else if (this.direction.x === -1) { // Moving Left
-      eye1X = headX - eyeForward; eye1Y = headY - eyeOffset;
-      eye2X = headX - eyeForward; eye2Y = headY + eyeOffset;
-    } else if (this.direction.y === 1) { // Moving Down
-      eye1X = headX - eyeOffset; eye1Y = headY + eyeForward;
-      eye2X = headX + eyeOffset; eye2Y = headY + eyeForward;
-    } else { // Moving Up
-      eye1X = headX - eyeOffset; eye1Y = headY - eyeForward;
-      eye2X = headX + eyeOffset; eye2Y = headY - eyeForward;
-    }
-
-    // Eye whites
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(eye1X, eye1Y, cs * 0.13, 0, Math.PI * 2);
-    ctx.arc(eye2X, eye2Y, cs * 0.13, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Eye pupils
-    ctx.fillStyle = colors.eye;
-    const pupilOffX = this.direction.x * 1.5;
-    const pupilOffY = this.direction.y * 1.5;
-    ctx.beginPath();
-    ctx.arc(eye1X + pupilOffX, eye1Y + pupilOffY, cs * 0.07, 0, Math.PI * 2);
-    ctx.arc(eye2X + pupilOffX, eye2Y + pupilOffY, cs * 0.07, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Animated flickering cyber tongue
-    const tongueFlicker = Math.sin(performance.now() * 0.015);
-    if (tongueFlicker > 0.4) {
-      const tLen = cs * 0.35 * (tongueFlicker - 0.4) * 1.6;
-      const startX = headX + this.direction.x * headRadius;
-      const startY = headY + this.direction.y * headRadius;
-      const endX = startX + this.direction.x * tLen;
-      const endY = startY + this.direction.y * tLen;
-
-      ctx.strokeStyle = '#ef4444';
-      ctx.lineWidth = 1.8;
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
-      // Fork
-      if (this.direction.x !== 0) {
-        ctx.lineTo(endX + this.direction.x * 3, endY - 3);
-        ctx.moveTo(endX, endY);
-        ctx.lineTo(endX + this.direction.x * 3, endY + 3);
+      ctx.save();
+      if (isGhost) {
+        ctx.globalAlpha = 0.8;
+        ctx.shadowColor = '#e879f9';
+        ctx.shadowBlur = 18;
+        ctx.fillStyle = '#c084fc';
       } else {
-        ctx.lineTo(endX - 3, endY + this.direction.y * 3);
-        ctx.moveTo(endX, endY);
-        ctx.lineTo(endX + 3, endY + this.direction.y * 3);
+        ctx.shadowColor = colors.headGlow;
+        ctx.shadowBlur = 18;
+        ctx.fillStyle = colors.head;
       }
-      ctx.stroke();
+
+      // Rounded head base
+      ctx.beginPath();
+      ctx.arc(renderHeadX, renderHeadY, headRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyes facing direction
+      const eyeOffset = cs * 0.18;
+      const eyeForward = cs * 0.16;
+      let eye1X, eye1Y, eye2X, eye2Y;
+
+      if (this.direction.x === 1) { // Moving Right
+        eye1X = renderHeadX + eyeForward; eye1Y = renderHeadY - eyeOffset;
+        eye2X = renderHeadX + eyeForward; eye2Y = renderHeadY + eyeOffset;
+      } else if (this.direction.x === -1) { // Moving Left
+        eye1X = renderHeadX - eyeForward; eye1Y = renderHeadY - eyeOffset;
+        eye2X = renderHeadX - eyeForward; eye2Y = renderHeadY + eyeOffset;
+      } else if (this.direction.y === 1) { // Moving Down
+        eye1X = renderHeadX - eyeOffset; eye1Y = renderHeadY + eyeForward;
+        eye2X = renderHeadX + eyeOffset; eye2Y = renderHeadY + eyeForward;
+      } else { // Moving Up
+        eye1X = renderHeadX - eyeOffset; eye1Y = renderHeadY - eyeForward;
+        eye2X = renderHeadX + eyeOffset; eye2Y = renderHeadY - eyeForward;
+      }
+
+      // Eye whites
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(eye1X, eye1Y, cs * 0.13, 0, Math.PI * 2);
+      ctx.arc(eye2X, eye2Y, cs * 0.13, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eye pupils
+      ctx.fillStyle = colors.eye;
+      const pupilOffX = this.direction.x * 1.5;
+      const pupilOffY = this.direction.y * 1.5;
+      ctx.beginPath();
+      ctx.arc(eye1X + pupilOffX, eye1Y + pupilOffY, cs * 0.07, 0, Math.PI * 2);
+      ctx.arc(eye2X + pupilOffX, eye2Y + pupilOffY, cs * 0.07, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Animated flickering cyber tongue
+      const tongueFlicker = Math.sin(performance.now() * 0.015);
+      if (tongueFlicker > 0.4) {
+        const tLen = cs * 0.35 * (tongueFlicker - 0.4) * 1.6;
+        const startX = renderHeadX + this.direction.x * headRadius;
+        const startY = renderHeadY + this.direction.y * headRadius;
+        const endX = startX + this.direction.x * tLen;
+        const endY = startY + this.direction.y * tLen;
+
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        // Fork
+        if (this.direction.x !== 0) {
+          ctx.lineTo(endX + this.direction.x * 3, endY - 3);
+          ctx.moveTo(endX, endY);
+          ctx.lineTo(endX + this.direction.x * 3, endY + 3);
+        } else {
+          ctx.lineTo(endX - 3, endY + this.direction.y * 3);
+          ctx.moveTo(endX, endY);
+          ctx.lineTo(endX + 3, endY + this.direction.y * 3);
+        }
+        ctx.stroke();
+      }
+
+      ctx.restore();
     }
 
     ctx.restore();

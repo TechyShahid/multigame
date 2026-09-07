@@ -143,10 +143,15 @@
         <div class="overlay-screen" id="start-overlay">
           <div style="font-size: 3rem;">🐍</div>
           <h1>NEON SNAKE</h1>
-          <p>Guide your growing cyber serpent to consume energy orbs without crashing into walls or yourself.</p>
-          <button class="btn-primary" id="btn-start-game">
-            <span>▶ PLAY NOW</span>
-          </button>
+          <p>Guide your growing cyber serpent to consume energy orbs. In Infinity Arena (Default), pass freely through borders — only your own tail can stop you!</p>
+          <div class="start-actions-row">
+            <button class="btn-primary" id="btn-start-game">
+              <span>▶ PLAY NOW</span>
+            </button>
+            <a href="../" class="btn-secondary btn-home-link" id="btn-home-start" title="Return to MultiGame Arcade">
+              <span>🏠 HOME PAGE</span>
+            </a>
+          </div>
           <div class="controls-hint">
             <span><span class="key-chip">↑ ↓ ← →</span> or <span class="key-chip">W A S D</span> to steer</span>
             <span><span class="key-chip">Space</span> or <span class="key-chip">P</span> to pause</span>
@@ -199,9 +204,19 @@
         </div>
       </div>
 
-      <button class="btn-primary" id="btn-restart-gameover">
-        🔄 PLAY AGAIN
-      </button>
+      <div class="modal-actions-stacked">
+        <button class="btn-primary" id="btn-restart-gameover">
+          🔄 PLAY AGAIN
+        </button>
+        <div class="modal-actions-row">
+          <button class="btn-secondary" id="btn-quit-gameover" title="Quit to Main Menu">
+            🚪 QUIT GAME
+          </button>
+          <a href="../" class="btn-secondary btn-home-link" id="btn-home-gameover" title="Return to MultiGame Arcade">
+            🏠 HOME PAGE
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -211,9 +226,19 @@
       <div style="font-size: 2.5rem;">⏸️</div>
       <h2 class="modal-title">MATCH PAUSED</h2>
       <p class="modal-subtitle">Take a breather, neon pilot.</p>
-      <div style="display: flex; gap: 12px; justify-content: center; margin-top: 10px;">
-        <button class="btn-primary" id="btn-resume">▶ RESUME</button>
-        <button class="btn-secondary" id="btn-restart-pause">🔄 RESTART</button>
+      <div class="modal-actions-stacked">
+        <div class="modal-actions-row">
+          <button class="btn-primary" id="btn-resume">▶ RESUME</button>
+          <button class="btn-secondary" id="btn-restart-pause">🔄 RESTART</button>
+        </div>
+        <div class="modal-actions-row">
+          <button class="btn-secondary" id="btn-quit-pause" title="Quit to Main Menu">
+            🚪 QUIT GAME
+          </button>
+          <a href="../" class="btn-secondary btn-home-link" id="btn-home-pause" title="Return to MultiGame Arcade">
+            🏠 HOME PAGE
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -283,18 +308,19 @@
         <div class="setting-item">
           <label for="setting-map">Arena Layout</label>
           <select id="setting-map">
-            <option value="open" selected>Open Arena</option>
-            <option value="box">The Box (Corner Blocks)</option>
-            <option value="cross">Crossroads</option>
-            <option value="pillars">Twin Pillars</option>
-            <option value="portals">Wormhole Portals</option>
+            <option value="infinity" selected>🌌 Infinity (No Walls — Wrap)</option>
+            <option value="open">🛡️ Classic (Solid Walls)</option>
+            <option value="box">📦 The Box (Corner Blocks)</option>
+            <option value="cross">➕ Crossroads</option>
+            <option value="pillars">🏛️ Twin Pillars</option>
+            <option value="portals">🌀 Wormhole Portals</option>
           </select>
         </div>
 
         <div class="setting-item">
           <label for="setting-walls">Solid Perimeter Walls</label>
           <label class="toggle-switch">
-            <input type="checkbox" id="setting-walls" checked>
+            <input type="checkbox" id="setting-walls">
             <span class="slider"></span>
           </label>
         </div>
