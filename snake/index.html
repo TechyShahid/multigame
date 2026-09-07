@@ -83,6 +83,11 @@
         <button id="btn-pause-toggle" class="icon-btn" title="Pause Match (Space / P)" aria-label="Pause Match">
           ⏸️
         </button>
+
+        <!-- Fullscreen toggle -->
+        <button id="btn-fullscreen" class="icon-btn" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+          ⛶
+        </button>
       </div>
     </header>
 
@@ -102,6 +107,12 @@
         <span class="hud-label">Length</span>
         <span class="hud-val" id="hud-length">4</span>
       </div>
+
+      <!-- Dedicated HUD Pause Button -->
+      <button id="btn-hud-pause" class="btn-hud-pause" title="Pause / Resume Game (Space / P)" aria-label="Pause Game">
+        <span class="pause-icon" id="hud-pause-icon">⏸️</span>
+        <span class="pause-text" id="hud-pause-text">PAUSE</span>
+      </button>
 
       <!-- Combo Indicator -->
       <div class="combo-badge hidden" id="combo-badge">
@@ -138,7 +149,7 @@
           </button>
           <div class="controls-hint">
             <span><span class="key-chip">↑ ↓ ← →</span> or <span class="key-chip">W A S D</span> to steer</span>
-            <span><span class="key-chip">Space</span> to pause</span>
+            <span><span class="key-chip">Space</span> or <span class="key-chip">P</span> to pause</span>
             <span>Swipe or D-Pad on mobile</span>
           </div>
         </div>
@@ -149,6 +160,7 @@
         <div class="dpad-container">
           <button class="dpad-btn" id="dpad-up" aria-label="Up">▲</button>
           <button class="dpad-btn" id="dpad-left" aria-label="Left">◀</button>
+          <button class="dpad-btn dpad-pause-btn" id="dpad-pause" title="Pause Game" aria-label="Pause">⏸️</button>
           <button class="dpad-btn" id="dpad-right" aria-label="Right">▶</button>
           <button class="dpad-btn" id="dpad-down" aria-label="Down">▼</button>
         </div>

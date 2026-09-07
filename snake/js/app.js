@@ -38,6 +38,10 @@ class App {
     this.btnMusic = document.getElementById('btn-music-toggle');
     this.btnFullscreen = document.getElementById('btn-fullscreen');
     this.btnPause = document.getElementById('btn-pause-toggle');
+    this.btnHudPause = document.getElementById('btn-hud-pause');
+    this.hudPauseIcon = document.getElementById('hud-pause-icon');
+    this.hudPauseText = document.getElementById('hud-pause-text');
+    this.dpadPause = document.getElementById('dpad-pause');
 
     this.init();
   }
@@ -239,9 +243,20 @@ class App {
       this.btnFullscreen.addEventListener('click', () => this.toggleFullscreen());
     }
 
-    // Pause button
+    // Pause buttons
     if (this.btnPause) {
       this.btnPause.addEventListener('click', () => this.togglePause());
+    }
+    if (this.btnHudPause) {
+      this.btnHudPause.addEventListener('click', () => this.togglePause());
+    }
+    if (this.dpadPause) {
+      const trigger = (e) => {
+        e.preventDefault();
+        this.togglePause();
+      };
+      this.dpadPause.addEventListener('touchstart', trigger, { passive: false });
+      this.dpadPause.addEventListener('mousedown', trigger);
     }
 
     // Resume button
@@ -411,11 +426,22 @@ class App {
   togglePause() {
     if (this.game.state === 'MENU') return;
     this.game.pause();
+    const isPaused = this.game.state === 'PAUSED';
+
     if (this.modalPause) {
-      this.modalPause.classList.toggle('hidden', this.game.state !== 'PAUSED');
+      this.modalPause.classList.toggle('hidden', !isPaused);
     }
     if (this.btnPause) {
-      this.btnPause.textContent = this.game.state === 'PAUSED' ? '▶️' : '⏸️';
+      this.btnPause.textContent = isPaused ? '▶️' : '⏸️';
+      this.btnPause.title = isPaused ? 'Resume Match (Space / P)' : 'Pause Match (Space / P)';
+    }
+    if (this.btnHudPause) {
+      this.btnHudPause.classList.toggle('paused', isPaused);
+      if (this.hudPauseIcon) this.hudPauseIcon.textContent = isPaused ? '▶️' : '⏸️';
+      if (this.hudPauseText) this.hudPauseText.textContent = isPaused ? 'RESUME' : 'PAUSE';
+    }
+    if (this.dpadPause) {
+      this.dpadPause.textContent = isPaused ? '▶️' : '⏸️';
     }
   }
 
@@ -426,6 +452,12 @@ class App {
     this.updateHighScoreDisplay();
     this.game.start();
     if (this.btnPause) this.btnPause.textContent = '⏸️';
+    if (this.btnHudPause) {
+      this.btnHudPause.classList.remove('paused');
+      if (this.hudPauseIcon) this.hudPauseIcon.textContent = '⏸️';
+      if (this.hudPauseText) this.hudPauseText.textContent = 'PAUSE';
+    }
+    if (this.dpadPause) this.dpadPause.textContent = '⏸️';
   }
 
   updateHUD() {
