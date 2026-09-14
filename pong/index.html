@@ -117,12 +117,15 @@
     <div class="modal-overlay" id="modal-start">
       <div class="modal-card">
         <div class="modal-header">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px;">
             <a href="../" class="btn-arcade-back" id="btn-modal-exit-arcade" title="Exit to MultiGame Arcade">
               <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
               <span>Exit to Arcade</span>
             </a>
-            <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent-neon); letter-spacing: 1px;">⚡ NEON PONG</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent-neon); letter-spacing: 1px;">⚡ NEON PONG</span>
+              <button class="icon-btn btn-arcade-fullscreen" title="Toggle Fullscreen Mode" aria-label="Toggle Fullscreen Mode">⛶</button>
+            </div>
           </div>
           <h2>START MATCH</h2>
           <p>Select your game mode and arena rules</p>

@@ -36,19 +36,20 @@
       exitIfFullscreen();
     }
 
-    // 2. When user clicks any game card, request fullscreen on the user gesture
+    // 2. When user clicks any game card, request fullscreen synchronously within the user gesture
     document.addEventListener('click', (e) => {
-      const gameLink = e.target.closest('a[href*="/"], .game-card, .btn-play-game');
-      if (gameLink && !gameLink.getAttribute('href')?.startsWith('#')) {
-        const docEl = document.documentElement;
-        const reqFn = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
-        if (reqFn) {
-          reqFn.call(docEl).catch(() => {
-            // Browser may restrict cross-document fullscreen; game will handle on first tap
-          });
+      const gameLink = e.target.closest('a[href], .game-card, .btn-play-game');
+      if (gameLink) {
+        const href = gameLink.getAttribute('href') || gameLink.querySelector('a')?.getAttribute('href');
+        if (href && !href.startsWith('#') && !href.includes('mailto:')) {
+          const docEl = document.documentElement;
+          const reqFn = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+          if (reqFn && !document.fullscreenElement) {
+            reqFn.call(docEl).catch(() => {});
+          }
         }
       }
-    });
+    }, { capture: true });
 
     // Portal has NO zoom or context menu restrictions: all default browser options remain active!
     return;
@@ -83,25 +84,27 @@
     },
 
     request() {
+      if (this.isFullscreen()) return Promise.resolve();
       const docEl = document.documentElement;
       const req =
         docEl.requestFullscreen ||
         docEl.webkitRequestFullscreen ||
         docEl.mozRequestFullScreen ||
         docEl.msRequestFullscreen;
-      if (req && !this.isFullscreen()) {
+      if (req) {
         return req.call(docEl).catch(() => {});
       }
       return Promise.resolve();
     },
 
     exit() {
+      if (!this.isFullscreen()) return Promise.resolve();
       const exitFn =
         document.exitFullscreen ||
         document.webkitExitFullscreen ||
         document.mozCancelFullScreen ||
         document.msExitFullscreen;
-      if (exitFn && this.isFullscreen()) {
+      if (exitFn) {
         return exitFn.call(document).catch(() => {});
       }
       return Promise.resolve();
@@ -119,7 +122,13 @@
       const isFs = this.isFullscreen();
       const buttons = document.querySelectorAll('.btn-arcade-fullscreen');
       buttons.forEach((btn) => {
-        btn.innerHTML = isFs ? '🗗' : '⛶';
+        // If button has text child, only update icon
+        if (btn.textContent.trim().length > 2) {
+          const text = btn.textContent.replace(/[⛶🗗]/g, '').trim();
+          btn.innerHTML = `<span>${isFs ? '🗗' : '⛶'}</span> <span>${isFs ? 'WINDOWED' : 'FULLSCREEN'}</span>`;
+        } else {
+          btn.innerHTML = isFs ? '🗗' : '⛶';
+        }
         btn.setAttribute('title', isFs ? 'Exit Fullscreen' : 'Enter Fullscreen Mode');
         btn.setAttribute('aria-label', isFs ? 'Exit Fullscreen' : 'Enter Fullscreen Mode');
       });
@@ -129,21 +138,22 @@
   // Expose global manager
   window.ArcadeFullscreen = FullscreenManager;
 
-  // 3. Auto-request Fullscreen on First User Gesture
-  let hasRequestedFs = false;
-  const triggerFullscreenOnFirstInteraction = (e) => {
-    // If clicking an exit link, do not request fullscreen
-    if (e.target && e.target.closest('a[href*="../"], [id*="exit"], [class*="exit"], .btn-arcade-back')) {
+  // 3. Auto-enter Fullscreen on Startup & User Interactions
+  // Try immediate request on load if user activation was inherited
+  FullscreenManager.request();
+
+  // On any interaction anywhere on the game page, if not in fullscreen, enter fullscreen
+  const ensureFullscreenOnInteraction = (e) => {
+    if (FullscreenManager.isFullscreen()) return;
+    // If clicking an exit or return-to-arcade button, do not request fullscreen
+    if (e.target && e.target.closest('a[href*="../"], [id*="exit"], [class*="exit"], .btn-arcade-back, .btn-home-link')) {
       return;
     }
-    if (!hasRequestedFs && !FullscreenManager.isFullscreen()) {
-      hasRequestedFs = true;
-      FullscreenManager.request();
-    }
+    FullscreenManager.request();
   };
 
-  ['pointerdown', 'touchstart', 'click', 'keydown'].forEach((evt) => {
-    window.addEventListener(evt, triggerFullscreenOnFirstInteraction, { passive: true, once: false });
+  ['click', 'touchend', 'pointerup', 'keydown'].forEach((evt) => {
+    window.addEventListener(evt, ensureFullscreenOnInteraction, { passive: true, capture: true });
   });
 
   // Track fullscreen state changes
@@ -246,7 +256,7 @@
   // 5. Exit Navigation Interception: Exit Fullscreen when leaving game
   const handleExitToArcade = (e) => {
     const exitTarget = e.target.closest(
-      'a[href^="../"], a[href="./"], [id*="exit"], [id*="back-arcade"], [id*="arcade-exit"], .btn-arcade-back, .btn-arcade-exit, .btn-arcade-exit-bottom'
+      'a[href^="../"], a[href="./"], [id*="exit"], [id*="back-arcade"], [id*="arcade-exit"], .btn-arcade-back, .btn-arcade-exit, .btn-arcade-exit-bottom, .btn-home-link'
     );
 
     if (exitTarget) {

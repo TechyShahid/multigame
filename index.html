@@ -1,19 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="MultiGame Arcade — Choose from a collection of beautiful, premium browser games including Zen Sudoku, Candy Crush, Neon Pong, and Neon Snake." />
+  <meta name="description"
+    content="MultiGame Arcade — Choose from a collection of beautiful, premium browser games including Zen Sudoku, Candy Crush, Neon Pong, and Neon Snake." />
   <title>MultiGame Arcade — Play Premium Browser Games</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="shared/arcade-ads.css" />
 
   <style>
     /* ============= Reset & Base ============= */
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     :root {
       --bg-deep: #0a0a1a;
@@ -33,7 +43,10 @@
       --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
 
     body {
       font-family: var(--font);
@@ -60,31 +73,48 @@
     }
 
     .orb-1 {
-      width: 500px; height: 500px;
+      width: 500px;
+      height: 500px;
       background: var(--accent-1);
-      top: -150px; left: -100px;
+      top: -150px;
+      left: -100px;
       animation-delay: 0s;
     }
 
     .orb-2 {
-      width: 400px; height: 400px;
+      width: 400px;
+      height: 400px;
       background: var(--accent-2);
-      bottom: -100px; right: -80px;
+      bottom: -100px;
+      right: -80px;
       animation-delay: -8s;
     }
 
     .orb-3 {
-      width: 300px; height: 300px;
+      width: 300px;
+      height: 300px;
       background: var(--accent-3);
-      top: 40%; left: 50%;
+      top: 40%;
+      left: 50%;
       animation-delay: -14s;
     }
 
     @keyframes orbFloat {
-      0% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(30px, -20px) scale(1.05); }
-      66% { transform: translate(-20px, 15px) scale(0.95); }
-      100% { transform: translate(10px, -10px) scale(1.02); }
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -20px) scale(1.05);
+      }
+
+      66% {
+        transform: translate(-20px, 15px) scale(0.95);
+      }
+
+      100% {
+        transform: translate(10px, -10px) scale(1.02);
+      }
     }
 
     /* Grid pattern overlay */
@@ -92,8 +122,8 @@
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
       background-size: 60px 60px;
       pointer-events: none;
       z-index: 0;
@@ -135,7 +165,8 @@
     }
 
     .header-badge .dot {
-      width: 6px; height: 6px;
+      width: 6px;
+      height: 6px;
       background: #22c55e;
       border-radius: 50%;
       box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
@@ -143,8 +174,17 @@
     }
 
     @keyframes dotPulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.6; transform: scale(0.8); }
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.6;
+        transform: scale(0.8);
+      }
     }
 
     .header h1 {
@@ -258,7 +298,7 @@
       z-index: 2;
       font-size: 42px;
       line-height: 1;
-      filter: drop-shadow(0 3px 8px rgba(0,0,0,0.35));
+      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.35));
       transition: transform 0.35s var(--ease-bounce);
     }
 
@@ -276,15 +316,46 @@
       z-index: 1;
     }
 
-    .card-decor:nth-child(2) { top: 12%; left: 10%; animation-delay: -1s; }
-    .card-decor:nth-child(3) { top: 58%; left: 8%; animation-delay: -3s; }
-    .card-decor:nth-child(4) { top: 15%; right: 10%; animation-delay: -2s; }
-    .card-decor:nth-child(5) { top: 62%; right: 12%; animation-delay: -4s; }
-    .card-decor:nth-child(6) { top: 38%; left: 22%; animation-delay: -0.5s; font-size: 12px; opacity: 0.15; }
+    .card-decor:nth-child(2) {
+      top: 12%;
+      left: 10%;
+      animation-delay: -1s;
+    }
+
+    .card-decor:nth-child(3) {
+      top: 58%;
+      left: 8%;
+      animation-delay: -3s;
+    }
+
+    .card-decor:nth-child(4) {
+      top: 15%;
+      right: 10%;
+      animation-delay: -2s;
+    }
+
+    .card-decor:nth-child(5) {
+      top: 62%;
+      right: 12%;
+      animation-delay: -4s;
+    }
+
+    .card-decor:nth-child(6) {
+      top: 38%;
+      left: 22%;
+      animation-delay: -0.5s;
+      font-size: 12px;
+      opacity: 0.15;
+    }
 
     @keyframes decorFloat {
-      0% { transform: translateY(0) rotate(0deg); }
-      100% { transform: translateY(-8px) rotate(12deg); }
+      0% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      100% {
+        transform: translateY(-8px) rotate(12deg);
+      }
     }
 
     /* Shimmer overlay on preview */
@@ -292,12 +363,10 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        135deg,
-        transparent 30%,
-        rgba(255, 255, 255, 0.04) 50%,
-        transparent 70%
-      );
+      background: linear-gradient(135deg,
+          transparent 30%,
+          rgba(255, 255, 255, 0.04) 50%,
+          transparent 70%);
       z-index: 3;
     }
 
@@ -323,7 +392,8 @@
     }
 
     .card-tag .tag-dot {
-      width: 4px; height: 4px;
+      width: 4px;
+      height: 4px;
       border-radius: 50%;
       background: currentColor;
     }
@@ -364,7 +434,8 @@
     }
 
     .meta-item svg {
-      width: 12px; height: 12px;
+      width: 12px;
+      height: 12px;
       stroke: currentColor;
       fill: none;
       stroke-width: 2;
@@ -388,11 +459,13 @@
       cursor: pointer;
       transition: all 0.25s var(--ease);
       width: fit-content;
-      pointer-events: none; /* Card click handles navigation */
+      pointer-events: none;
+      /* Card click handles navigation */
     }
 
     .card-play svg {
-      width: 12px; height: 12px;
+      width: 12px;
+      height: 12px;
       fill: currentColor;
       transition: transform 0.2s var(--ease);
     }
@@ -406,11 +479,35 @@
     }
 
     /* Card-specific glow colors */
-    .card-sudoku { --card-glow: rgba(99, 102, 241, 0.15); --tag-color: #818cf8; --play-bg: linear-gradient(135deg, #6366f1, #4f46e5); }
-    .card-candy { --card-glow: rgba(236, 72, 153, 0.15); --tag-color: #f472b6; --play-bg: linear-gradient(135deg, #ec4899, #db2777); }
-    .card-pong { --card-glow: rgba(6, 182, 212, 0.2); --tag-color: #06b6d4; --play-bg: linear-gradient(135deg, #06b6d4, #a855f7); }
-    .card-snake { --card-glow: rgba(34, 197, 94, 0.2); --tag-color: #22c55e; --play-bg: linear-gradient(135deg, #22c55e, #06b6d4); }
-    .card-olympiad { --card-glow: rgba(245, 158, 11, 0.25); --tag-color: #f59e0b; --play-bg: linear-gradient(135deg, #f59e0b, #ea580c); }
+    .card-sudoku {
+      --card-glow: rgba(99, 102, 241, 0.15);
+      --tag-color: #818cf8;
+      --play-bg: linear-gradient(135deg, #6366f1, #4f46e5);
+    }
+
+    .card-candy {
+      --card-glow: rgba(236, 72, 153, 0.15);
+      --tag-color: #f472b6;
+      --play-bg: linear-gradient(135deg, #ec4899, #db2777);
+    }
+
+    .card-pong {
+      --card-glow: rgba(6, 182, 212, 0.2);
+      --tag-color: #06b6d4;
+      --play-bg: linear-gradient(135deg, #06b6d4, #a855f7);
+    }
+
+    .card-snake {
+      --card-glow: rgba(34, 197, 94, 0.2);
+      --tag-color: #22c55e;
+      --play-bg: linear-gradient(135deg, #22c55e, #06b6d4);
+    }
+
+    .card-olympiad {
+      --card-glow: rgba(245, 158, 11, 0.25);
+      --tag-color: #f59e0b;
+      --play-bg: linear-gradient(135deg, #f59e0b, #ea580c);
+    }
 
     /* ============= Footer ============= */
     .footer {
@@ -438,13 +535,27 @@
       animation: cardReveal 0.5s var(--ease) forwards;
     }
 
-    .game-card:nth-child(1) { animation-delay: 0.08s; }
-    .game-card:nth-child(2) { animation-delay: 0.16s; }
-    .game-card:nth-child(3) { animation-delay: 0.24s; }
-    .game-card:nth-child(4) { animation-delay: 0.32s; }
+    .game-card:nth-child(1) {
+      animation-delay: 0.08s;
+    }
+
+    .game-card:nth-child(2) {
+      animation-delay: 0.16s;
+    }
+
+    .game-card:nth-child(3) {
+      animation-delay: 0.24s;
+    }
+
+    .game-card:nth-child(4) {
+      animation-delay: 0.32s;
+    }
 
     @keyframes cardReveal {
-      to { opacity: 1; transform: translateY(0); }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .header {
@@ -454,7 +565,10 @@
     }
 
     @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* ============= Responsive Breakpoints ============= */
@@ -548,7 +662,8 @@
       }
 
       .card-play svg {
-        width: 10px; height: 10px;
+        width: 10px;
+        height: 10px;
       }
 
       .footer {
@@ -603,13 +718,17 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
+
+      *,
+      *::before,
+      *::after {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
+
 <body data-arcade-portal="true">
 
   <!-- Ambient background -->
@@ -627,9 +746,10 @@
       </div>
       <h1><span class="gradient-text">MultiGame Arcade</span></h1>
       <p>A collection of beautiful, premium browser games — play instantly with zero installs.</p>
-      
+
       <div class="header-monetization-row">
-        <a href="https://buymeacoffee.com" target="_blank" rel="noopener" class="monetize-pill pill-coffee" id="btn-coffee">
+        <a href="https://buymeacoffee.com" target="_blank" rel="noopener" class="monetize-pill pill-coffee"
+          id="btn-coffee">
           <span>☕</span>
           <span>Buy Me a Coffee</span>
         </a>
@@ -657,24 +777,35 @@
         <div class="card-body">
           <span class="card-tag"><span class="tag-dot"></span> Puzzle • Logic</span>
           <h2 class="card-title">Zen Sudoku</h2>
-          <p class="card-desc">Master the 9×9 grid with smart hints, candidate notes, PvP duels, and 5 difficulty levels. Features ambient audio and career stats.</p>
+          <p class="card-desc">Master the 9×9 grid with smart hints, candidate notes, PvP duels, and 5 difficulty
+            levels. Features ambient audio and career stats.</p>
           <div class="card-meta">
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
               5 Difficulties
             </span>
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+              <svg viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+              </svg>
               PvP Mode
             </span>
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <svg viewBox="0 0 24 24">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
               Pro Edition
             </span>
           </div>
           <div class="card-play">
             Play Now
-            <svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5V3z"/></svg>
+            <svg viewBox="0 0 16 16">
+              <path d="M6 3l5 5-5 5V3z" />
+            </svg>
           </div>
         </div>
       </a>
@@ -693,24 +824,34 @@
         <div class="card-body">
           <span class="card-tag"><span class="tag-dot"></span> Match-3 • Puzzle</span>
           <h2 class="card-title">Candy Crush</h2>
-          <p class="card-desc">Swap and match colorful candies in this sweet puzzle adventure. Cascade combos, special candies, and 30 levels of sugary fun.</p>
+          <p class="card-desc">Swap and match colorful candies in this sweet puzzle adventure. Cascade combos, special
+            candies, and 30 levels of sugary fun.</p>
           <div class="card-meta">
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
               30 Levels
             </span>
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
               3 Worlds
             </span>
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <svg viewBox="0 0 24 24">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
               Special Candies
             </span>
           </div>
           <div class="card-play">
             Play Now
-            <svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5V3z"/></svg>
+            <svg viewBox="0 0 16 16">
+              <path d="M6 3l5 5-5 5V3z" />
+            </svg>
           </div>
         </div>
       </a>
@@ -729,24 +870,36 @@
         <div class="card-body">
           <span class="card-tag"><span class="tag-dot"></span> Arcade • Retro • PvP</span>
           <h2 class="card-title">Neon Pong</h2>
-          <p class="card-desc">Control your paddle to bounce the supersonic ball across glowing neon arenas. Solo vs 4 AI difficulties, 2-player local battle, and solo target rally with power-ups.</p>
+          <p class="card-desc">Control your paddle to bounce the supersonic ball across glowing neon arenas. Solo vs 4
+            AI difficulties, 2-player local battle, and solo target rally with power-ups.</p>
           <div class="card-meta">
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+              <svg viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+              </svg>
               1P vs AI & 2P Local
             </span>
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <svg viewBox="0 0 24 24">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
               Power-Ups
             </span>
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
               Solo Rally
             </span>
           </div>
           <div class="card-play">
             Play Now
-            <svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5V3z"/></svg>
+            <svg viewBox="0 0 16 16">
+              <path d="M6 3l5 5-5 5V3z" />
+            </svg>
           </div>
         </div>
       </a>
@@ -765,24 +918,34 @@
         <div class="card-body">
           <span class="card-tag"><span class="tag-dot"></span> Arcade • Retro • Reflex</span>
           <h2 class="card-title">Neon Snake</h2>
-          <p class="card-desc">Guide a growing cyber-serpent to consume energy orbs without crashing into walls or itself. Features 4 game modes, power-ups, maze obstacles, and synthesized audio.</p>
+          <p class="card-desc">Guide a growing cyber-serpent to consume energy orbs without crashing into walls or
+            itself. Features 4 game modes, power-ups, maze obstacles, and synthesized audio.</p>
           <div class="card-meta">
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
               4 Game Modes
             </span>
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              Power-Ups & Portals
+              <svg viewBox="0 0 24 24">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+              Power-Ups
             </span>
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
               Career Stats
             </span>
           </div>
           <div class="card-play">
             Play Now
-            <svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5V3z"/></svg>
+            <svg viewBox="0 0 16 16">
+              <path d="M6 3l5 5-5 5V3z" />
+            </svg>
           </div>
         </div>
       </a>
@@ -800,25 +963,36 @@
         </div>
         <div class="card-body">
           <span class="card-tag"><span class="tag-dot"></span> Educational • Kids (LKG & Class 1)</span>
-          <h2 class="card-title">Math Olympiad Adventure</h2>
-          <p class="card-desc">Embark on a joyful math & reasoning journey across 10 vibrant worlds. Features voice narration, animated mascots, 250+ challenges, daily quests, and official printable certificates.</p>
+          <h2 class="card-title">Math Olympiad</h2>
+          <p class="card-desc">Embark on a joyful math & reasoning journey across 10 vibrant worlds. Features voice
+            narration, animated mascots, 250+ challenges, daily quests, and official printable certificates.</p>
           <div class="card-meta">
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
               10 Worlds & 50+ Levels
             </span>
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
               LKG & Class 1
             </span>
             <span class="meta-item">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
               Audio Narration & Certificates
             </span>
           </div>
           <div class="card-play">
             Play Now
-            <svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5V3z"/></svg>
+            <svg viewBox="0 0 16 16">
+              <path d="M6 3l5 5-5 5V3z" />
+            </svg>
           </div>
         </div>
       </a>
@@ -835,7 +1009,8 @@
 
     <!-- Footer -->
     <footer class="footer">
-      <p>Built with ❤️ by <a href="https://github.com/TechyShahid" target="_blank">Shahid Khan</a> — Pure HTML, CSS & JavaScript</p>
+      <p>Built with ❤️ by <a href="https://github.com/TechyShahid" target="_blank">Shahid Khan</a> — Pure HTML, CSS &
+        JavaScript</p>
     </footer>
   </div>
 
@@ -844,7 +1019,8 @@
     <div class="arcade-reward-card">
       <div class="arcade-reward-icon">⭐</div>
       <h3 class="arcade-reward-title">MultiGame VIP Pass</h3>
-      <p class="arcade-reward-desc">Enjoy an ad-free arcade experience, unlimited Sudoku hints, and instant bonus revives across all games.</p>
+      <p class="arcade-reward-desc">Enjoy an ad-free arcade experience, unlimited Sudoku hints, and instant bonus
+        revives across all games.</p>
       <div class="arcade-reward-actions">
         <button class="arcade-reward-btn-watch" id="btn-toggle-vip">⭐ Toggle VIP Mode</button>
         <button class="arcade-reward-btn-cancel" id="btn-close-vip">Close</button>
@@ -889,4 +1065,5 @@
     })();
   </script>
 </body>
+
 </html>
