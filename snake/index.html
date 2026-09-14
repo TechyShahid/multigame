@@ -12,6 +12,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Orbitron:wght@500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../shared/arcade-ads.css" />
+  <link rel="stylesheet" href="../shared/arcade-fullscreen.css" />
 </head>
 <body data-theme="neon">
 
@@ -75,7 +77,7 @@
         </button>
 
         <!-- Fullscreen toggle -->
-        <button id="btn-fullscreen" class="icon-btn" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+        <button id="btn-fullscreen" class="icon-btn btn-arcade-fullscreen" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
           ⛶
         </button>
 
@@ -205,6 +207,9 @@
       </div>
 
       <div class="modal-actions-stacked">
+        <button class="btn-primary" id="btn-revive-gameover" style="background: linear-gradient(135deg, #a855f7, #6366f1); margin-bottom: 8px;">
+          ⚡ REVIVE SNAKE (WATCH AD)
+        </button>
         <button class="btn-primary" id="btn-restart-gameover">
           🔄 PLAY AGAIN
         </button>
@@ -331,6 +336,8 @@
   </div>
 
   <!-- JavaScript Modules -->
+  <script src="../shared/arcade-ads.js"></script>
+  <script src="../shared/arcade-fullscreen.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/particles.js"></script>
   <script src="js/game.js"></script>

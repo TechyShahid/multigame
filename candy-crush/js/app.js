@@ -58,7 +58,13 @@ class CandyCrushApp {
       Audio.playClick();
       this.closeAllModals();
       const nextLevel = Math.min(this.currentLevel + 1, 30);
-      this.startGame(nextLevel);
+      if (window.ArcadeAds) {
+        window.ArcadeAds.showInterstitial({
+          onComplete: () => this.startGame(nextLevel)
+        });
+      } else {
+        this.startGame(nextLevel);
+      }
     });
     document.getElementById('btn-victory-replay').addEventListener('click', () => {
       Audio.playClick();
@@ -73,6 +79,29 @@ class CandyCrushApp {
     });
 
     // Game over modal buttons
+    const btnAdMoves = document.getElementById('btn-gameover-ad-moves');
+    if (btnAdMoves) {
+      btnAdMoves.addEventListener('click', () => {
+        if (window.ArcadeAds) {
+          window.ArcadeAds.showRewarded({
+            rewardType: 'moves',
+            title: '+5 Extra Moves',
+            onRewarded: () => {
+              this.closeAllModals();
+              this.engine.movesLeft += 5;
+              this.engine.state = 'IDLE';
+              if (this.engine.onMovesChanged) this.engine.onMovesChanged(this.engine.movesLeft);
+              if (this.renderer) {
+                this.renderer.updateHUD();
+              }
+              this._checkValidMoves();
+              Audio.playPowerup();
+            }
+          });
+        }
+      });
+    }
+
     document.getElementById('btn-gameover-retry').addEventListener('click', () => {
       Audio.playClick();
       this.closeAllModals();

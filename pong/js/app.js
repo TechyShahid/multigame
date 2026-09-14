@@ -202,9 +202,57 @@ document.addEventListener('DOMContentLoaded', () => {
     game.state = 'idle';
   });
 
+  const btnTopBackMenu = document.getElementById('btn-top-back-menu');
+  if (btnTopBackMenu) {
+    btnTopBackMenu.addEventListener('click', (e) => {
+      e.preventDefault();
+      game.state = 'idle';
+      if (pauseModal) pauseModal.classList.add('hidden');
+      if (gameoverModal) gameoverModal.classList.add('hidden');
+      if (startModal) startModal.classList.remove('hidden');
+    });
+  }
+
+  const btnGameoverMenu = document.getElementById('btn-gameover-menu');
+  if (btnGameoverMenu) {
+    btnGameoverMenu.addEventListener('click', () => {
+      gameoverModal.classList.add('hidden');
+      startModal.classList.remove('hidden');
+      game.state = 'idle';
+    });
+  }
+
+  const btnPongRevive = document.getElementById('btn-pong-revive');
+  if (btnPongRevive) {
+    btnPongRevive.addEventListener('click', () => {
+      if (window.ArcadeAds) {
+        window.ArcadeAds.showRewarded({
+          rewardType: 'lives',
+          title: 'Pong Solo Rally Continue (+2 Lives)',
+          onRewarded: () => {
+            gameoverModal.classList.add('hidden');
+            game.rallyLives = 2;
+            game.state = 'countdown';
+            game.countdown = 3;
+            game.resetBall();
+            game.startCountdown();
+          }
+        });
+      }
+    });
+  }
+
   btnPlayAgain.addEventListener('click', () => {
     gameoverModal.classList.add('hidden');
-    startModal.classList.remove('hidden');
+    if (window.ArcadeAds) {
+      window.ArcadeAds.showInterstitial({
+        onComplete: () => {
+          startModal.classList.remove('hidden');
+        }
+      });
+    } else {
+      startModal.classList.remove('hidden');
+    }
   });
 
   // Game state callback
@@ -261,6 +309,10 @@ document.addEventListener('DOMContentLoaded', () => {
         subtitleEl.textContent = 'A thrilling match on the court!';
       }
       finalScoreEl.textContent = `${game.paddleLeft.score} - ${game.paddleRight.score}`;
+    }
+
+    if (btnPongRevive) {
+      btnPongRevive.style.display = game.mode === GAME_MODES.SOLO_RALLY ? 'block' : 'none';
     }
 
     gameoverModal.classList.remove('hidden');

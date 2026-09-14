@@ -595,6 +595,25 @@ class SnakeGame {
     }
   }
 
+  revive() {
+    this.state = 'PLAYING';
+    const head = this.snake[0];
+    if (head.x < 0) head.x = 0;
+    if (head.x >= this.gridCols) head.x = this.gridCols - 1;
+    if (head.y < 0) head.y = 0;
+    if (head.y >= this.gridRows) head.y = this.gridRows - 1;
+
+    // Grant temporary ghost invulnerability phase
+    this.activePowerUp = {
+      type: 'ghost',
+      duration: 4.0,
+      maxDuration: 4.0
+    };
+    this.lastStepTime = performance.now();
+
+    if (window.soundManager) window.soundManager.playPowerUp();
+  }
+
   update(deltaTime) {
     if (this.state === 'PLAYING') {
       // Time Attack countdown

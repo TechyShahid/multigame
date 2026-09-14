@@ -273,10 +273,35 @@ class App {
       btnPlayStart.addEventListener('click', () => this.startGame());
     }
 
+    // Revive button
+    const btnReviveGameOver = document.getElementById('btn-revive-gameover');
+    if (btnReviveGameOver) {
+      btnReviveGameOver.addEventListener('click', () => {
+        if (window.ArcadeAds) {
+          window.ArcadeAds.showRewarded({
+            rewardType: 'revive',
+            title: 'Snake Revive (Ghost Shield)',
+            onRewarded: () => {
+              this.hideModal('modal-gameover');
+              this.game.revive();
+            }
+          });
+        }
+      });
+    }
+
     // Restart buttons
     const btnRestartGameOver = document.getElementById('btn-restart-gameover');
     if (btnRestartGameOver) {
-      btnRestartGameOver.addEventListener('click', () => this.startGame());
+      btnRestartGameOver.addEventListener('click', () => {
+        if (window.ArcadeAds) {
+          window.ArcadeAds.showInterstitial({
+            onComplete: () => this.startGame()
+          });
+        } else {
+          this.startGame();
+        }
+      });
     }
     const btnRestartPause = document.getElementById('btn-restart-pause');
     if (btnRestartPause) {

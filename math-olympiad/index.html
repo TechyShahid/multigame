@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Math & Reasoning Olympiad Adventure — Educational learning game for LKG and Class 1 kids." />
+  <title>Math & Reasoning Olympiad Adventure — Kids Fun Learning Game</title>
+
+  <!-- Google Fonts: Fredoka & Quicksand -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../shared/arcade-ads.css" />
+  <link rel="stylesheet" href="../shared/arcade-fullscreen.css" />
+</head>
+<body>
+
+  <!-- ======================== -->
+  <!-- GLOBAL HEADER            -->
+  <!-- ======================== -->
+  <header id="game-header" class="game-header">
+    <div class="header-left">
+      <a href="../" class="btn-arcade-exit" id="btn-arcade-exit" title="Exit to MultiGame Arcade">
+        <span class="exit-icon">🎮</span>
+        <span class="exit-text">Arcade</span>
+      </a>
+      <button id="btn-header-back" class="btn-back" title="Go Back">⬅️</button>
+      <div class="header-titles">
+        <h2 id="header-title">Olympiad Quest</h2>
+        <p id="header-subtitle">Math & Reasoning Adventure</p>
+      </div>
+    </div>
+
+    <div class="header-stats">
+      <div class="stat-chip stars">
+        <span>⭐</span>
+        <span id="stat-stars">0</span>
+      </div>
+      <div class="stat-chip gems">
+        <span>💎</span>
+        <span id="stat-gems">0</span>
+      </div>
+      <div class="stat-chip streak">
+        <span>🔥</span>
+        <span id="stat-streak">1d</span>
+      </div>
+
+      <div class="header-audio-controls">
+        <button id="btn-toggle-speech" class="btn-icon-toggle active" title="Toggle Voice Narration">🔊</button>
+        <button id="btn-toggle-sound" class="btn-icon-toggle active" title="Toggle Sound Effects">🔔</button>
+        <button id="btn-toggle-music" class="btn-icon-toggle" title="Toggle Soft Music">🎵</button>
+        <button id="btn-header-fullscreen" class="btn-arcade-fullscreen" title="Toggle Fullscreen Mode">⛶</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================== -->
+  <!-- SCREEN: HOME             -->
+  <!-- ======================== -->
+  <main id="screen-home" class="screen screen-active">
+    <div class="hero-card">
+      <div>
+        <span class="hero-tag">✨ Math & Reasoning Adventure</span>
+        <h1>Olympiad Quest! 🚀</h1>
+        <p>Welcome back, <strong id="home-child-name" style="text-decoration: underline;">Little Explorer</strong>! Ready for today's brain journey?</p>
+      </div>
+      <div class="mascot-box" id="home-mascot-box">
+        <div class="mascot-avatar animate-bounce" id="home-mascot-avatar">🤖</div>
+        <div class="mascot-bubble" id="home-mascot-bubble">
+          Let's learn and win shiny stars together! ⭐
+        </div>
+      </div>
+    </div>
+
+    <!-- Overview Ribbon -->
+    <div class="overview-grid">
+      <div class="overview-card">
+        <div class="overview-icon">⭐</div>
+        <div class="overview-info">
+          <span>Total Stars</span>
+          <strong id="overview-stars">0</strong>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon">🏆</div>
+        <div class="overview-info">
+          <span>Trophies</span>
+          <strong id="overview-trophies">0</strong>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon">🔥</div>
+        <div class="overview-info">
+          <span>Streak</span>
+          <strong id="overview-streak">1 Day</strong>
+        </div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-icon">📚</div>
+        <div class="overview-info">
+          <span>Levels Won</span>
+          <strong id="overview-levels">0 / 50</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grade Selectors -->
+    <div class="grade-launcher">
+      <button id="btn-play-lkg" class="btn-grade lkg">
+        <div class="grade-top">
+          <span class="grade-age">Ages 4–5</span>
+          <span class="grade-emoji">🐣</span>
+        </div>
+        <div>
+          <h2>Play LKG</h2>
+          <p>Counting 1–20, picture math, shapes, colors, patterns & memory fun!</p>
+        </div>
+        <div class="grade-cta">
+          <span>Explore LKG Worlds ➔</span>
+        </div>
+      </button>
+
+      <button id="btn-play-class1" class="btn-grade class1">
+        <div class="grade-top">
+          <span class="grade-age">Ages 5–7</span>
+          <span class="grade-emoji">🚀</span>
+        </div>
+        <div>
+          <h2>Play Class 1</h2>
+          <p>Numbers 1–100, addition, subtraction, clocks, coins, coding & logic!</p>
+        </div>
+        <div class="grade-cta">
+          <span>Explore Class 1 Worlds ➔</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- Modes Section -->
+    <div class="modes-section">
+      <h3><span>🧭</span> Game Modes & Special Quests</h3>
+      <div class="modes-grid">
+        <button id="btn-mode-daily" class="mode-btn">
+          <div class="mode-icon">🌟</div>
+          <h4>Daily Quest</h4>
+          <p>10 Qs + Mystery Box</p>
+        </button>
+
+        <button id="btn-mode-olympiad" class="mode-btn">
+          <div class="mode-icon">🏆</div>
+          <h4>Olympiad Exam</h4>
+          <p>Win Certificate</p>
+        </button>
+
+        <button id="btn-mode-practice" class="mode-btn">
+          <div class="mode-icon">🎯</div>
+          <h4>Practice Gym</h4>
+          <p>Choose Any Topic</p>
+        </button>
+
+        <button id="btn-mode-badges" class="mode-btn">
+          <div class="mode-icon">🎖️</div>
+          <h4>My Badges</h4>
+          <p>Mascots & Trophies</p>
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer links -->
+    <div class="home-footer-row">
+      <a href="../" class="btn-arcade-exit-bottom" id="btn-home-exit" title="Exit to MultiGame Arcade">
+        <span>🎮</span> Exit to MultiGame Arcade
+      </a>
+      <button id="btn-mode-parent" style="background: white; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; color: #475569; display: flex; align-items: center; gap: 6px;">
+        <span>🛡️</span> Parents Zone (Dashboard & Analytics)
+      </button>
+      <span style="font-size: 0.75rem; font-weight: 700; color: #78350f;">Math & Reasoning Olympiad v2.0</span>
+    </div>
+  </main>
+
+  <!-- ======================== -->
+  <!-- SCREEN: WORLDS MAP       -->
+  <!-- ======================== -->
+  <main id="screen-worlds" class="screen">
+    <div style="width: 100%; background: white; border: 4px solid #fde68a; border-radius: 24px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+      <div>
+        <span style="font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: #d97706;">Adventure Map</span>
+        <h2 id="worlds-map-title" style="font-size: 1.8rem; font-weight: 900; color: #1e293b;">LKG Adventure Worlds 🗺️</h2>
+        <p style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Complete levels to unlock new worlds and collect golden trophies!</p>
+      </div>
+      <div class="stat-chip stars" style="font-size: 1rem; padding: 8px 16px;">
+        <span>⭐</span> <span id="worlds-total-stars">0 Stars</span>
+      </div>
+    </div>
+
+    <div id="worlds-list" class="worlds-container">
+      <!-- Worlds rendered by JS -->
+    </div>
+  </main>
+
+  <!-- ======================== -->
+  <!-- SCREEN: ACTIVE GAMEPLAY  -->
+  <!-- ======================== -->
+  <main id="screen-game" class="screen">
+    <div class="progress-container">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span id="game-progress-text" style="font-size: 0.85rem; font-weight: 900; background: white; padding: 4px 12px; border-radius: 999px; border: 1px solid #fde68a;">Question 1 / 5</span>
+        <span id="game-stars-preview" style="font-size: 16px;">⭐⭐⭐</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span id="game-score-badge" style="font-size: 0.85rem; font-weight: 900; background: #ecfdf5; color: #047857; padding: 4px 10px; border-radius: 999px; border: 1px solid #a7f3d0;">+0 pts</span>
+        <button id="btn-game-hint" class="btn-hint">💡 Hint (3)</button>
+      </div>
+    </div>
+
+    <div class="progress-track" style="width: 100%; max-width: 680px;">
+      <div id="game-progress-fill" class="progress-fill" style="width: 20%;"></div>
+    </div>
+
+    <div class="game-play-card">
+      <div class="question-top">
+        <h3 id="game-q-text" class="question-text">How many red apples can you count?</h3>
+        <button id="btn-game-speak" class="btn-speak" title="Read Question Aloud">🔊</button>
+      </div>
+
+      <div id="game-visual-arena" class="visual-arena">
+        <!-- Visual counting / Picture math rendered by JS -->
+      </div>
+
+      <div id="game-answers-grid" class="answers-grid">
+        <!-- Answer buttons rendered by JS -->
+      </div>
+
+      <div id="game-feedback-box" class="feedback-box correct" style="display: none;">
+        <div class="feedback-top">
+          <div id="feedback-icon" class="feedback-icon">🎉</div>
+          <div class="feedback-msg">
+            <h4 id="feedback-title">Awesome Job! ⭐</h4>
+            <p id="feedback-desc">There are 3 delicious red apples!</p>
+          </div>
+        </div>
+        <button id="btn-game-next" class="btn-next-q">Next Question ➔</button>
+      </div>
+    </div>
+
+    <div class="mascot-box" style="margin-top: 6px;">
+      <div class="mascot-avatar" id="game-mascot-avatar" style="width: 48px; height: 48px; font-size: 26px;">🤖</div>
+      <div class="mascot-bubble" id="game-mascot-msg" style="font-size: 0.85rem;">
+        Take your time, tap the answer when you are ready!
+      </div>
+    </div>
+  </main>
+
+  <!-- ======================== -->
+  <!-- SCREEN: OLYMPIAD EXAM    -->
+  <!-- ======================== -->
+  <main id="screen-olympiad" class="screen">
+    <!-- Intro state -->
+    <div id="olympiad-intro" class="hero-card" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); text-align: center; align-items: center; max-width: 680px;">
+      <div style="width: 80px; height: 80px; border-radius: 50%; background: white; font-size: 44px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(0,0,0,0.2);">
+        🏆
+      </div>
+      <div>
+        <span class="hero-tag" style="background: rgba(255,255,255,0.2);">Official Kids Challenge</span>
+        <h1 style="font-size: 2.2rem; margin-top: 8px;">Grand Olympiad Exam</h1>
+        <p style="margin: 6px auto; font-size: 0.95rem;">Test your brain power across Math, Logic, Patterns, and Shapes. Complete the challenge to earn an official certificate!</p>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin: 12px 0;">
+        <div style="background: rgba(255,255,255,0.2); padding: 10px 18px; border-radius: 14px; text-align: center;">
+          <span style="font-size: 0.75rem; font-weight: 800; display: block; opacity: 0.9;">QUESTIONS</span>
+          <strong id="oly-intro-count" style="font-size: 1.4rem;">20 Challenges</strong>
+        </div>
+        <div style="background: rgba(255,255,255,0.2); padding: 10px 18px; border-radius: 14px; text-align: center;">
+          <span style="font-size: 0.75rem; font-weight: 800; display: block; opacity: 0.9;">PACING</span>
+          <strong style="font-size: 1.4rem;">Fun & Gentle ⏱️</strong>
+        </div>
+      </div>
+
+      <button id="btn-start-olympiad-exam" style="background: white; color: #6b21a8; font-weight: 900; font-size: 1.2rem; padding: 16px 36px; border-radius: 20px; box-shadow: 0 6px 0 rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px;">
+        <span>Begin Olympiad Exam 🚀</span>
+      </button>
+    </div>
+
+    <!-- Exam Results -->
+    <div id="olympiad-results" class="hero-card" style="background: white; color: #1e293b; border: 4px solid #fde68a; text-align: center; align-items: center; max-width: 680px; display: none;">
+      <div style="font-size: 60px;">🎖️</div>
+      <h2 style="font-size: 2rem; font-weight: 900;">Olympiad Completed! 🎉</h2>
+      <p id="oly-res-rank" style="font-size: 1.2rem; font-weight: 900; color: #7c3aed;">Junior Math Wizard 🏆</p>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; margin: 16px 0;">
+        <div style="background: #fef3c7; border: 2px solid #fde68a; padding: 12px; border-radius: 16px;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #92400e;">SCORE</span>
+          <div id="oly-res-score" style="font-size: 1.4rem; font-weight: 900; color: #78350f;">190 pts</div>
+        </div>
+        <div style="background: #ecfdf5; border: 2px solid #a7f3d0; padding: 12px; border-radius: 16px;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #065f46;">ACCURACY</span>
+          <div id="oly-res-acc" style="font-size: 1.4rem; font-weight: 900; color: #047857;">95%</div>
+        </div>
+        <div style="background: #e0f2fe; border: 2px solid #bae6fd; padding: 12px; border-radius: 16px;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #0369a1;">CORRECT</span>
+          <div id="oly-res-correct" style="font-size: 1.4rem; font-weight: 900; color: #0284c7;">19 / 20</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px; width: 100%; justify-content: center;">
+        <button id="btn-view-certificate" style="background: linear-gradient(135deg, #f59e0b, #ea580c); color: white; padding: 14px 28px; border-radius: 16px; font-weight: 900; font-size: 1.1rem; box-shadow: 0 4px 0 #d97706; display: flex; align-items: center; gap: 8px;">
+          <span>📜 View / Print Certificate</span>
+        </button>
+        <button id="btn-oly-back-home" style="background: #f1f5f9; color: #334155; padding: 14px 24px; border-radius: 16px; font-weight: 800; font-size: 1rem;">
+          Back Home
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ======================== -->
+  <!-- SCREEN: PRACTICE GYM     -->
+  <!-- ======================== -->
+  <main id="screen-practice" class="screen">
+    <div style="width: 100%; max-width: 680px; background: white; border: 4px solid #10b981; border-radius: 28px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 18px;">
+      <h2 style="font-size: 1.6rem; font-weight: 900; color: #065f46;">🎯 Practice Gym</h2>
+
+      <!-- Grade Selection -->
+      <div>
+        <label style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; color: #047857; display: block; margin-bottom: 8px;">1. Select Grade:</label>
+        <div style="display: flex; gap: 10px;">
+          <button id="practice-grade-lkg" class="btn-grade lkg" style="flex: 1; padding: 12px; border-radius: 16px; font-size: 1.1rem; font-weight: 900; text-align: center;">🐣 LKG (Ages 4–5)</button>
+          <button id="practice-grade-class1" class="btn-grade class1" style="flex: 1; padding: 12px; border-radius: 16px; font-size: 1.1rem; font-weight: 900; text-align: center; opacity: 0.6;">🚀 Class 1 (Ages 5–7)</button>
+        </div>
+      </div>
+
+      <!-- Topic Selection -->
+      <div>
+        <label style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; color: #047857; display: block; margin-bottom: 8px;">2. Choose Topic:</label>
+        <div id="practice-topics-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+          <!-- Topics rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Difficulty Selection -->
+      <div>
+        <label style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; color: #047857; display: block; margin-bottom: 8px;">3. Select Difficulty:</label>
+        <div style="display: flex; gap: 8px;">
+          <button id="diff-easy" class="btn-icon-toggle active" style="flex: 1; height: 42px; border-radius: 12px; font-weight: 900; font-size: 1rem;">🌱 Easy</button>
+          <button id="diff-medium" class="btn-icon-toggle" style="flex: 1; height: 42px; border-radius: 12px; font-weight: 900; font-size: 1rem;">⚡ Medium</button>
+          <button id="diff-hard" class="btn-icon-toggle" style="flex: 1; height: 42px; border-radius: 12px; font-weight: 900; font-size: 1rem;">🔥 Hard</button>
+        </div>
+      </div>
+
+      <button id="btn-start-practice-run" style="width: 100%; padding: 16px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 18px; font-weight: 900; font-size: 1.2rem; box-shadow: 0 5px 0 #047857;">
+        Start Practice Workout! 🚀
+      </button>
+    </div>
+  </main>
+
+  <!-- ======================== -->
+  <!-- SCREEN: DAILY CHALLENGE  -->
+  <!-- ======================== -->
+  <main id="screen-daily" class="screen">
+    <div class="hero-card" style="background: linear-gradient(135deg, #f59e0b, #ea580c); text-align: center; align-items: center; max-width: 640px;">
+      <div style="font-size: 60px;">🎁</div>
+      <span class="hero-tag">Special Daily Workout</span>
+      <h1 style="font-size: 2.2rem; margin-top: 6px;">Today's 11-Question Quest</h1>
+      <p style="font-size: 0.95rem; max-width: 440px;">Complete 5 Math questions + 5 Reasoning challenges + 1 Mystery Bonus Puzzle to open the Daily Mystery Gift!</p>
+
+      <div style="display: flex; gap: 8px; width: 100%; margin: 12px 0;">
+        <div style="flex: 1; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 14px;">
+          <span style="font-size: 0.75rem; font-weight: 800; display: block;">PART 1</span>
+          <strong>5 Math ➕</strong>
+        </div>
+        <div style="flex: 1; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 14px;">
+          <span style="font-size: 0.75rem; font-weight: 800; display: block;">PART 2</span>
+          <strong>5 Logic 🧩</strong>
+        </div>
+        <div style="flex: 1; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 14px;">
+          <span style="font-size: 0.75rem; font-weight: 800; display: block;">PART 3</span>
+          <strong>1 Bonus 🎁</strong>
+        </div>
+      </div>
+
+      <button id="btn-start-daily-quest" style="background: white; color: #ea580c; font-weight: 900; font-size: 1.2rem; padding: 16px 36px; border-radius: 18px; box-shadow: 0 5px 0 rgba(0,0,0,0.15);">
+        Start Daily Quest! 🌟
+      </button>
+    </div>
+  </main>
+
+  <!-- ======================== -->
+  <!-- SCREEN: BADGES & MASCOTS -->
+  <!-- ======================== -->
+  <main id="screen-badges" class="screen">
+    <div style="width: 100%; max-width: 760px; background: white; border: 4px solid #f472b6; border-radius: 28px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); display: flex; flex-direction: column; gap: 20px;">
+      <!-- Profile Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 2px solid #fdf2f8;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div id="badges-mascot-avatar" style="width: 56px; height: 56px; border-radius: 16px; background: #fef3c7; border: 2px solid #fde68a; display: flex; align-items: center; justify-content: center; font-size: 32px;">🤖</div>
+          <div>
+            <span style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Explorer Name</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <input id="input-child-name" type="text" value="Little Explorer" maxlength="20" style="font-family: inherit; font-size: 1.3rem; font-weight: 900; color: #1e293b; border: 2px solid #fde68a; border-radius: 10px; padding: 2px 8px; width: 180px;" />
+              <button id="btn-save-child-name" style="background: #10b981; color: white; padding: 6px 12px; border-radius: 10px; font-weight: 800; font-size: 0.8rem;">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mascots list -->
+      <div>
+        <h4 style="font-size: 1rem; font-weight: 900; color: #be185d; margin-bottom: 8px;">Choose Your Mascot Companion:</h4>
+        <div id="mascots-picker-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Badges Grid -->
+      <div>
+        <h4 style="font-size: 1rem; font-weight: 900; color: #be185d; margin-bottom: 8px;">Earned Badges & Achievements:</h4>
+        <div id="badges-showcase-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ======================== -->
+  <!-- SCREEN: PARENT DASHBOARD -->
+  <!-- ======================== -->
+  <main id="screen-parent" class="screen">
+    <div style="width: 100%; max-width: 760px; background: white; border: 4px solid #94a3b8; border-radius: 28px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
+        <div>
+          <span style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Parent Zone • Analytics</span>
+          <h2 id="parent-student-name" style="font-size: 1.6rem; font-weight: 900; color: #0f172a;">Little Explorer</h2>
+          <p id="parent-grade-label" style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Grade: Lower Kindergarten (LKG)</p>
+        </div>
+        <div style="text-align: right;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Learning Time</span>
+          <div id="parent-learning-time" style="font-size: 1.4rem; font-weight: 900; color: #0f172a;">12 mins</div>
+        </div>
+      </div>
+
+      <!-- Metrics 3 columns -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div style="background: #ecfdf5; border: 2px solid #a7f3d0; border-radius: 16px; padding: 12px;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #065f46; text-transform: uppercase;">Overall Accuracy</span>
+          <div id="parent-stat-acc" style="font-size: 1.6rem; font-weight: 900; color: #047857;">88%</div>
+        </div>
+        <div style="background: #fef3c7; border: 2px solid #fde68a; border-radius: 16px; padding: 12px;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #92400e; text-transform: uppercase;">Strongest Topic</span>
+          <div id="parent-stat-strong" style="font-size: 1.1rem; font-weight: 900; color: #78350f;">Shapes ⭐</div>
+        </div>
+        <div style="background: #f3e8ff; border: 2px solid #e9d5ff; border-radius: 16px; padding: 12px;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #6b21a8; text-transform: uppercase;">Practice Focus</span>
+          <div id="parent-stat-weak" style="font-size: 1.1rem; font-weight: 900; color: #581c87;">Patterns 📚</div>
+        </div>
+      </div>
+
+      <!-- Topics Breakdown -->
+      <div>
+        <h4 style="font-size: 0.95rem; font-weight: 900; color: #334155; margin-bottom: 8px;">Topic Mastery Breakdown:</h4>
+        <div id="parent-topics-bars" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Bars rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Reset Option -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid #e2e8f0;">
+        <span style="font-size: 0.75rem; font-weight: 600; color: #94a3b8;">Local data stored securely in browser.</span>
+        <button id="btn-parent-reset" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 10px; padding: 6px 14px; font-size: 0.8rem; font-weight: 800;">
+          Reset Child Progress
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ======================== -->
+  <!-- MODAL: HINT              -->
+  <!-- ======================== -->
+  <div id="modal-hint" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog">
+      <button id="btn-close-hint" class="btn-close-modal">✕</button>
+      <div style="width: 56px; height: 56px; border-radius: 18px; background: #fef3c7; border: 2px solid #fde68a; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+        💡
+      </div>
+      <h3 style="font-size: 1.4rem; font-weight: 900; color: #78350f;">Friendly Hint! 💡</h3>
+      <p id="hint-modal-text" style="font-size: 1rem; font-weight: 700; color: #334155; line-height: 1.4;">
+        Count all the apples together!
+      </p>
+      <button id="btn-hint-confirm" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #f59e0b, #ea580c); color: white; border-radius: 16px; font-weight: 900; font-size: 1.1rem; box-shadow: 0 4px 0 #d97706;">
+        Got it! I can do this! 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- ======================== -->
+  <!-- MODAL: LEVEL REWARD      -->
+  <!-- ======================== -->
+  <div id="modal-reward" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog">
+      <div style="font-size: 60px; margin-top: -10px;">⭐</div>
+      <h2 id="reward-modal-title" style="font-size: 1.8rem; font-weight: 900; color: #0f172a;">Level Completed! 🌟</h2>
+      <p id="reward-modal-subtitle" style="font-size: 0.95rem; font-weight: 700; color: #d97706; margin-top: -8px;">Number Land • Level 1</p>
+
+      <div id="reward-modal-stars" style="font-size: 36px; margin: 4px 0;">⭐⭐⭐</div>
+
+      <div style="display: flex; gap: 10px; width: 100%;">
+        <div style="flex: 1; background: #fef3c7; border: 2px solid #fde68a; border-radius: 14px; padding: 10px;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #92400e;">SCORE</span>
+          <div id="reward-modal-score" style="font-size: 1.3rem; font-weight: 900; color: #78350f;">+50</div>
+        </div>
+        <div style="flex: 1; background: #cffafe; border: 2px solid #a5f3fc; border-radius: 14px; padding: 10px;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #155e75;">GEMS</span>
+          <div id="reward-modal-gems" style="font-size: 1.3rem; font-weight: 900; color: #0891b2;">+10 💎</div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 6px;">
+        <button id="btn-reward-next-level" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 16px; font-weight: 900; font-size: 1.15rem; box-shadow: 0 4px 0 #047857;">
+          Next Level ➔
+        </button>
+        <button id="btn-reward-world-map" style="width: 100%; padding: 10px; background: #fef3c7; color: #78350f; border: 2px solid #fde68a; border-radius: 14px; font-weight: 800; font-size: 0.95rem;">
+          Back to Worlds Map
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== -->
+  <!-- MODAL: PARENT GATE       -->
+  <!-- ======================== -->
+  <div id="modal-parent-gate" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog">
+      <button id="btn-close-parent-gate" class="btn-close-modal">✕</button>
+      <div style="width: 56px; height: 56px; border-radius: 18px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 26px;">
+        🔒
+      </div>
+      <h3 style="font-size: 1.4rem; font-weight: 900; color: #0f172a;">Parents Zone Check</h3>
+      <p style="font-size: 0.85rem; font-weight: 600; color: #64748b; margin-top: -6px;">
+        Please solve this math question to confirm you are an adult:
+      </p>
+
+      <div id="parent-gate-question" style="font-size: 2rem; font-weight: 900; color: #0f172a; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 16px; padding: 10px 24px;">
+        7 × 8 = ?
+      </div>
+
+      <div id="parent-gate-input" style="width: 180px; height: 48px; background: #fff; border: 2px solid #cbd5e1; border-radius: 12px; font-size: 1.6rem; font-weight: 900; display: flex; align-items: center; justify-content: center; letter-spacing: 4px;">
+        --
+      </div>
+
+      <!-- Keypad -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 220px;">
+        <button class="btn-gate-key" data-digit="1" style="padding: 10px; background: #f1f5f9; border-radius: 10px; font-size: 1.2rem; font-weight: 900;">1</button>
+        <button class="btn-gate-key" data-digit="2" style="padding: 10px; background: #f1f5f9; border-radius: 10px; font-size: 1.2rem; font-weight: 900;">2</button>
+        <button class="btn-gate-key" data-digit="3" style="padding: 10px; background: #f1f5f9; border-radius: 10px; font-size: 1.2rem; font-weight: 900;">3</button>
+        <button class="btn-gate-key" data-digit="4" style="padding: 10px; background: #f1f5f9; border-radius: 10px; font-size: 1.2rem; font-weight: 900;">4</button>
+        <button class="btn-gate-key" data-digit="5" style="padding: 10px; background: #f1f5f9; border-radius: 10px; font-size: 1.2rem; font-weight: 900;">5</button>
+        <button class="btn-gate-key" data-digit="6" style="padding: 10px; background: #f1f5f9; border-radius: 10px; font-size: 1.2rem; font-weight: 900;">6</button>
+        <button class="btn-gate-key" data-digit="7" style="padding: 10px; background: #f1f5f9; border-radius: 10px; font-size: 1.2rem; font-weight: 900;">7</button>
+        <button class="btn-gate-key" data-digit="8" style="padding: 10px; background: #f1f5f9; border-radius: 10px; font-size: 1.2rem; font-weight: 900;">8</button>
+        <button class="btn-gate-key" data-digit="9" style="padding: 10px; background: #f1f5f9; border-radius: 10px; font-size: 1.2rem; font-weight: 900;">9</button>
+        <button id="btn-gate-clear" style="padding: 10px; background: #fee2e2; color: #b91c1c; border-radius: 10px; font-size: 0.9rem; font-weight: 900;">C</button>
+        <button class="btn-gate-key" data-digit="0" style="padding: 10px; background: #f1f5f9; border-radius: 10px; font-size: 1.2rem; font-weight: 900;">0</button>
+        <button id="btn-gate-submit" style="padding: 10px; background: #10b981; color: white; border-radius: 10px; font-size: 1.2rem; font-weight: 900;">✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== -->
+  <!-- MODAL: CERTIFICATE       -->
+  <!-- ======================== -->
+  <div id="modal-certificate" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog" style="max-width: 640px;">
+      <button id="btn-close-cert" class="btn-close-modal">✕</button>
+
+      <!-- Printable Certificate Frame -->
+      <div id="certificate-print-zone" class="certificate-frame">
+        <div style="font-size: 40px; margin-bottom: 4px;">🏆</div>
+        <span style="font-size: 0.8rem; font-weight: 900; text-transform: uppercase; color: #b45309; letter-spacing: 1px;">Official Distinction Certificate</span>
+        <h2 class="cert-title">Math & Reasoning Olympiad</h2>
+        <p style="font-size: 0.95rem; font-style: italic; color: #64748b; margin-top: 4px;">This certificate of excellence is proudly presented to</p>
+        <div id="cert-child-name" class="cert-name">Little Explorer</div>
+        <p style="font-size: 0.95rem; font-weight: 700; color: #475569; max-width: 440px; margin: 0 auto;">
+          For outstanding critical reasoning, logic, and mathematical excellence in <strong id="cert-grade-title">Lower Kindergarten (LKG)</strong>.
+        </p>
+
+        <div class="cert-stats">
+          <div>
+            <span style="font-size: 0.7rem; font-weight: 800; color: #94a3b8; display: block;">SCORE</span>
+            <strong id="cert-score-val" style="font-size: 1.2rem; color: #d97706;">190 pts</strong>
+          </div>
+          <div style="border-left: 1px solid #fde68a; border-right: 1px solid #fde68a; padding: 0 16px;">
+            <span style="font-size: 0.7rem; font-weight: 800; color: #94a3b8; display: block;">RATING</span>
+            <strong style="font-size: 1.2rem; color: #d97706;">⭐⭐⭐</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.7rem; font-weight: 800; color: #94a3b8; display: block;">HONOR</span>
+            <strong id="cert-honor-val" style="font-size: 1.2rem; color: #7c3aed;">Math Prodigy</strong>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 0.85rem; font-weight: 700; color: #64748b; padding: 0 10px;">
+          <span>📅 Date: <strong id="cert-date-val">Today</strong></span>
+          <span>Seal of Honor: 🏅 Certified</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; width: 100%;">
+        <button id="btn-print-certificate" style="flex: 1; padding: 14px; background: linear-gradient(135deg, #f59e0b, #ea580c); color: white; border-radius: 16px; font-weight: 900; font-size: 1.1rem; box-shadow: 0 4px 0 #d97706;">
+          🖨️ Print / Save PDF
+        </button>
+        <button id="btn-dismiss-cert" style="padding: 14px 20px; background: #f1f5f9; color: #475569; border-radius: 16px; font-weight: 800;">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Arcade Ads Placeholder (Matches other games in multigame) -->
+  <div class="arcade-banner-slot" style="margin-top: 20px; max-width: 900px; width: 100%;">
+    <span>🎮 MultiGame Arcade • Educational Partner</span>
+  </div>
+
+  <!-- Arcade Fullscreen & Zoom Lock Controller -->
+  <script src="../shared/arcade-fullscreen.js"></script>
+
+  <!-- Vanilla App Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

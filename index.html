@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared/arcade-ads.css" />
 
   <style>
     /* ============= Reset & Base ============= */
@@ -248,6 +249,10 @@
       background: linear-gradient(135deg, #052614 0%, #081d1e 50%, #151838 100%);
     }
 
+    .card-olympiad .card-preview-bg {
+      background: linear-gradient(135deg, #3d1c02 0%, #2b1202 50%, #522204 100%);
+    }
+
     .card-preview-icon {
       position: relative;
       z-index: 2;
@@ -405,6 +410,7 @@
     .card-candy { --card-glow: rgba(236, 72, 153, 0.15); --tag-color: #f472b6; --play-bg: linear-gradient(135deg, #ec4899, #db2777); }
     .card-pong { --card-glow: rgba(6, 182, 212, 0.2); --tag-color: #06b6d4; --play-bg: linear-gradient(135deg, #06b6d4, #a855f7); }
     .card-snake { --card-glow: rgba(34, 197, 94, 0.2); --tag-color: #22c55e; --play-bg: linear-gradient(135deg, #22c55e, #06b6d4); }
+    .card-olympiad { --card-glow: rgba(245, 158, 11, 0.25); --tag-color: #f59e0b; --play-bg: linear-gradient(135deg, #f59e0b, #ea580c); }
 
     /* ============= Footer ============= */
     .footer {
@@ -551,6 +557,51 @@
       }
     }
 
+    .header-monetization-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .monetize-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      padding: 6px 15px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.25s var(--ease);
+      font-family: var(--font);
+    }
+
+    .monetize-pill:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .pill-coffee:hover {
+      border-color: rgba(251, 191, 36, 0.5);
+      box-shadow: 0 4px 14px rgba(251, 191, 36, 0.25);
+    }
+
+    .pill-vip {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(99, 102, 241, 0.2));
+      border-color: rgba(168, 85, 247, 0.4);
+    }
+
+    .pill-vip:hover {
+      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -559,7 +610,7 @@
     }
   </style>
 </head>
-<body>
+<body data-arcade-portal="true">
 
   <!-- Ambient background -->
   <div class="ambient-orb orb-1" aria-hidden="true"></div>
@@ -575,7 +626,18 @@
         <span>Arcade Collection</span>
       </div>
       <h1><span class="gradient-text">MultiGame Arcade</span></h1>
-      <p>A collection of beautiful, premium browser games — no downloads, no ads, just pure fun.</p>
+      <p>A collection of beautiful, premium browser games — play instantly with zero installs.</p>
+      
+      <div class="header-monetization-row">
+        <a href="https://buymeacoffee.com" target="_blank" rel="noopener" class="monetize-pill pill-coffee" id="btn-coffee">
+          <span>☕</span>
+          <span>Buy Me a Coffee</span>
+        </a>
+        <button class="monetize-pill pill-vip" id="btn-vip-pass">
+          <span>⭐</span>
+          <span id="vip-pass-text">VIP Ad-Free Pass</span>
+        </button>
+      </div>
     </header>
 
     <!-- Game Cards -->
@@ -725,6 +787,50 @@
         </div>
       </a>
 
+      <!-- Math Olympiad Adventure -->
+      <a href="math-olympiad/" class="game-card card-olympiad" id="card-olympiad">
+        <div class="card-preview">
+          <div class="card-preview-bg"></div>
+          <span class="card-decor">⭐</span>
+          <span class="card-decor">🏆</span>
+          <span class="card-decor">➕</span>
+          <span class="card-decor">📐</span>
+          <span class="card-decor">🚀</span>
+          <div class="card-preview-icon">🤖</div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag"><span class="tag-dot"></span> Educational • Kids (LKG & Class 1)</span>
+          <h2 class="card-title">Math Olympiad Adventure</h2>
+          <p class="card-desc">Embark on a joyful math & reasoning journey across 10 vibrant worlds. Features voice narration, animated mascots, 250+ challenges, daily quests, and official printable certificates.</p>
+          <div class="card-meta">
+            <span class="meta-item">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              10 Worlds & 50+ Levels
+            </span>
+            <span class="meta-item">
+              <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              LKG & Class 1
+            </span>
+            <span class="meta-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              Audio Narration & Certificates
+            </span>
+          </div>
+          <div class="card-play">
+            Play Now
+            <svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5V3z"/></svg>
+          </div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Responsive Banner Slot -->
+    <div class="arcade-banner-slot" id="arcade-home-banner">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span>🎮</span>
+        <span>MultiGame Arcade Partner • High-Speed Web Gaming</span>
+      </div>
     </div>
 
     <!-- Footer -->
@@ -733,5 +839,54 @@
     </footer>
   </div>
 
+  <!-- VIP Pass Modal -->
+  <div id="modal-vip" class="arcade-reward-prompt-modal hidden">
+    <div class="arcade-reward-card">
+      <div class="arcade-reward-icon">⭐</div>
+      <h3 class="arcade-reward-title">MultiGame VIP Pass</h3>
+      <p class="arcade-reward-desc">Enjoy an ad-free arcade experience, unlimited Sudoku hints, and instant bonus revives across all games.</p>
+      <div class="arcade-reward-actions">
+        <button class="arcade-reward-btn-watch" id="btn-toggle-vip">⭐ Toggle VIP Mode</button>
+        <button class="arcade-reward-btn-cancel" id="btn-close-vip">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="shared/arcade-ads.js"></script>
+  <script src="shared/arcade-fullscreen.js"></script>
+  <script>
+    (function () {
+      const btnVip = document.getElementById('btn-vip-pass');
+      const modalVip = document.getElementById('modal-vip');
+      const btnCloseVip = document.getElementById('btn-close-vip');
+      const btnToggleVip = document.getElementById('btn-toggle-vip');
+      const vipText = document.getElementById('vip-pass-text');
+
+      function updateVipUI() {
+        const isVip = window.ArcadeAds && window.ArcadeAds.isAdFree();
+        if (vipText) vipText.textContent = isVip ? '⭐ VIP Active (Ad-Free)' : '⭐ VIP Ad-Free Pass';
+        if (btnToggleVip) btnToggleVip.textContent = isVip ? 'Disable VIP (Enable Ads)' : '⭐ Activate Free VIP Preview';
+      }
+
+      btnVip?.addEventListener('click', () => {
+        updateVipUI();
+        modalVip?.classList.remove('hidden');
+      });
+
+      btnCloseVip?.addEventListener('click', () => {
+        modalVip?.classList.add('hidden');
+      });
+
+      btnToggleVip?.addEventListener('click', () => {
+        if (window.ArcadeAds) {
+          const current = window.ArcadeAds.isAdFree();
+          window.ArcadeAds.setAdFree(!current);
+          updateVipUI();
+        }
+      });
+
+      updateVipUI();
+    })();
+  </script>
 </body>
 </html>

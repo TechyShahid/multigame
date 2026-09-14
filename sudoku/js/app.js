@@ -43,6 +43,7 @@ class SudokuApp {
     this.historyStack = [];
     this.redoStack = [];
     this.activeHint = null;
+    this.hintsRemaining = 3;
 
     // DOM Elements Cache
     this.dom = {
@@ -223,6 +224,8 @@ class SudokuApp {
     this.activeHint = null;
 
     this.hideHintBanner();
+    this.hintsRemaining = 3;
+    this.updateHintBadge();
     this.updateMistakesUI();
     this.updateScoreUI();
     this.renderBoard();
@@ -694,16 +697,58 @@ class SudokuApp {
     this.showToast(`Auto-filled candidates across ${addedCount} empty cells!`);
   }
 
+  updateHintBadge() {
+    const badge = document.getElementById('hint-badge');
+    if (badge) {
+      if (window.ArcadeAds && window.ArcadeAds.isAdFree()) {
+        badge.textContent = '∞';
+      } else {
+        badge.textContent = this.hintsRemaining;
+        badge.style.color = this.hintsRemaining === 0 ? '#ef4444' : '#c084fc';
+      }
+    }
+  }
+
   /**
    * Requests a smart hint from the engine
    */
   requestHint() {
     if (this.isPaused || this.isGameOver || this.isWon) return;
 
+    if (this.hintsRemaining <= 0 && (!window.ArcadeAds || !window.ArcadeAds.isAdFree())) {
+      if (window.ArcadeAds) {
+        window.ArcadeAds.showRewardPrompt({
+          icon: '💡',
+          title: 'Need More Hints?',
+          desc: 'You have used all 3 free hints. Watch a quick 5-second sponsor offer to unlock +3 Free Smart Hints!',
+          watchBtnText: 'Watch Video for +3 Hints',
+          onWatch: () => {
+            window.ArcadeAds.showRewarded({
+              rewardType: 'hints',
+              title: '+3 Smart Hints',
+              onRewarded: () => {
+                this.hintsRemaining = 3;
+                this.updateHintBadge();
+                this.requestHint();
+              }
+            });
+          }
+        });
+      } else {
+        this.showToast('No more hints remaining for this puzzle!');
+      }
+      return;
+    }
+
     const hint = SudokuEngine.getSmartHint(this.currentGrid, this.solutionGrid);
     if (!hint) {
       this.showToast('No hints available or board is already solved!');
       return;
+    }
+
+    if (!window.ArcadeAds || !window.ArcadeAds.isAdFree()) {
+      this.hintsRemaining = Math.max(0, this.hintsRemaining - 1);
+      this.updateHintBadge();
     }
 
     this.activeHint = hint;
@@ -1447,7 +1492,13 @@ class SudokuApp {
     document.getElementById('btn-victory-new').addEventListener('click', () => {
       this.dom.modalVictory.classList.add('hidden');
       this.confetti.stop();
-      this.startNewGame(this.difficulty);
+      if (window.ArcadeAds) {
+        window.ArcadeAds.showInterstitial({
+          onComplete: () => this.startNewGame(this.difficulty)
+        });
+      } else {
+        this.startNewGame(this.difficulty);
+      }
     });
 
     document.getElementById('btn-victory-share').addEventListener('click', () => {
@@ -1461,6 +1512,26 @@ class SudokuApp {
     });
 
     // Game Over modal buttons
+    const btnAdRevive = document.getElementById('btn-gameover-ad-revive');
+    if (btnAdRevive) {
+      btnAdRevive.addEventListener('click', () => {
+        if (window.ArcadeAds) {
+          window.ArcadeAds.showRewarded({
+            rewardType: 'revive',
+            title: 'Sudoku Revive (-1 Mistake)',
+            onRewarded: () => {
+              this.dom.modalGameOver.classList.add('hidden');
+              this.mistakes = Math.max(0, this.mistakes - 1);
+              this.isGameOver = false;
+              this.updateMistakesUI();
+              this.startTimer();
+              this.showToast('✨ Revived! 1 mistake removed.');
+            }
+          });
+        }
+      });
+    }
+
     document.getElementById('btn-gameover-revive').addEventListener('click', () => {
       this.dom.modalGameOver.classList.add('hidden');
       this.settings.mistakeLimit = false;
@@ -1477,6 +1548,8 @@ class SudokuApp {
       this.mistakes = 0;
       this.timerSeconds = 0;
       this.isGameOver = false;
+      this.hintsRemaining = 3;
+      this.updateHintBadge();
       this.updateMistakesUI();
       this.renderBoard();
       this.startTimer();

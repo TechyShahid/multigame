@@ -12,6 +12,8 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="style.css?v=2.1" />
+  <link rel="stylesheet" href="../shared/arcade-ads.css" />
+  <link rel="stylesheet" href="../shared/arcade-fullscreen.css" />
 </head>
 <body>
   <!-- Confetti Canvas overlay for game victory -->
@@ -21,10 +23,11 @@
     <!-- Top App Navigation Header -->
     <header class="app-header">
       <div class="header-left">
-        <a href="../" id="btn-exit-game" class="btn btn-icon btn-exit" title="Exit to Arcade" aria-label="Exit to MultiGame Arcade">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <a href="../" id="btn-exit-game" class="btn btn-icon btn-exit" title="Exit to MultiGame Arcade" aria-label="Exit to MultiGame Arcade" style="width: auto; padding: 0 12px; gap: 6px; display: inline-flex; align-items: center; text-decoration: none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
+          <span style="font-size: 0.85rem; font-weight: 600;">Arcade</span>
         </a>
         <a href="../" class="brand" title="Back to MultiGame Arcade" style="text-decoration: none; color: inherit;">
           <div class="brand-icon">
@@ -146,6 +149,10 @@
             <polyline points="2 17 12 22 22 17"></polyline>
             <polyline points="2 12 12 17 22 12"></polyline>
           </svg>
+        </button>
+
+        <button id="btn-sudoku-fullscreen" class="btn btn-icon btn-arcade-fullscreen" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+          ⛶
         </button>
 
         <!-- Mobile More Menu Dropdown -->
@@ -371,6 +378,7 @@
               <path d="M12 2v1M12 21v1M4.22 4.22l.71.71M18.36 18.36l.71.71M1 12h1M21 12h1M4.22 19.78l.71-.71M18.36 5.64l.71-.71"></path>
               <circle cx="12" cy="12" r="5"></circle>
             </svg>
+            <span id="hint-badge" class="badge-mini" style="background: rgba(168, 85, 247, 0.25); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4);">3</span>
           </div>
           <span class="control-label">Hint</span>
         </button>
@@ -493,7 +501,8 @@
       <h2>Game Over</h2>
       <p>You have reached the limit of 3 mistakes.</p>
       <div class="modal-actions vertical">
-        <button id="btn-gameover-revive" class="btn btn-primary">Continue in Casual Mode</button>
+        <button id="btn-gameover-ad-revive" class="btn btn-primary" style="background: linear-gradient(135deg, #a855f7, #ec4899); box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);">⚡ Watch Ad to Revive (-1 Mistake)</button>
+        <button id="btn-gameover-revive" class="btn btn-secondary">Continue in Casual Mode</button>
         <button id="btn-gameover-restart" class="btn btn-secondary">Restart Puzzle</button>
         <button id="btn-gameover-new" class="btn btn-secondary">New Puzzle</button>
         <a href="../" class="btn btn-danger-ghost" style="text-decoration: none;">Exit to Arcade</a>
@@ -859,6 +868,8 @@
   <div id="toast-container" class="toast-container"></div>
 
   <!-- Modular Scripts -->
+  <script src="../shared/arcade-ads.js"></script>
+  <script src="../shared/arcade-fullscreen.js"></script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
