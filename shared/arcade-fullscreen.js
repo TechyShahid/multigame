@@ -122,10 +122,9 @@
       const isFs = this.isFullscreen();
       const buttons = document.querySelectorAll('.btn-arcade-fullscreen');
       buttons.forEach((btn) => {
-        // If button has text child, only update icon
-        if (btn.textContent.trim().length > 2) {
-          const text = btn.textContent.replace(/[⛶🗗]/g, '').trim();
-          btn.innerHTML = `<span>${isFs ? '🗗' : '⛶'}</span> <span>${isFs ? 'WINDOWED' : 'FULLSCREEN'}</span>`;
+        const diffTitle = btn.querySelector('.diff-title');
+        if (diffTitle) {
+          diffTitle.textContent = `${isFs ? '🗗' : '⛶'} ${isFs ? 'Exit Fullscreen' : 'Fullscreen Mode'}`;
         } else {
           btn.innerHTML = isFs ? '🗗' : '⛶';
         }
