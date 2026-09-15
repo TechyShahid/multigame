@@ -143,6 +143,8 @@
 
     /* ============= Header ============= */
     .header {
+      position: relative;
+      z-index: 100;
       text-align: center;
       margin-bottom: 20px;
     }
@@ -727,6 +729,170 @@
       box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
     }
 
+    /* User Profile Menu Dropdown */
+    .user-menu-wrapper {
+      position: relative;
+      display: inline-block;
+      z-index: 1000;
+    }
+
+    .pill-user {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.16);
+      padding: 6px 14px;
+      user-select: none;
+    }
+
+    .pill-user:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .pill-user.pill-admin {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(245, 158, 11, 0.15));
+      border-color: rgba(255, 215, 0, 0.45);
+      color: #ffd700;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+    }
+
+    .user-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 250px;
+      background: rgba(15, 19, 32, 0.95);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 240, 255, 0.1);
+      z-index: 99999;
+      animation: dropdownFade 0.2s ease-out;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .user-dropdown-menu.hidden {
+      display: none !important;
+    }
+
+    @keyframes dropdownFade {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-dropdown-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px 10px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .user-dropdown-avatar {
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .user-dropdown-meta {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .user-dropdown-meta strong {
+      font-size: 0.85rem;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .badge-role {
+      font-size: 0.68rem;
+      color: #94a3b8;
+    }
+
+    .badge-admin-role {
+      color: #ffd700;
+      font-weight: 700;
+    }
+
+    .user-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 10px;
+      color: #e2e8f0;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+    }
+
+    .user-dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .btn-analytics-item {
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      color: #00f0ff;
+    }
+
+    .btn-analytics-item:hover {
+      background: rgba(0, 240, 255, 0.16);
+      border-color: #00f0ff;
+      color: #fff;
+    }
+
+    .item-text {
+      flex: 1;
+    }
+
+    .item-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .item-sub {
+      font-size: 0.68rem;
+      color: #94a3b8;
+    }
+
+    .badge-admin {
+      font-size: 0.62rem;
+      font-weight: 800;
+      background: rgba(255, 215, 0, 0.2);
+      color: #ffd700;
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      padding: 2px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 2px 0;
+    }
+
     @media (prefers-reduced-motion: reduce) {
 
       *,
@@ -758,7 +924,7 @@
       <p>A collection of beautiful, premium browser games — play instantly with zero installs.</p>
 
       <div class="header-monetization-row">
-        <a href="https://buymeacoffee.com" target="_blank" rel="noopener" class="monetize-pill pill-coffee"
+        <a href="https://buymeacoffee.com/shahid.caps6" target="_blank" rel="noopener" class="monetize-pill pill-coffee"
           id="btn-coffee">
           <span>☕</span>
           <span>Buy Me a Coffee</span>
@@ -767,6 +933,43 @@
           <span>⭐</span>
           <span id="vip-pass-text">VIP Ad-Free Pass</span>
         </button>
+
+        <!-- User Menu (Analytics option strictly visible only to shahid_adm) -->
+        <div class="user-menu-wrapper" id="arcade-user-menu-wrap">
+          <button class="monetize-pill pill-user" id="btn-user-pill" aria-haspopup="true" aria-expanded="false"
+            title="Current Player">
+            <span id="user-pill-icon">👤</span>
+            <span id="user-pill-name">Guest</span>
+            <span style="font-size: 0.7em; opacity: 0.7; margin-left: 2px;">▾</span>
+          </button>
+          <div class="user-dropdown-menu hidden" id="arcade-user-dropdown">
+            <div class="user-dropdown-header">
+              <span class="user-dropdown-avatar" id="dropdown-avatar">👤</span>
+              <div class="user-dropdown-meta">
+                <strong id="dropdown-username">Guest</strong>
+                <span id="dropdown-badge" class="badge-role">Standard Player</span>
+              </div>
+            </div>
+
+            <!-- ANALYTICS: STRICTLY DISPLAYED ONLY IF LOGGED IN AS shahid_adm -->
+            <div id="dropdown-analytics-container" class="hidden">
+              <button class="user-dropdown-item btn-analytics-item" id="btn-open-analytics-menu">
+                <span style="font-size: 1.1rem;">📊</span>
+                <div class="item-text">
+                  <div class="item-title">Arcade Analytics</div>
+                  <div class="item-sub">Game usage & popularity</div>
+                </div>
+                <span class="badge-admin">ADMIN</span>
+              </button>
+            </div>
+
+            <div class="dropdown-divider"></div>
+            <button class="user-dropdown-item" id="btn-user-auth">
+              <span id="user-auth-icon">🔑</span>
+              <span id="user-auth-label">Switch / Login User</span>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -1021,11 +1224,13 @@
         <div class="card-body">
           <span class="card-tag"><span class="tag-dot"></span> Preschool • Early Learning (Ages 3–6)</span>
           <h2 class="card-title">Kids Adventure</h2>
-          <p class="card-desc">Delightful voice-enabled preschool game. Learn A–Z, canvas alphabet tracing, 3-letter words, animal sounds, fruits, vegetables, colors, numbers, shapes, matching pairs, and daily challenges.</p>
+          <p class="card-desc">Delightful voice-enabled preschool game. Learn A–Z, canvas alphabet tracing, 3-letter
+            words, animal sounds, fruits, vegetables, colors, numbers, shapes, matching pairs, and daily challenges.</p>
           <div class="card-meta">
             <span class="meta-item">
               <svg viewBox="0 0 24 24">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
               </svg>
               12+ Interactive Games
             </span>
@@ -1085,6 +1290,7 @@
 
   <script src="shared/arcade-ads.js"></script>
   <script src="shared/arcade-fullscreen.js"></script>
+  <script src="shared/arcade-analytics.js"></script>
   <script>
     (function () {
       const btnVip = document.getElementById('btn-vip-pass');
