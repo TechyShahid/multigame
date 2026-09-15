@@ -26,29 +26,30 @@
   <!-- Confetti Canvas Overlay -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Badge Toast Notification -->
-  <div id="badge-toast" class="badge-toast">
+  <!-- Badge Toast Notification (Compact, Auto-dismissing, tap to close) -->
+  <div id="badge-toast" class="badge-toast" title="Tap to close">
     <span id="badge-toast-icon" class="badge-toast-icon">🏆</span>
-    <div>
+    <div class="badge-toast-body">
       <h4 id="badge-toast-title">Badge Unlocked!</h4>
       <p id="badge-toast-desc">Great job on your learning adventure!</p>
     </div>
+    <button class="btn-toast-close" id="btn-toast-close" aria-label="Close notification">✕</button>
   </div>
 
   <!-- Global Header -->
   <header id="global-header" class="global-header" style="display:none;">
     <div class="header-left">
       <a href="../" class="header-btn btn-arcade-exit" id="btn-arcade-exit" title="Exit to Arcade">
-        <span>🎮</span>
-        <span>Arcade</span>
+        <span class="btn-icon">🎮</span>
+        <span class="btn-text">Arcade</span>
       </a>
       <button class="header-btn btn-nav-home" id="btn-header-home" title="Go to Home Screen">
-        <span>🏠</span>
-        <span>Home</span>
+        <span class="btn-icon">🏠</span>
+        <span class="btn-text">Home</span>
       </button>
       <button class="header-btn btn-nav-back" id="btn-header-back" title="Go Back">
-        <span>⬅️</span>
-        <span>Back</span>
+        <span class="btn-icon">⬅️</span>
+        <span class="btn-text">Back</span>
       </button>
     </div>
 
@@ -57,10 +58,22 @@
         <span>⭐</span>
         <span class="stat-star-count">0</span>
       </div>
-      <button class="btn-toggle-audio active" id="btn-toggle-voice" title="Toggle Voice Narration">🗣️ Voice</button>
-      <button class="btn-toggle-audio" id="btn-choose-voice" title="Choose Friendly Voice">🎙️ Voices</button>
-      <button class="btn-toggle-audio active" id="btn-toggle-sound" title="Toggle Sound FX">🔔 Sounds</button>
-      <button class="header-btn btn-parent-zone" id="btn-open-parent-zone" title="Parent Zone">👨‍👩‍👧 Parents</button>
+      <button class="btn-toggle-audio active" id="btn-toggle-voice" title="Toggle Voice Narration">
+        <span class="btn-icon">🗣️</span>
+        <span class="btn-text">Voice</span>
+      </button>
+      <button class="btn-toggle-audio" id="btn-choose-voice" title="Choose Friendly Voice">
+        <span class="btn-icon">🎙️</span>
+        <span class="btn-text">Voices</span>
+      </button>
+      <button class="btn-toggle-audio active" id="btn-toggle-sound" title="Toggle Sound FX">
+        <span class="btn-icon">🔔</span>
+        <span class="btn-text">Sounds</span>
+      </button>
+      <button class="header-btn btn-parent-zone" id="btn-open-parent-zone" title="Parent Zone">
+        <span class="btn-icon">👨‍👩‍👧</span>
+        <span class="btn-text">Parents</span>
+      </button>
     </div>
   </header>
 
@@ -300,11 +313,15 @@
   <section class="app-screen" id="screen-words">
     <div class="draw-screen-wrap">
       <div class="draw-top-bar">
-        <div class="draw-word-header">
-          <span class="draw-word-emoji" id="draw-word-emoji">🐱</span>
-          <span class="draw-title-text" id="draw-word-title">CAT</span>
+        <div class="draw-title-area">
+          <button class="btn-circle-nav" id="btn-words-prev" style="width:46px;height:46px;font-size:1.2rem;" title="Previous Word">⬅️</button>
+          <div class="draw-word-header">
+            <span class="draw-word-emoji" id="draw-word-emoji">🐱</span>
+            <span class="draw-title-text" id="draw-word-title">CAT</span>
+          </div>
+          <button class="btn-circle-nav" id="btn-words-next" style="width:46px;height:46px;font-size:1.2rem;" title="Next Word">➡️</button>
         </div>
-        <div id="draw-word-indicator"></div>
+        <div id="draw-word-indicator" class="draw-word-indicator"></div>
         <div class="draw-progress-bar" style="max-width:140px;">
           <div class="draw-progress-fill" id="draw-words-progress-fill"></div>
         </div>
@@ -327,6 +344,7 @@
           <button class="draw-color-btn" data-color="#8338EC" style="background:#8338EC;" title="Violet"></button>
         </div>
         <div class="draw-actions">
+          <button class="btn-tool-action btn-draw-next-step" id="btn-words-next-step" title="Next Letter or Word">Next ➡️</button>
           <button class="btn-tool-action btn-draw-undo" id="btn-words-undo">↩️ Undo</button>
           <button class="btn-tool-action btn-draw-clear" id="btn-words-clear">🧹 Clear</button>
         </div>

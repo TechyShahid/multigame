@@ -284,9 +284,14 @@ window.App = (function () {
       btnVoice.addEventListener('click', () => {
         if (window.AudioSystem) {
           window.AudioSystem.voiceEnabled = !window.AudioSystem.voiceEnabled;
-          btnVoice.classList.toggle('active', window.AudioSystem.voiceEnabled);
-          btnVoice.textContent = window.AudioSystem.voiceEnabled ? '🗣️ Voice' : '🔇 Mute';
-          if (window.AudioSystem.voiceEnabled) {
+          const isEnabled = window.AudioSystem.voiceEnabled;
+          btnVoice.classList.toggle('active', isEnabled);
+          const icon = btnVoice.querySelector('.btn-icon');
+          const txt = btnVoice.querySelector('.btn-text');
+          if (icon) icon.textContent = isEnabled ? '🗣️' : '🔇';
+          if (txt) txt.textContent = isEnabled ? 'Voice' : 'Mute';
+
+          if (isEnabled) {
             window.AudioSystem.speak('Voice is on!');
           } else {
             window.AudioSystem.stopSpeaking();
@@ -299,9 +304,14 @@ window.App = (function () {
       btnSound.addEventListener('click', () => {
         if (window.AudioSystem) {
           window.AudioSystem.soundEnabled = !window.AudioSystem.soundEnabled;
-          btnSound.classList.toggle('active', window.AudioSystem.soundEnabled);
-          btnSound.textContent = window.AudioSystem.soundEnabled ? '🔔 Sounds' : '🔕 Off';
-          if (window.AudioSystem.soundEnabled) {
+          const isEnabled = window.AudioSystem.soundEnabled;
+          btnSound.classList.toggle('active', isEnabled);
+          const icon = btnSound.querySelector('.btn-icon');
+          const txt = btnSound.querySelector('.btn-text');
+          if (icon) icon.textContent = isEnabled ? '🔔' : '🔕';
+          if (txt) txt.textContent = isEnabled ? 'Sounds' : 'Off';
+
+          if (isEnabled) {
             window.AudioSystem.playClick();
           }
         }
@@ -512,6 +522,29 @@ window.App = (function () {
         const idx = window.GameData.alphabets.findIndex(a => a.letter === current);
         const prevLetter = window.GameData.alphabets[(idx - 1 + window.GameData.alphabets.length) % window.GameData.alphabets.length].letter;
         window.DrawingEngine.loadLetter(prevLetter);
+      });
+    }
+
+    // Next / Prev Word buttons & Next Step in 3-Letter Words Screen
+    const btnWordsPrev = document.getElementById('btn-words-prev');
+    const btnWordsNext = document.getElementById('btn-words-next');
+    const btnWordsNextStep = document.getElementById('btn-words-next-step');
+
+    if (btnWordsPrev) {
+      btnWordsPrev.addEventListener('click', () => {
+        if (window.GamesManager) window.GamesManager.WordDrawer.prev();
+      });
+    }
+
+    if (btnWordsNext) {
+      btnWordsNext.addEventListener('click', () => {
+        if (window.GamesManager) window.GamesManager.WordDrawer.next();
+      });
+    }
+
+    if (btnWordsNextStep) {
+      btnWordsNextStep.addEventListener('click', () => {
+        if (window.DrawingEngine) window.DrawingEngine.advanceWordLetter();
       });
     }
   }

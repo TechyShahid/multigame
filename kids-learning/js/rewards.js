@@ -105,6 +105,8 @@ window.RewardSystem = (function () {
     showBadgeNotification(badgeDef);
   }
 
+  let badgeToastTimeout = null;
+
   function showBadgeNotification(badge) {
     const toast = document.getElementById('badge-toast');
     if (!toast) return;
@@ -112,15 +114,38 @@ window.RewardSystem = (function () {
     const iconEl = document.getElementById('badge-toast-icon');
     const titleEl = document.getElementById('badge-toast-title');
     const descEl = document.getElementById('badge-toast-desc');
+    const closeBtn = document.getElementById('btn-toast-close');
 
     if (iconEl) iconEl.textContent = badge.icon;
-    if (titleEl) titleEl.textContent = `Badge Unlocked: ${badge.title}!`;
+    if (titleEl) titleEl.textContent = `${badge.title}!`;
     if (descEl) descEl.textContent = badge.desc;
 
-    toast.classList.add('visible');
-    setTimeout(() => {
+    if (badgeToastTimeout) {
+      clearTimeout(badgeToastTimeout);
+      badgeToastTimeout = null;
+    }
+
+    const dismissToast = () => {
+      if (badgeToastTimeout) {
+        clearTimeout(badgeToastTimeout);
+        badgeToastTimeout = null;
+      }
       toast.classList.remove('visible');
-    }, 4500);
+    };
+
+    // Tap toast or close button to dismiss immediately
+    toast.onclick = dismissToast;
+    if (closeBtn) closeBtn.onclick = (e) => {
+      e.stopPropagation();
+      dismissToast();
+    };
+
+    toast.classList.add('visible');
+
+    // Auto-dismiss after 2.4 seconds so it never stays stuck
+    badgeToastTimeout = setTimeout(() => {
+      dismissToast();
+    }, 2400);
 
     if (window.Buddy) {
       window.Buddy.celebrate(`Hooray! You earned the ${badge.title} badge! 🏆`);

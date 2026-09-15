@@ -135,8 +135,30 @@ window.GamesManager = (function () {
       if (titleEl) titleEl.textContent = item.word;
       if (emojiEl) emojiEl.textContent = item.emoji;
 
+      // Update active state in chip list
+      const list = document.getElementById('words-quick-list');
+      if (list) {
+        list.querySelectorAll('.word-chip-btn').forEach(b => {
+          if (b.getAttribute('data-word') === item.word) {
+            b.classList.add('active');
+            b.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          } else {
+            b.classList.remove('active');
+          }
+        });
+      }
+
       if (window.DrawingEngine) {
         window.DrawingEngine.loadWord(item.word);
+      }
+    },
+
+    goToWord(word) {
+      const idx = window.GameData.threeLetterWords.findIndex(w => w.word === word);
+      if (idx !== -1) {
+        this.currentWordIndex = idx;
+        this.loadCurrentWord();
+        if (window.AudioSystem) window.AudioSystem.playClick();
       }
     },
 
@@ -166,13 +188,7 @@ window.GamesManager = (function () {
       list.querySelectorAll('.word-chip-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const target = btn.getAttribute('data-word');
-          const idx = window.GameData.threeLetterWords.findIndex(w => w.word === target);
-          if (idx !== -1) {
-            this.currentWordIndex = idx;
-            this.loadCurrentWord();
-            list.querySelectorAll('.word-chip-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-          }
+          this.goToWord(target);
         });
       });
     }

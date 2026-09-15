@@ -46,12 +46,12 @@ window.DrawingEngine = (function () {
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    const width = rect.width || 600;
-    const height = rect.height || 420;
+    const width = Math.max(300, rect.width || 600);
+    const height = Math.max(200, rect.height || 420);
 
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    ctx.scale(dpr, dpr);
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
   }
@@ -155,24 +155,56 @@ window.DrawingEngine = (function () {
     ctx.clearRect(0, 0, w, h);
 
     ctx.save();
+
+    // 1. Draw preschool handwriting guidelines (top, dashed mid, baseline)
+    const midY = h / 2 + 10;
+    const lineSpacing = Math.min(w * 0.22, h * 0.28);
+    const topY = midY - lineSpacing;
+    const bottomY = midY + lineSpacing;
+
+    // Top guide line
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(20, topY);
+    ctx.lineTo(w - 20, topY);
+    ctx.stroke();
+
+    // Midline (dashed)
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.25)';
+    ctx.setLineDash([8, 8]);
+    ctx.beginPath();
+    ctx.moveTo(20, midY);
+    ctx.lineTo(w - 20, midY);
+    ctx.stroke();
+
+    // Bottom guideline
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(20, bottomY);
+    ctx.lineTo(w - 20, bottomY);
+    ctx.stroke();
+
+    // 2. Draw bold, kid-friendly letter outline
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    const fontSize = textToDraw.length > 1 ? Math.min(w * 0.28, 140) : Math.min(w * 0.55, h * 0.65);
+    const fontSize = textToDraw.length > 1 ? Math.min(w * 0.28, 140) : Math.min(w * 0.52, h * 0.65);
     ctx.font = `900 ${fontSize}px "Fredoka", "Quicksand", sans-serif`;
 
     const cx = w / 2;
-    const cy = h / 2 + 10;
+    const cy = midY;
 
-    // Dotted stroke outline
-    ctx.strokeStyle = 'rgba(180, 195, 220, 0.45)';
+    // Inner pleasant soft tint fill
+    ctx.fillStyle = 'rgba(224, 231, 255, 0.55)';
+    ctx.fillText(textToDraw, cx, cy);
+
+    // High contrast dotted outline
+    ctx.strokeStyle = 'rgba(79, 70, 229, 0.75)';
     ctx.lineWidth = 14;
     ctx.setLineDash([12, 14]);
     ctx.strokeText(textToDraw, cx, cy);
-
-    // Inner subtle fill
-    ctx.fillStyle = 'rgba(235, 243, 255, 0.4)';
-    ctx.fillText(textToDraw, cx, cy);
 
     ctx.restore();
   }
@@ -250,8 +282,23 @@ window.DrawingEngine = (function () {
   function evaluateTracingProgress() {
     if (hasCompletedCurrent || guidePoints.length === 0) return;
 
+    const currentLetter = (currentTargetType === 'letter'
+      ? currentTargetLetter
+      : (currentTargetWord && currentTargetWord[currentWordLetterIndex]) || ''
+    ).toUpperCase();
+
+    // Multi-stroke letters that require at least 2 distinct strokes to be legitimately complete
+    // (e.g. 'X' needs both diagonal lines, 'T' needs bar and stem, 'F' needs stem and bars, etc.)
+    const multiStrokeLetters = ['X', 'H', 'F', 'T', 'E', 'K', 'A'];
+    const minStrokesNeeded = multiStrokeLetters.includes(currentLetter) ? 2 : 1;
+
     const coverage = (hitPoints.size / guidePoints.length) * 100;
-    if (coverage >= 55) {
+
+    // Must reach at least 70% total letter coverage,
+    // AND multi-stroke letters must have at least 2 strokes (unless coverage >= 88% from one continuous stroke)
+    const hasEnoughStrokes = strokesHistory.length >= minStrokesNeeded || coverage >= 88;
+
+    if (coverage >= 70 && hasEnoughStrokes) {
       hasCompletedCurrent = true;
       triggerSuccessCelebration();
     }
@@ -413,14 +460,36 @@ window.DrawingEngine = (function () {
     if (subTitle && wordObj) {
       subTitle.innerHTML = wordObj.letters.map((l, i) => {
         const cls = i === index ? 'active-letter' : (i < index ? 'completed-letter' : '');
-        return `<span class="word-step-pill ${cls}">${l}</span>`;
+        return `<button class="word-step-pill ${cls}" data-letter-idx="${i}" title="Trace ${l}">${l}</button>`;
       }).join('');
+
+      subTitle.querySelectorAll('.word-step-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          const ltrIdx = parseInt(pill.getAttribute('data-letter-idx'), 10);
+          if (!isNaN(ltrIdx)) {
+            loadWordLetter(currentTargetWord, ltrIdx);
+          }
+        });
+      });
     }
 
     if (window.AudioSystem) {
       window.AudioSystem.speak(`Trace ${letter} for ${word}`);
     }
     startGuideHandAnimation('words-guide-hand');
+  }
+
+  function advanceWordLetter() {
+    if (currentTargetType !== 'word') return;
+    const wordObj = window.GameData.threeLetterWords.find(w => w.word === currentTargetWord);
+    if (!wordObj) return;
+
+    if (currentWordLetterIndex + 1 < wordObj.letters.length) {
+      if (window.AudioSystem) window.AudioSystem.playCorrect();
+      loadWordLetter(currentTargetWord, currentWordLetterIndex + 1);
+    } else {
+      assembleTracedWord(wordObj);
+    }
   }
 
   function startGuideHandAnimation(handId) {
@@ -500,11 +569,14 @@ window.DrawingEngine = (function () {
     setCanvas,
     loadLetter,
     loadWord,
+    loadWordLetter,
+    advanceWordLetter,
     clearCanvas,
     undoLastStroke,
     setColor,
     setSize,
     get currentTargetLetter() { return currentTargetLetter; },
-    get currentTargetWord() { return currentTargetWord; }
+    get currentTargetWord() { return currentTargetWord; },
+    get currentWordLetterIndex() { return currentWordLetterIndex; }
   };
 })();
