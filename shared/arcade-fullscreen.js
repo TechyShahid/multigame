@@ -13,7 +13,7 @@
     window.location.pathname.endsWith('/multigame/') ||
     window.location.pathname.endsWith('/multigame/index.html') ||
     window.location.pathname === '/' ||
-    window.location.pathname.endsWith('/index.html') && !window.location.pathname.includes('/candy-crush/') && !window.location.pathname.includes('/math-olympiad/') && !window.location.pathname.includes('/pong/') && !window.location.pathname.includes('/snake/') && !window.location.pathname.includes('/sudoku/');
+    window.location.pathname.endsWith('/index.html') && !window.location.pathname.includes('/candy-crush/') && !window.location.pathname.includes('/math-olympiad/') && !window.location.pathname.includes('/pong/') && !window.location.pathname.includes('/snake/') && !window.location.pathname.includes('/sudoku/') && !window.location.pathname.includes('/kids-learning/');
 
   /* -------------------------------------------------------------
      PORTAL MODE: Default browser behavior restored

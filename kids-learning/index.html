@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Kids Learning Adventure — Colorful, voice-enabled preschool educational game for children aged 3–6 years." />
+  <title>Kids Learning Adventure 🌈 Learn • Play • Draw • Discover!</title>
+
+  <!-- Google Fonts: Fredoka & Quicksand -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../shared/arcade-fullscreen.css" onerror="this.remove()" />
+</head>
+<body>
+
+  <!-- Sky Decoration: Floating Clouds -->
+  <div class="sky-bg-decoration">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+  </div>
+
+  <!-- Confetti Canvas Overlay -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Badge Toast Notification -->
+  <div id="badge-toast" class="badge-toast">
+    <span id="badge-toast-icon" class="badge-toast-icon">🏆</span>
+    <div>
+      <h4 id="badge-toast-title">Badge Unlocked!</h4>
+      <p id="badge-toast-desc">Great job on your learning adventure!</p>
+    </div>
+  </div>
+
+  <!-- Global Header -->
+  <header id="global-header" class="global-header" style="display:none;">
+    <div class="header-left">
+      <a href="../" class="header-btn btn-arcade-exit" id="btn-arcade-exit" title="Exit to Arcade">
+        <span>🎮</span>
+        <span>Arcade</span>
+      </a>
+      <button class="header-btn btn-nav-home" id="btn-header-home" title="Go to Home Screen">
+        <span>🏠</span>
+        <span>Home</span>
+      </button>
+      <button class="header-btn btn-nav-back" id="btn-header-back" title="Go Back">
+        <span>⬅️</span>
+        <span>Back</span>
+      </button>
+    </div>
+
+    <div class="header-right">
+      <div class="header-star-chip" id="header-star-chip" title="My Rewards & Stars">
+        <span>⭐</span>
+        <span class="stat-star-count">0</span>
+      </div>
+      <button class="btn-toggle-audio active" id="btn-toggle-voice" title="Toggle Voice Narration">🗣️ Voice</button>
+      <button class="btn-toggle-audio" id="btn-choose-voice" title="Choose Friendly Voice">🎙️ Voices</button>
+      <button class="btn-toggle-audio active" id="btn-toggle-sound" title="Toggle Sound FX">🔔 Sounds</button>
+      <button class="header-btn btn-parent-zone" id="btn-open-parent-zone" title="Parent Zone">👨‍👩‍👧 Parents</button>
+    </div>
+  </header>
+
+  <!-- Mascot "Buddy" Widget -->
+  <aside class="mascot-container" id="mascot-container">
+    <div class="mascot-bubble" id="mascot-bubble">Hi! Let's learn and play! 🌈</div>
+    <div class="mascot-avatar" id="mascot-buddy" title="Buddy the Mascot">
+      <svg class="buddy-svg" viewBox="0 0 100 100">
+        <!-- Ears -->
+        <circle cx="22" cy="24" r="14" fill="#FB5607" />
+        <circle cx="22" cy="24" r="8" fill="#FFBE0B" />
+        <circle cx="78" cy="24" r="14" fill="#FB5607" />
+        <circle cx="78" cy="24" r="8" fill="#FFBE0B" />
+        <!-- Head -->
+        <circle cx="50" cy="54" r="38" fill="#FFBE0B" />
+        <!-- Cheeks -->
+        <circle cx="28" cy="62" r="7" fill="#FF006E" opacity="0.4" />
+        <circle cx="72" cy="62" r="7" fill="#FF006E" opacity="0.4" />
+        <!-- Eyes -->
+        <circle cx="36" cy="48" r="5" fill="#1E293B" />
+        <circle cx="38" cy="46" r="1.8" fill="#ffffff" />
+        <circle cx="64" cy="48" r="5" fill="#1E293B" />
+        <circle cx="66" cy="46" r="1.8" fill="#ffffff" />
+        <!-- Cute Nose & Smile -->
+        <ellipse cx="50" cy="58" rx="5" ry="4" fill="#FB5607" />
+        <path d="M 44 64 Q 50 72 56 64" stroke="#FB5607" stroke-width="3" fill="none" stroke-linecap="round" />
+        <!-- Tongue -->
+        <path d="M 47 67 Q 50 74 53 67 Z" fill="#FF006E" />
+      </svg>
+    </div>
+  </aside>
+
+  <!-- =============================================================
+       SCREENS
+       ============================================================= -->
+
+  <!-- 1. SPLASH SCREEN -->
+  <section class="app-screen" id="screen-splash">
+    <div class="splash-logo-card">
+      <div class="splash-mascot-img">
+        <svg viewBox="0 0 100 100" style="width:100%;height:100%;">
+          <circle cx="22" cy="24" r="14" fill="#FB5607" />
+          <circle cx="78" cy="24" r="14" fill="#FB5607" />
+          <circle cx="50" cy="54" r="38" fill="#FFBE0B" />
+          <circle cx="28" cy="62" r="7" fill="#FF006E" opacity="0.4" />
+          <circle cx="72" cy="62" r="7" fill="#FF006E" opacity="0.4" />
+          <circle cx="36" cy="48" r="5" fill="#1E293B" />
+          <circle cx="38" cy="46" r="1.8" fill="#ffffff" />
+          <circle cx="64" cy="48" r="5" fill="#1E293B" />
+          <circle cx="66" cy="46" r="1.8" fill="#ffffff" />
+          <ellipse cx="50" cy="58" rx="5" ry="4" fill="#FB5607" />
+          <path d="M 44 64 Q 50 72 56 64" stroke="#FB5607" stroke-width="3" fill="none" stroke-linecap="round" />
+        </svg>
+      </div>
+      <h1 class="splash-title">🌈 Kids Learning Adventure</h1>
+      <p class="splash-subtitle">Learn • Play • Draw • Discover!</p>
+      <button class="btn-big-play" id="btn-splash-start">
+        <span>🚀</span>
+        <span>Start Playing!</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 2. HOME SCREEN -->
+  <section class="app-screen" id="screen-home">
+    <div class="home-hero">
+      <h1 class="home-title">🌈 Kids Learning Adventure</h1>
+      <p class="home-subtitle">Learn • Play • Draw • Discover!</p>
+    </div>
+
+    <!-- Daily Challenge Banner -->
+    <div class="daily-challenge-banner" id="btn-daily-challenge">
+      <div class="daily-banner-info">
+        <h3>🌟 Today's 5-Mission Challenge</h3>
+        <p>Complete 5 fun preschool activities and win +10 Stars!</p>
+      </div>
+      <button class="btn-play-daily">Play Now ⭐</button>
+    </div>
+
+    <!-- 13 Fun Categories Grid -->
+    <div class="category-grid">
+      <!-- 1. Learn ABC -->
+      <div class="category-card card-abc" data-route="screen-learn-abc">
+        <div class="category-icon-wrap">✏️</div>
+        <h3 class="category-name">Learn ABC</h3>
+        <p class="category-desc">A–Z with pictures & voice</p>
+      </div>
+
+      <!-- 2. Draw ABC -->
+      <div class="category-card card-draw" data-route="screen-draw-abc">
+        <div class="category-icon-wrap">🖍️</div>
+        <h3 class="category-name">Draw ABC</h3>
+        <p class="category-desc">Trace letters on canvas</p>
+      </div>
+
+      <!-- 3. 3 Letter Words -->
+      <div class="category-card card-words" data-route="screen-words">
+        <div class="category-icon-wrap">🔤</div>
+        <h3 class="category-name">3 Letter Words</h3>
+        <p class="category-desc">CAT, DOG, SUN & trace</p>
+      </div>
+
+      <!-- 4. Animals -->
+      <div class="category-card card-animals" data-route="screen-quiz" data-quiz-category="animals">
+        <div class="category-icon-wrap">🐶</div>
+        <h3 class="category-name">Animals</h3>
+        <p class="category-desc">Identify 15+ cute animals</p>
+      </div>
+
+      <!-- 5. Animal Sounds -->
+      <div class="category-card card-sounds" data-route="screen-animal-sounds">
+        <div class="category-icon-wrap">🔊</div>
+        <h3 class="category-name">Animal Sounds</h3>
+        <p class="category-desc">Listen and guess who made it</p>
+      </div>
+
+      <!-- 6. Fruits -->
+      <div class="category-card card-fruits" data-route="screen-quiz" data-quiz-category="fruits">
+        <div class="category-icon-wrap">🍎</div>
+        <h3 class="category-name">Fruits</h3>
+        <p class="category-desc">Yummy apples, bananas, mangoes</p>
+      </div>
+
+      <!-- 7. Vegetables -->
+      <div class="category-card card-veggies" data-route="screen-quiz" data-quiz-category="vegetables">
+        <div class="category-icon-wrap">🥕</div>
+        <h3 class="category-name">Vegetables</h3>
+        <p class="category-desc">Healthy carrots, corn, peas</p>
+      </div>
+
+      <!-- 8. Colors -->
+      <div class="category-card card-colors" data-route="screen-quiz" data-quiz-category="colors">
+        <div class="category-icon-wrap">🎨</div>
+        <h3 class="category-name">Colors</h3>
+        <p class="category-desc">Red, Blue, Yellow, Green & more</p>
+      </div>
+
+      <!-- 9. Numbers -->
+      <div class="category-card card-numbers" data-route="screen-numbers">
+        <div class="category-icon-wrap">🔢</div>
+        <h3 class="category-name">Numbers</h3>
+        <p class="category-desc">Count stars & solve 1–20</p>
+      </div>
+
+      <!-- 10. Shapes -->
+      <div class="category-card card-shapes" data-route="screen-quiz" data-quiz-category="shapes">
+        <div class="category-icon-wrap">🔺</div>
+        <h3 class="category-name">Shapes</h3>
+        <p class="category-desc">Circle, Square, Star, Heart</p>
+      </div>
+
+      <!-- 11. General Knowledge -->
+      <div class="category-card card-gk" data-route="screen-quiz" data-quiz-category="gk">
+        <div class="category-icon-wrap">🧠</div>
+        <h3 class="category-name">General Knowledge</h3>
+        <p class="category-desc">Fun questions for little minds</p>
+      </div>
+
+      <!-- 12. Match & Connect -->
+      <div class="category-card card-match" data-route="screen-matching">
+        <div class="category-icon-wrap">🧩</div>
+        <h3 class="category-name">Match Pairs</h3>
+        <p class="category-desc">Connect pictures with words</p>
+      </div>
+
+      <!-- 13. Memory Flip -->
+      <div class="category-card card-memory" data-route="screen-memory">
+        <div class="category-icon-wrap">🃏</div>
+        <h3 class="category-name">Memory Game</h3>
+        <p class="category-desc">Flip cards & find matching pairs</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. LEARN ABC FLASHCARD SCREEN -->
+  <section class="app-screen" id="screen-learn-abc">
+    <div class="learn-abc-container">
+      <div class="flashcard">
+        <div class="flashcard-top">
+          <span class="flashcard-counter" id="abc-card-counter">1 / 26</span>
+          <button class="btn-flashcard-picker" id="btn-abc-open-picker">🔤 All Letters</button>
+        </div>
+        <div class="flashcard-letter" id="abc-card-letter">A</div>
+        <div class="flashcard-emoji" id="abc-card-emoji">🍎</div>
+        <h2 class="flashcard-word" id="abc-card-word">Apple</h2>
+        <p class="flashcard-phonics" id="abc-card-phonics">A is for Apple! Crunchy sweet apple!</p>
+
+        <div class="flashcard-nav">
+          <button class="btn-circle-nav" id="btn-abc-prev" title="Previous Letter">⬅️</button>
+          <button class="btn-speak-action" id="btn-abc-speak">
+            <span>🔊</span>
+            <span>Listen</span>
+          </button>
+          <button class="btn-circle-nav" id="btn-abc-next" title="Next Letter">➡️</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. DRAW / TRACE ABC SCREEN -->
+  <section class="app-screen" id="screen-draw-abc">
+    <div class="draw-screen-wrap">
+      <div class="draw-top-bar">
+        <div class="draw-title-area">
+          <button class="btn-circle-nav" id="btn-draw-prev-letter" style="width:46px;height:46px;font-size:1.2rem;">⬅️</button>
+          <span class="draw-title-text">Trace the Letter</span>
+          <button class="btn-circle-nav" id="btn-draw-next-letter" style="width:46px;height:46px;font-size:1.2rem;">➡️</button>
+        </div>
+        <div class="draw-progress-bar">
+          <div class="draw-progress-fill" id="draw-progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="canvas-tablet-container">
+        <canvas id="draw-letter-canvas"></canvas>
+        <div class="tracing-guide-hand" id="tracing-guide-hand">👉</div>
+      </div>
+
+      <div class="draw-toolbar">
+        <div class="draw-palette">
+          <button class="draw-color-btn btn-rainbow active" data-color="rainbow" title="Magic Rainbow"></button>
+          <button class="draw-color-btn" data-color="#FF4D6D" style="background:#FF4D6D;" title="Cherry Red"></button>
+          <button class="draw-color-btn" data-color="#3A86FF" style="background:#3A86FF;" title="Sky Blue"></button>
+          <button class="draw-color-btn" data-color="#06D6A0" style="background:#06D6A0;" title="Mint Green"></button>
+          <button class="draw-color-btn" data-color="#FFB703" style="background:#FFB703;" title="Sun Yellow"></button>
+          <button class="draw-color-btn" data-color="#8338EC" style="background:#8338EC;" title="Violet"></button>
+        </div>
+        <div class="draw-actions">
+          <button class="btn-tool-action btn-draw-undo" id="btn-draw-undo">↩️ Undo</button>
+          <button class="btn-tool-action btn-draw-clear" id="btn-draw-clear">🧹 Clear</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. DRAW 3-LETTER WORDS SCREEN -->
+  <section class="app-screen" id="screen-words">
+    <div class="draw-screen-wrap">
+      <div class="draw-top-bar">
+        <div class="draw-word-header">
+          <span class="draw-word-emoji" id="draw-word-emoji">🐱</span>
+          <span class="draw-title-text" id="draw-word-title">CAT</span>
+        </div>
+        <div id="draw-word-indicator"></div>
+        <div class="draw-progress-bar" style="max-width:140px;">
+          <div class="draw-progress-fill" id="draw-words-progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="words-quick-list" id="words-quick-list"></div>
+
+      <div class="canvas-tablet-container" style="margin-top:8px;">
+        <canvas id="draw-words-canvas"></canvas>
+        <div class="tracing-guide-hand" id="words-guide-hand">👉</div>
+      </div>
+
+      <div class="draw-toolbar">
+        <div class="draw-palette">
+          <button class="draw-color-btn btn-rainbow active" data-color="rainbow" title="Magic Rainbow"></button>
+          <button class="draw-color-btn" data-color="#FF4D6D" style="background:#FF4D6D;" title="Cherry Red"></button>
+          <button class="draw-color-btn" data-color="#3A86FF" style="background:#3A86FF;" title="Sky Blue"></button>
+          <button class="draw-color-btn" data-color="#06D6A0" style="background:#06D6A0;" title="Mint Green"></button>
+          <button class="draw-color-btn" data-color="#FFB703" style="background:#FFB703;" title="Sun Yellow"></button>
+          <button class="draw-color-btn" data-color="#8338EC" style="background:#8338EC;" title="Violet"></button>
+        </div>
+        <div class="draw-actions">
+          <button class="btn-tool-action btn-draw-undo" id="btn-words-undo">↩️ Undo</button>
+          <button class="btn-tool-action btn-draw-clear" id="btn-words-clear">🧹 Clear</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. MULTIPLE CHOICE QUIZ SCREEN (Animals, Fruits, Veggies, Colors, Shapes, GK) -->
+  <section class="app-screen" id="screen-quiz">
+    <div class="quiz-container">
+      <div class="quiz-card">
+        <h2 class="quiz-title" id="quiz-title">Who is this?</h2>
+        <p class="quiz-prompt" id="quiz-prompt">What animal is this?</p>
+        <div class="quiz-display-emoji" id="quiz-display-emoji">🐘</div>
+        <div class="quiz-options-grid" id="quiz-options-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. ANIMAL SOUNDS SCREEN -->
+  <section class="app-screen" id="screen-animal-sounds">
+    <div class="sound-game-card">
+      <h2 class="quiz-title">🔊 Guess the Animal!</h2>
+      <p class="quiz-prompt">Tap the button to hear the sound, then choose the animal!</p>
+      <button class="btn-listen-sound" id="btn-play-animal-sound" title="Play Animal Sound">
+        <span>🔊</span>
+      </button>
+      <div class="sound-options-grid" id="sound-options-grid"></div>
+    </div>
+  </section>
+
+  <!-- 8. NUMBERS & COUNTING SCREEN -->
+  <section class="app-screen" id="screen-numbers">
+    <div class="numbers-card">
+      <h2 class="quiz-title">🔢 Numbers Adventure</h2>
+      <p class="quiz-prompt" id="numbers-prompt">How many can you count?</p>
+      <div class="numbers-display-area" id="numbers-display-area"></div>
+      <div class="numbers-options-grid" id="numbers-options-grid"></div>
+    </div>
+  </section>
+
+  <!-- 9. MATCHING & CONNECT SCREEN -->
+  <section class="app-screen" id="screen-matching">
+    <div style="text-align:center;margin-bottom:18px;">
+      <h2 class="quiz-title">🧩 Match & Connect</h2>
+      <p class="quiz-prompt">Tap an item on the left, then find its matching pair on the right!</p>
+    </div>
+    <div class="matching-board">
+      <div class="match-column" id="match-left-col"></div>
+      <div class="match-column" id="match-right-col"></div>
+    </div>
+  </section>
+
+  <!-- 10. MEMORY FLIP CARDS SCREEN -->
+  <section class="app-screen" id="screen-memory">
+    <div style="text-align:center;margin-bottom:18px;">
+      <h2 class="quiz-title">🃏 Memory Match</h2>
+      <p class="quiz-prompt">Flip cards and find the matching pairs!</p>
+    </div>
+    <div class="memory-board-wrap">
+      <div class="memory-cards-grid" id="memory-cards-grid"></div>
+    </div>
+  </section>
+
+  <!-- 11. TODAY'S DAILY CHALLENGE SCREEN -->
+  <section class="app-screen" id="screen-daily">
+    <div style="text-align:center;margin-bottom:18px;">
+      <h2 class="quiz-title">🌟 Today's 5-Mission Challenge</h2>
+      <p class="quiz-prompt" id="daily-challenge-step-text">Mission 1 of 5</p>
+      <div class="draw-progress-bar" style="margin:10px auto;max-width:320px;">
+        <div class="draw-progress-fill" id="daily-challenge-progress-fill" style="width:20%;"></div>
+      </div>
+    </div>
+    <div class="quiz-container" id="daily-interactive-container">
+      <div class="quiz-card">
+        <h2 class="quiz-title" id="daily-step-title">Mission</h2>
+        <p class="quiz-prompt" id="daily-step-prompt">Solve this activity!</p>
+        <div class="quiz-display-emoji" id="daily-step-emoji">⭐</div>
+        <div class="quiz-options-grid" id="daily-step-options"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================================
+       MODALS
+       ============================================================= -->
+
+  <!-- Modal: Rewards & Badges -->
+  <div class="app-modal" id="modal-rewards">
+    <div class="modal-content-card">
+      <button class="btn-modal-close" id="btn-close-rewards">✕</button>
+      <h2 class="quiz-title">⭐ My Rewards & Badges</h2>
+      <p class="quiz-prompt">You have earned <strong class="stat-star-count" style="color:#B45309;font-size:1.6rem;">0</strong> Stars!</p>
+      <div class="badges-grid" id="rewards-badges-grid"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Parent Gate (Math Question) -->
+  <div class="app-modal" id="modal-parent-gate">
+    <div class="modal-content-card">
+      <button class="btn-modal-close" id="btn-close-parent-gate">✕</button>
+      <h2 class="quiz-title">👨‍👩‍👧 Parent Zone Gate</h2>
+      <p class="quiz-prompt" id="parent-gate-question">Parents Only: What is 4 + 4?</p>
+      <div class="gate-options-row" id="parent-gate-options"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Parent Zone Dashboard -->
+  <div class="app-modal" id="modal-parent-zone">
+    <div class="modal-content-card">
+      <button class="btn-modal-close" id="btn-close-parent-zone">✕</button>
+      <h2 class="quiz-title">👨‍👩‍👧 Parent Learning Dashboard</h2>
+      <p class="quiz-prompt">Track your child's educational progress</p>
+      <div class="parent-stats-list" id="parent-zone-stats-list"></div>
+      <button class="btn-reset-danger" id="btn-parent-reset-progress">🗑️ Reset Learning Progress</button>
+    </div>
+  </div>
+
+  <!-- Modal: Tracing Success -->
+  <div class="app-modal" id="modal-tracing-success">
+    <div class="modal-content-card">
+      <div style="font-size:5rem;margin-bottom:8px;">🌟 ⭐ 🌟</div>
+      <h2 class="quiz-title" id="tracing-modal-title">Great Tracing!</h2>
+      <p class="quiz-prompt" id="tracing-modal-sub">You earned 3 Stars!</p>
+      <button class="btn-big-play" id="btn-tracing-next" style="margin-top:14px;padding:14px 36px;font-size:1.3rem;">Next Letter ➡️</button>
+    </div>
+  </div>
+
+  <!-- Modal: Word Assembly Animation (C + A + T -> CAT) -->
+  <div class="app-modal" id="modal-word-assembly">
+    <div class="modal-content-card">
+      <div id="assembly-emoji" style="font-size:5.5rem;">🐱</div>
+      <div class="assembly-letters-row" id="assembly-letters"></div>
+      <div class="assembly-result-word" id="assembly-result">CAT</div>
+      <p class="quiz-prompt" style="margin-top:10px;">C - A - T makes CAT!</p>
+      <button class="btn-big-play" id="btn-close-word-assembly" style="margin-top:16px;padding:14px 36px;font-size:1.3rem;">Superstar! Next Word ➡️</button>
+    </div>
+  </div>
+
+  <!-- Modal: Daily Challenge Completed -->
+  <div class="app-modal" id="modal-daily-complete">
+    <div class="modal-content-card">
+      <div style="font-size:5.5rem;">🎉 🏆 🎉</div>
+      <h2 class="quiz-title">Today's Challenge Complete!</h2>
+      <p class="quiz-prompt">Hooray! You finished all 5 missions and won <strong style="color:#B45309;font-size:1.5rem;">+10 Stars</strong>!</p>
+      <button class="btn-big-play" id="btn-close-daily-modal" style="margin-top:16px;padding:14px 36px;font-size:1.3rem;">Back to Home 🏠</button>
+    </div>
+  </div>
+
+  <!-- Modal: All Alphabet Letters Picker -->
+  <div class="app-modal" id="modal-abc-picker">
+    <div class="modal-content-card" style="max-width:680px;">
+      <button class="btn-modal-close" id="btn-close-abc-picker">✕</button>
+      <h2 class="quiz-title">Choose Any Letter</h2>
+      <div class="abc-picker-grid" id="abc-picker-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:10px;margin-top:16px;"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Choose Cheerful Voice -->
+  <div class="app-modal" id="modal-voice-picker">
+    <div class="modal-content-card" style="max-width:540px;">
+      <button class="btn-modal-close" id="btn-close-voice-picker">✕</button>
+      <div style="font-size:3.5rem;margin-bottom:6px;">🎙️ ✨</div>
+      <h2 class="quiz-title">Choose Cheerful Voice</h2>
+      <div id="voice-picker-list" class="voice-picker-list" style="display:flex;flex-direction:column;gap:12px;margin-top:16px;max-height:280px;overflow-y:auto;padding:4px;"></div>
+
+      <!-- Speaking Pace Controls -->
+      <div style="margin-top:16px;padding:12px 16px;background:#F8FAFC;border-radius:18px;border:2px dashed #CBD5E1;text-align:center;">
+        <div style="font-weight:800;font-size:0.95rem;color:#475569;margin-bottom:8px;">🗣️ Speaking Pace:</div>
+        <div id="voice-speed-buttons" style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
+          <button class="btn-tool-action btn-speed-choice" data-speed="0.75" style="padding:8px 14px;font-size:0.88rem;background:#E2E8F0;color:#334155;">🐢 Very Slow</button>
+          <button class="btn-tool-action btn-speed-choice active-speed" data-speed="0.82" style="padding:8px 14px;font-size:0.88rem;background:#10B981;color:#ffffff;">🌟 Gentle & Clear</button>
+          <button class="btn-tool-action btn-speed-choice" data-speed="0.94" style="padding:8px 14px;font-size:0.88rem;background:#E2E8F0;color:#334155;">🐰 Normal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================
+       SCRIPTS
+       ============================================================= -->
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/mascot.js"></script>
+  <script src="js/drawing.js"></script>
+  <script src="js/rewards.js"></script>
+  <script src="js/games.js"></script>
+  <script src="js/app.js"></script>
+  <script src="../shared/arcade-fullscreen.js" onerror="this.remove()"></script>
+</body>
+</html>
