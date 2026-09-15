@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2.1" />
   <link rel="stylesheet" href="../shared/arcade-ads.css" />
   <link rel="stylesheet" href="../shared/arcade-fullscreen.css" />
 </head>
@@ -221,7 +221,10 @@
     <div class="game-play-card">
       <div class="question-top">
         <h3 id="game-q-text" class="question-text">How many red apples can you count?</h3>
-        <button id="btn-game-speak" class="btn-speak" title="Read Question Aloud">🔊</button>
+        <div class="question-actions">
+          <button id="btn-game-speak" class="btn-speak" title="Read Question Aloud (Voice Narration)" aria-label="Read question aloud">🗣️</button>
+          <button id="btn-game-mute" class="btn-game-mute" title="Mute Audio (Silence Voice & Sounds)" aria-label="Mute audio">🔊</button>
+        </div>
       </div>
 
       <div id="game-visual-arena" class="visual-arena">
@@ -625,6 +628,6 @@
   <script src="../shared/arcade-fullscreen.js"></script>
 
   <!-- Vanilla App Script -->
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js?v=2.1"></script>
 </body>
 </html>

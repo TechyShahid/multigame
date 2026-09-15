@@ -59,6 +59,9 @@ export function generateDynamicQuestion(grade, preferredCategory) {
       visualData: {
         type: 'emojis',
         items: isLkg ? [emoji.repeat(a), '+', emoji.repeat(b)] : [String(a), '+', String(b)],
+        countA: a,
+        countB: b,
+        emojiA: emoji,
       },
       options: shuffleArray(uniqueOptions),
       correctAnswer: optA,
@@ -97,6 +100,9 @@ export function generateDynamicQuestion(grade, preferredCategory) {
         items: isLkg
           ? [...Array(diff).fill(emoji), ...Array(b).fill('❌')]
           : [String(a), '-', String(b)],
+        countA: a,
+        subtractionCrossCount: b,
+        emojiA: emoji,
       },
       options: shuffleArray(rawOptions),
       correctAnswer: optA,

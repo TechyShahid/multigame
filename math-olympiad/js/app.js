@@ -59,7 +59,11 @@ const modalCertificate = document.getElementById('modal-certificate');
 
 // Initialize
 function init() {
+  audio.setSpeechEnabled(profile.speechEnabled);
+  audio.setSoundEnabled(profile.soundEnabled);
+  audio.setMusicEnabled(profile.musicEnabled);
   updateHeaderStats();
+  updateAudioUI();
   renderHomeScreen();
   bindGlobalEvents();
 }
@@ -100,6 +104,59 @@ function updateHeaderStats() {
   document.getElementById('stat-stars').textContent = profile.stars;
   document.getElementById('stat-gems').textContent = profile.gems;
   document.getElementById('stat-streak').textContent = `${profile.currentStreak}d`;
+}
+
+function updateAudioUI() {
+  const isMuted = !profile.speechEnabled && !profile.soundEnabled;
+  const btnGameMute = document.getElementById('btn-game-mute');
+  if (btnGameMute) {
+    btnGameMute.textContent = isMuted ? '🔇' : '🔊';
+    btnGameMute.title = isMuted ? 'Unmute Audio (Turn Voice & Sounds On)' : 'Mute Audio (Silence Voice & Sounds)';
+    btnGameMute.classList.toggle('muted', isMuted);
+    btnGameMute.setAttribute('aria-label', isMuted ? 'Unmute audio' : 'Mute audio');
+  }
+
+  const btnSpeech = document.getElementById('btn-toggle-speech');
+  if (btnSpeech) {
+    btnSpeech.textContent = profile.speechEnabled ? '🔊' : '🔇';
+    btnSpeech.classList.toggle('active', profile.speechEnabled);
+    btnSpeech.title = profile.speechEnabled ? 'Voice Narration is ON (Click to mute)' : 'Voice Narration is OFF (Click to turn on)';
+  }
+
+  const btnSound = document.getElementById('btn-toggle-sound');
+  if (btnSound) {
+    btnSound.textContent = profile.soundEnabled ? '🔔' : '🔕';
+    btnSound.classList.toggle('active', profile.soundEnabled);
+    btnSound.title = profile.soundEnabled ? 'Sound Effects are ON (Click to mute)' : 'Sound Effects are OFF (Click to turn on)';
+  }
+
+  const btnMusic = document.getElementById('btn-toggle-music');
+  if (btnMusic) {
+    btnMusic.classList.toggle('active', profile.musicEnabled);
+  }
+}
+
+function toggleGameMute() {
+  const willMute = profile.speechEnabled || profile.soundEnabled;
+  if (willMute) {
+    profile.speechEnabled = false;
+    profile.soundEnabled = false;
+    profile.musicEnabled = false;
+    audio.setSpeechEnabled(false);
+    audio.setSoundEnabled(false);
+    audio.setMusicEnabled(false);
+    audio.stopNarration();
+    document.getElementById('game-mascot-msg').textContent = 'Audio muted 🔇 Tap 🔊 anytime to turn it back on!';
+  } else {
+    profile.speechEnabled = true;
+    profile.soundEnabled = true;
+    audio.setSpeechEnabled(true);
+    audio.setSoundEnabled(true);
+    audio.playClick();
+    document.getElementById('game-mascot-msg').textContent = 'Audio turned on! 🔊';
+  }
+  storage.saveProfile(profile);
+  updateAudioUI();
 }
 
 // -------------------------------------------------------------
@@ -244,6 +301,7 @@ function renderCurrentQuestion() {
   isAnswered = false;
   tappedItems = [];
   questionStartTime = Date.now();
+  updateAudioUI();
 
   const q = questions[currentQIndex];
   if (!q) {
@@ -403,6 +461,7 @@ function handleAnswerSelect(selectedAnswer, clickedBtn) {
   document.getElementById('feedback-title').textContent = isCorrect ? 'Awesome Job! ⭐' : "Good try! Let's look carefully 👀";
   document.getElementById('feedback-desc').textContent = q.explanation;
   feedbackBox.style.display = 'flex';
+  feedbackBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
   // Update mascot
   const cheerMsg = isCorrect
@@ -655,7 +714,15 @@ function bindGlobalEvents() {
   const btnHomeExit = document.getElementById('btn-home-exit');
   if (btnHomeExit) btnHomeExit.addEventListener('click', handleArcadeExit);
 
-  // Audio Toggles
+  // Game Mute Button (In-Game Audio Toggle)
+  const btnGameMute = document.getElementById('btn-game-mute');
+  if (btnGameMute) {
+    btnGameMute.addEventListener('click', () => {
+      toggleGameMute();
+    });
+  }
+
+  // Audio Toggles in Header
   const btnSpeech = document.getElementById('btn-toggle-speech');
   const btnSound = document.getElementById('btn-toggle-sound');
   const btnMusic = document.getElementById('btn-toggle-music');
@@ -664,7 +731,7 @@ function bindGlobalEvents() {
     profile.speechEnabled = !profile.speechEnabled;
     storage.saveProfile(profile);
     audio.setSpeechEnabled(profile.speechEnabled);
-    btnSpeech.classList.toggle('active', profile.speechEnabled);
+    updateAudioUI();
     if (profile.speechEnabled) audio.speakText('Voice narration is on!');
   });
 
@@ -672,7 +739,7 @@ function bindGlobalEvents() {
     profile.soundEnabled = !profile.soundEnabled;
     storage.saveProfile(profile);
     audio.setSoundEnabled(profile.soundEnabled);
-    btnSound.classList.toggle('active', profile.soundEnabled);
+    updateAudioUI();
     if (profile.soundEnabled) audio.playClick();
   });
 
@@ -680,7 +747,7 @@ function bindGlobalEvents() {
     profile.musicEnabled = !profile.musicEnabled;
     storage.saveProfile(profile);
     audio.setMusicEnabled(profile.musicEnabled);
-    btnMusic.classList.toggle('active', profile.musicEnabled);
+    updateAudioUI();
   });
 
   // Home Grade Buttons
@@ -718,8 +785,14 @@ function bindGlobalEvents() {
     }
   });
 
-  // Game Read Aloud
+  // Game Read Aloud (Unmutes voice narration if currently muted)
   document.getElementById('btn-game-speak').addEventListener('click', () => {
+    if (!profile.speechEnabled) {
+      profile.speechEnabled = true;
+      storage.saveProfile(profile);
+      audio.setSpeechEnabled(true);
+      updateAudioUI();
+    }
     const q = questions[currentQIndex];
     if (q) audio.speakText(q.narrationText || q.questionText, q);
   });

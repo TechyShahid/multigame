@@ -241,9 +241,46 @@ class SoundService {
     }
   }
 
-  // Friendly names for visual items for a 4-year-old
-  getItemFriendlyName(emoji) {
-    const map = {
+  // Friendly names for visual items for preschool children (handles singular and plural)
+  getItemFriendlyName(emoji, count = 2) {
+    const singleMap = {
+      '🍎': 'sweet apple',
+      '🍌': 'sweet banana',
+      '⭐': 'twinkling star',
+      '🐶': 'playful puppy',
+      '🐱': 'cute kitten',
+      '🚗': 'zoomy car',
+      '🚙': 'blue car',
+      '🎈': 'party balloon',
+      '🌸': 'pretty flower',
+      '🐟': 'little fish',
+      '🐥': 'baby duck',
+      '🧁': 'sweet cupcake',
+      '🍪': 'crunchy cookie',
+      '🍬': 'sweet candy',
+      '🍓': 'sweet strawberry',
+      '🦋': 'fluttering butterfly',
+      '🐝': 'busy bee',
+      '💎': 'shiny diamond',
+      '🐸': 'jumping frog',
+      '⚽': 'soccer ball',
+      '🍦': 'ice cream cone',
+      '☀️': 'sunny sun',
+      '🧸': 'teddy bear',
+      '🍩': 'sweet donut',
+      '🍭': 'lollipop',
+      '🔵': 'blue circle',
+      '🔴': 'red circle',
+      '🟢': 'green circle',
+      '🟡': 'yellow circle',
+      '🔺': 'triangle',
+      '🟦': 'blue square',
+      '🟩': 'green square',
+      '⏹️': 'square',
+      '⭕': 'circle',
+      '💖': 'sweet heart',
+    };
+    const pluralMap = {
       '🍎': 'red apples',
       '🍌': 'sweet bananas',
       '⭐': 'twinkling stars',
@@ -269,8 +306,142 @@ class SoundService {
       '🧸': 'teddy bears',
       '🍩': 'sweet donuts',
       '🍭': 'lollipops',
+      '🔵': 'blue circles',
+      '🔴': 'red circles',
+      '🟢': 'green circles',
+      '🟡': 'yellow circles',
+      '🔺': 'triangles',
+      '🟦': 'blue squares',
+      '🟩': 'green squares',
+      '⏹️': 'squares',
+      '⭕': 'circles',
+      '💖': 'sweet hearts',
     };
-    return map[emoji] || 'fun items';
+    if (count === 1) return singleMap[emoji] || 'item';
+    return pluralMap[emoji] || 'items';
+  }
+
+  extractAdditionDetails(question) {
+    let countA = 0;
+    let countB = 0;
+    let emoji = null;
+
+    if (question.visualData?.countA) countA = question.visualData.countA;
+    if (question.visualData?.countB) countB = question.visualData.countB;
+    if (question.visualData?.emojiA) emoji = question.visualData.emojiA;
+
+    if ((!countA || !countB) && question.visualData?.items && question.visualData.items.length >= 3) {
+      const first = String(question.visualData.items[0] || '');
+      const second = String(question.visualData.items[2] || '');
+
+      const numA = parseInt(first, 10);
+      const numB = parseInt(second, 10);
+      if (!isNaN(numA) && !isNaN(numB) && first.match(/^\d+$/)) {
+        countA = numA;
+        countB = numB;
+      } else {
+        const charsA = Array.from(first.trim());
+        const charsB = Array.from(second.trim());
+        if (charsA.length > 0) {
+          countA = charsA.length;
+          if (!emoji) emoji = charsA[0];
+        }
+        if (charsB.length > 0) {
+          countB = charsB.length;
+          if (!emoji) emoji = charsB[0];
+        }
+      }
+    }
+
+    if (!countA || !countB) {
+      const text = question.questionText || '';
+      const numMatch = text.match(/(\d+)\s*\+\s*(\d+)/);
+      if (numMatch) {
+        countA = parseInt(numMatch[1], 10);
+        countB = parseInt(numMatch[2], 10);
+      } else if (text.includes('+')) {
+        const parts = text.split('+');
+        const charsA = Array.from(parts[0].trim());
+        const charsB = Array.from((parts[1] || '').split('=')[0].trim());
+        if (charsA.length > 0) {
+          countA = charsA.length;
+          if (!emoji) emoji = charsA[0];
+        }
+        if (charsB.length > 0) {
+          countB = charsB.length;
+          if (!emoji) emoji = charsB[0];
+        }
+      }
+    }
+
+    if (!countA) countA = 2;
+    if (!countB) countB = 3;
+    if (!emoji && !question.questionText?.match(/\d+/)) emoji = '🍎';
+
+    const sum = parseInt(question.correctAnswer, 10) || (countA + countB);
+    return { countA, countB, emoji, sum };
+  }
+
+  extractSubtractionDetails(question) {
+    let startCount = 0;
+    let takeAwayCount = 0;
+    let remainingCount = 0;
+    let emoji = null;
+
+    if (question.visualData?.countA) startCount = question.visualData.countA;
+    if (question.visualData?.subtractionCrossCount) takeAwayCount = question.visualData.subtractionCrossCount;
+    if (question.visualData?.emojiA) emoji = question.visualData.emojiA;
+
+    if (question.visualData?.items && Array.isArray(question.visualData.items)) {
+      const items = question.visualData.items;
+      const crossed = items.filter((it) => it === '❌' || it === '💥');
+      const normal = items.filter((it) => it !== '❌' && it !== '💥' && it !== '-' && it !== '=');
+
+      if (normal.length > 0 && crossed.length > 0) {
+        if (!emoji) emoji = normal[0];
+        if (!remainingCount) remainingCount = normal.length;
+        if (!takeAwayCount) takeAwayCount = crossed.length;
+        if (!startCount) startCount = remainingCount + takeAwayCount;
+      } else if (items.includes('-') && items.length >= 3) {
+        const numA = parseInt(items[0], 10);
+        const numB = parseInt(items[2], 10);
+        if (!isNaN(numA) && !isNaN(numB)) {
+          startCount = numA;
+          takeAwayCount = numB;
+          remainingCount = startCount - takeAwayCount;
+        }
+      }
+    }
+
+    if (!startCount || !takeAwayCount) {
+      const text = question.questionText || question.narrationText || '';
+      const numMatch = text.match(/(\d+)[^\d\-–]*[\-–]\s*(\d+)/);
+      const takeAwayMatch = text.match(/(?:take away|swam away|ate|popped|leaves)\s*(\d+)/i);
+      if (numMatch) {
+        startCount = parseInt(numMatch[1], 10);
+        takeAwayCount = parseInt(numMatch[2], 10);
+      } else if (takeAwayMatch && question.correctAnswer) {
+        takeAwayCount = parseInt(takeAwayMatch[1], 10);
+      }
+      const emojiMatch = text.match(/[🍎🍌⭐🐶🐱🚗🎈🐟🌸🐥🧁🍪🍬🍓🦋🐸⚽🍦🧸🍩🍭]/u);
+      if (emojiMatch && !emoji) emoji = emojiMatch[0];
+    }
+
+    if (!remainingCount) {
+      const ansNum = parseInt(question.correctAnswer, 10);
+      if (!isNaN(ansNum)) {
+        remainingCount = ansNum;
+        if (startCount && !takeAwayCount) takeAwayCount = startCount - remainingCount;
+        if (!startCount && takeAwayCount) startCount = remainingCount + takeAwayCount;
+      }
+    }
+
+    if (!startCount) startCount = 5;
+    if (!takeAwayCount) takeAwayCount = 2;
+    if (!remainingCount) remainingCount = Math.max(1, startCount - takeAwayCount);
+    if (!emoji && !question.questionText?.match(/\d+/)) emoji = '🐟';
+
+    return { startCount, takeAwayCount, remainingCount, emoji };
   }
 
   // Generates warm, interactive preschool teacher speech directly teaching a 4-year-old child
@@ -285,7 +456,7 @@ class SoundService {
     if (questionType === 'visual-counting' && visualData?.items) {
       const count = visualData.items.length;
       const emoji = visualData.items[0];
-      const itemName = this.getItemFriendlyName(emoji);
+      const itemName = this.getItemFriendlyName(emoji, count);
 
       const countingWords = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
       const sequence = countingWords.slice(0, Math.min(count, 12)).join(', , ');
@@ -295,34 +466,50 @@ class SoundService {
 
     // 2. PICTURE ADDITION for 4-year-olds
     if (questionType === 'picture-addition') {
-      const countA = question.visualData?.countA || 2;
-      const countB = question.visualData?.countB || 3;
-      const emoji = question.visualData?.emojiA || '🍎';
-      const itemName = this.getItemFriendlyName(emoji);
-      const sum = countA + countB;
+      const { countA, countB, emoji, sum } = this.extractAdditionDetails(question);
+      if (emoji) {
+        const itemA = this.getItemFriendlyName(emoji, countA);
+        const itemB = this.getItemFriendlyName(emoji, countB);
+        const joinPhrase = countB === 1 ? 'Here comes 1 more' : `Here come ${countB} more`;
 
-      return `Let's play a magic math game! On this side, we have ${countA} ${itemName}. And look! Here come ${countB} more to join the party! If we put all of them together into one big basket... let's count: ${countA}, plus, ${countB}, makes, ${sum}! Can you find the number ${sum}? Tap it!`;
+        return `Let's play a magic math game! On this side, we have ${countA} ${itemA}. And look! ${joinPhrase} ${itemB} to join the party! If we put all of them together into one big basket... let's count: ${countA}, plus, ${countB}, makes, ${sum}! Can you find the number ${sum}? Tap it!`;
+      } else {
+        return `Let's play a magic math game! What is ${countA} plus ${countB}? If we add them together, that makes ${sum}! Can you tap number ${sum}?`;
+      }
     }
 
     // 3. PICTURE SUBTRACTION for 4-year-olds
     if (questionType === 'picture-subtraction') {
-      const countA = question.visualData?.countA || 5;
-      const cross = question.visualData?.subtractionCrossCount || 2;
-      const emoji = question.visualData?.emojiA || '🐟';
-      const itemName = this.getItemFriendlyName(emoji);
-      const diff = countA - cross;
+      const { startCount, takeAwayCount, remainingCount, emoji } = this.extractSubtractionDetails(question);
+      const namePlural = emoji ? this.getItemFriendlyName(emoji, 2) : 'items';
 
-      return `Splish splash! There were ${countA} ${itemName} playing happily together. But look! ${cross} of them went away to play! How many ${itemName} are still left with us? Let's count what remains! That leaves, ${diff}! Can you tap number ${diff}?`;
+      if (emoji === '🐟') {
+        return `Splish splash! There were ${startCount} little fish playing happily together. But look! ${takeAwayCount} of them swam away! How many little fish are still left with us? Let's count what remains! That leaves, ${remainingCount}! Can you tap number ${remainingCount}?`;
+      } else if (emoji === '🎈') {
+        const balloonStart = this.getItemFriendlyName(emoji, startCount);
+        const popPhrase = takeAwayCount === 1 ? '1 balloon popped' : `${takeAwayCount} balloons popped`;
+        return `Up in the sky, there were ${startCount} ${balloonStart} floating happily! But pop! ${popPhrase}! How many party balloons are still floating? Let's count what remains! That leaves, ${remainingCount}! Can you tap number ${remainingCount}?`;
+      } else if (emoji === '🧁' || emoji === '🍪' || emoji === '🍎' || emoji === '🍬' || emoji === '🍓' || emoji === '🍩') {
+        const foodStart = this.getItemFriendlyName(emoji, startCount);
+        const eatPhrase = takeAwayCount === 1 ? '1 yummy treat was eaten' : `${takeAwayCount} yummy treats were eaten`;
+        return `Yum yum! Look at your screen, we had ${startCount} ${foodStart}! But look! ${eatPhrase}! How many ${namePlural} are still left? Let's count what remains! That leaves, ${remainingCount}! Can you tap number ${remainingCount}?`;
+      } else if (emoji) {
+        const itemStart = this.getItemFriendlyName(emoji, startCount);
+        const awayPhrase = takeAwayCount === 1 ? '1 went away to play' : `${takeAwayCount} went away to play`;
+        return `Look at your screen! There were ${startCount} ${itemStart} playing happily together. But look! ${awayPhrase}! How many ${namePlural} are still left with us? Let's count what remains! That leaves, ${remainingCount}! Can you tap number ${remainingCount}?`;
+      } else {
+        return `Let's solve our math puzzle! We have ${startCount}, and we take away ${takeAwayCount}. Let's count what remains: ${startCount}, minus, ${takeAwayCount}, leaves, ${remainingCount}! Can you tap number ${remainingCount}?`;
+      }
     }
 
     // 4. BIGGER OR SMALLER for 4-year-olds
     if (questionType === 'bigger-smaller') {
-      if (questionText.toLowerCase().includes('bigger')) {
-        const [optA, optB] = options || ['7', '4'];
-        return `Let's see who has the giant pile! Imagine you have ${optA} sweet candies, and your friend has ${optB} candies. Who has more? Which number is bigger? Is it ${optA}, or ${optB}? Tap the bigger number!`;
+      const [optA, optB] = options || ['7', '4'];
+      const text = (questionText || '').toLowerCase();
+      if (text.includes('bigger') || text.includes('more') || text.includes('greater')) {
+        return `Let's see who has more! Look at ${optA}, and ${optB}. Which one is bigger? Tap the bigger one for me!`;
       } else {
-        const [optA, optB] = options || ['3', '8'];
-        return `Let's look for the smaller number with fewer pieces! Look at ${optA}, and ${optB}. Which number is smaller? Tap the smaller number for me!`;
+        return `Let's look for the smaller one with fewer pieces! Look at ${optA}, and ${optB}. Which one is smaller? Tap the smaller one for me!`;
       }
     }
 
@@ -345,7 +532,17 @@ class SoundService {
 
     // 6. PATTERNS for 4-year-olds
     if (questionType === 'pattern') {
-      return `Listen to our fun repeating pattern! Apple, banana, apple, banana! What should come next in our rhythm train? Is it the first one, or the second one? Give it a tap!`;
+      if (visualData?.items) {
+        const patternItems = visualData.items.filter((it) => it !== '❓' && it !== '?');
+        if (patternItems.length > 0) {
+          const names = patternItems.map((it) => this.getItemFriendlyName(it, 1)).join(', ');
+          return `Listen to our fun repeating pattern! ${names}! What should come next in our rhythm train? Give it a tap!`;
+        }
+      }
+      if (question.narrationText) {
+        return `Listen to our fun repeating pattern! ${question.narrationText.replace(/[❓?]/g, '')}. What should come next? Give it a tap!`;
+      }
+      return `Listen to our fun repeating pattern! What should come next in our rhythm train? Give it a tap!`;
     }
 
     // 7. ODD ONE OUT / LOGIC for 4-year-olds
@@ -370,7 +567,15 @@ class SoundService {
 
     // General fallback formatted like a warm teacher
     let clean = (question.narrationText || question.questionText || fallbackText || '')
-      .replace(/[🍎🍌⭐🐶🐱🚗🎈🐟🌸🐥🧁🍪🍬🔴🔵🟢🟡🔺⏹️⭕❓💎🐸⚽🍦🕊️🦜🦋🐞🦄🐝]/gu, '')
+      .replace(/[🍎]/gu, ' apple ')
+      .replace(/[⭐]/gu, ' star ')
+      .replace(/[🚗]/gu, ' car ')
+      .replace(/[🌸]/gu, ' flower ')
+      .replace(/[🎈]/gu, ' balloon ')
+      .replace(/[🐟]/gu, ' fish ')
+      .replace(/[🧁]/gu, ' cupcake ')
+      .replace(/[🍪]/gu, ' cookie ')
+      .replace(/[🍌⭐🐶🐱🚙🐥🍬🔴🔵🟢🟡🔺⏹️⭕❓💎🐸⚽🍦🕊️🦜🦋🐞🦄🐝]/gu, '')
       .replace(/₹(\d+)/g, '$1 rupees')
       .replace(/\s*\+\s*/g, ', plus, ')
       .replace(/\s*-\s*(?!\w)/g, ', minus, ')
