@@ -26,6 +26,7 @@ window.App = (function () {
     setupAudioToggleEvents();
     setupParentGateEvents();
     setupDrawingToolbars();
+    setupGameNavigationEvents();
     setupConfettiCanvas();
 
     // 4. Start at splash screen
@@ -246,13 +247,37 @@ window.App = (function () {
       });
     }
 
-    // Word Assembly Modal Close
+    const btnTracingPrev = document.getElementById('btn-tracing-prev');
+    if (btnTracingPrev) {
+      btnTracingPrev.addEventListener('click', () => {
+        const modal = document.getElementById('modal-tracing-success');
+        if (modal) modal.classList.remove('visible');
+        if (window.DrawingEngine) {
+          const current = window.DrawingEngine.currentTargetLetter;
+          const idx = window.GameData.alphabets.findIndex(a => a.letter === current);
+          const prevIdx = (idx - 1 + window.GameData.alphabets.length) % window.GameData.alphabets.length;
+          const prevLetter = window.GameData.alphabets[prevIdx].letter;
+          window.DrawingEngine.loadLetter(prevLetter);
+        }
+      });
+    }
+
+    // Word Assembly Modal Close / Next / Prev
     const btnCloseAssembly = document.getElementById('btn-close-word-assembly');
     if (btnCloseAssembly) {
       btnCloseAssembly.addEventListener('click', () => {
         const modal = document.getElementById('modal-word-assembly');
         if (modal) modal.classList.remove('visible');
         if (window.GamesManager) window.GamesManager.WordDrawer.next();
+      });
+    }
+
+    const btnWordsAssemblyPrev = document.getElementById('btn-words-assembly-prev');
+    if (btnWordsAssemblyPrev) {
+      btnWordsAssemblyPrev.addEventListener('click', () => {
+        const modal = document.getElementById('modal-word-assembly');
+        if (modal) modal.classList.remove('visible');
+        if (window.GamesManager) window.GamesManager.WordDrawer.prev();
       });
     }
 
@@ -545,6 +570,182 @@ window.App = (function () {
     if (btnWordsNextStep) {
       btnWordsNextStep.addEventListener('click', () => {
         if (window.DrawingEngine) window.DrawingEngine.advanceWordLetter();
+      });
+    }
+  }
+
+  function setupGameNavigationEvents() {
+    // 1. Multiple Choice Quiz Screen (Animals, Fruits, Veggies, Colors, Shapes, GK)
+    const btnQuizPrev = document.getElementById('btn-quiz-prev');
+    const btnQuizNext = document.getElementById('btn-quiz-next');
+    const btnQuizNextAction = document.getElementById('btn-quiz-next-action');
+
+    if (btnQuizPrev) {
+      btnQuizPrev.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.QuizEngine) {
+          window.GamesManager.QuizEngine.prev();
+        }
+      });
+    }
+
+    if (btnQuizNext) {
+      btnQuizNext.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.QuizEngine) {
+          window.GamesManager.QuizEngine.next();
+        }
+      });
+    }
+
+    if (btnQuizNextAction) {
+      btnQuizNextAction.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.QuizEngine) {
+          window.GamesManager.QuizEngine.next();
+        }
+      });
+    }
+
+    // 2. Animal Sounds Game
+    const btnSoundPrev = document.getElementById('btn-sound-prev');
+    const btnSoundNext = document.getElementById('btn-sound-next');
+    const btnSoundNextAction = document.getElementById('btn-sound-next-action');
+
+    if (btnSoundPrev) {
+      btnSoundPrev.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.AnimalSoundGame) {
+          window.GamesManager.AnimalSoundGame.prev();
+        }
+      });
+    }
+
+    if (btnSoundNext) {
+      btnSoundNext.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.AnimalSoundGame) {
+          window.GamesManager.AnimalSoundGame.next();
+        }
+      });
+    }
+
+    if (btnSoundNextAction) {
+      btnSoundNextAction.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.AnimalSoundGame) {
+          window.GamesManager.AnimalSoundGame.next();
+        }
+      });
+    }
+
+    // 3. Numbers & Counting Game
+    const btnNumbersPrev = document.getElementById('btn-numbers-prev');
+    const btnNumbersNext = document.getElementById('btn-numbers-next');
+    const btnNumbersNextAction = document.getElementById('btn-numbers-next-action');
+
+    if (btnNumbersPrev) {
+      btnNumbersPrev.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.NumbersGame) {
+          window.GamesManager.NumbersGame.prev();
+        }
+      });
+    }
+
+    if (btnNumbersNext) {
+      btnNumbersNext.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.NumbersGame) {
+          window.GamesManager.NumbersGame.next();
+        }
+      });
+    }
+
+    if (btnNumbersNextAction) {
+      btnNumbersNextAction.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.NumbersGame) {
+          window.GamesManager.NumbersGame.next();
+        }
+      });
+    }
+
+    // 4. Daily Challenge
+    const btnDailyPrev = document.getElementById('btn-daily-prev');
+    const btnDailyNext = document.getElementById('btn-daily-next');
+    const btnDailyNextAction = document.getElementById('btn-daily-next-action');
+
+    if (btnDailyPrev) {
+      btnDailyPrev.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.DailyChallenge) {
+          window.GamesManager.DailyChallenge.prev();
+        }
+      });
+    }
+
+    if (btnDailyNext) {
+      btnDailyNext.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.DailyChallenge) {
+          window.GamesManager.DailyChallenge.next();
+        }
+      });
+    }
+
+    if (btnDailyNextAction) {
+      btnDailyNextAction.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.DailyChallenge) {
+          window.GamesManager.DailyChallenge.next();
+        }
+      });
+    }
+
+    // 5. Matching & Connect Game
+    const btnMatchPrev = document.getElementById('btn-match-prev');
+    const btnMatchNext = document.getElementById('btn-match-next');
+    const btnMatchNextAction = document.getElementById('btn-match-next-action');
+
+    if (btnMatchPrev) {
+      btnMatchPrev.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.MatchingGame) {
+          window.GamesManager.MatchingGame.prev();
+        }
+      });
+    }
+
+    if (btnMatchNext) {
+      btnMatchNext.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.MatchingGame) {
+          window.GamesManager.MatchingGame.next();
+        }
+      });
+    }
+
+    if (btnMatchNextAction) {
+      btnMatchNextAction.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.MatchingGame) {
+          window.GamesManager.MatchingGame.next();
+        }
+      });
+    }
+
+    // 6. Memory Flip Cards Game
+    const btnMemoryPrev = document.getElementById('btn-memory-prev');
+    const btnMemoryNext = document.getElementById('btn-memory-next');
+    const btnMemoryNextAction = document.getElementById('btn-memory-next-action');
+
+    if (btnMemoryPrev) {
+      btnMemoryPrev.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.MemoryGame) {
+          window.GamesManager.MemoryGame.prev();
+        }
+      });
+    }
+
+    if (btnMemoryNext) {
+      btnMemoryNext.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.MemoryGame) {
+          window.GamesManager.MemoryGame.next();
+        }
+      });
+    }
+
+    if (btnMemoryNextAction) {
+      btnMemoryNextAction.addEventListener('click', () => {
+        if (window.GamesManager && window.GamesManager.MemoryGame) {
+          window.GamesManager.MemoryGame.next();
+        }
       });
     }
   }

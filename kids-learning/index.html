@@ -355,11 +355,19 @@
   <!-- 6. MULTIPLE CHOICE QUIZ SCREEN (Animals, Fruits, Veggies, Colors, Shapes, GK) -->
   <section class="app-screen" id="screen-quiz">
     <div class="quiz-container">
+      <div class="game-nav-bar">
+        <button class="btn-circle-nav" id="btn-quiz-prev" style="width:46px;height:46px;font-size:1.2rem;" title="Previous Question">⬅️</button>
+        <span class="game-nav-counter" id="quiz-counter">Question 1</span>
+        <button class="btn-circle-nav" id="btn-quiz-next" style="width:46px;height:46px;font-size:1.2rem;" title="Next Question">➡️</button>
+      </div>
       <div class="quiz-card">
         <h2 class="quiz-title" id="quiz-title">Who is this?</h2>
         <p class="quiz-prompt" id="quiz-prompt">What animal is this?</p>
         <div class="quiz-display-emoji" id="quiz-display-emoji">🐘</div>
         <div class="quiz-options-grid" id="quiz-options-grid"></div>
+        <div class="quiz-nav-footer">
+          <button class="btn-quiz-next-action" id="btn-quiz-next-action">Next Question ➡️</button>
+        </div>
       </div>
     </div>
   </section>
@@ -367,53 +375,92 @@
   <!-- 7. ANIMAL SOUNDS SCREEN -->
   <section class="app-screen" id="screen-animal-sounds">
     <div class="sound-game-card">
+      <div class="game-nav-bar">
+        <button class="btn-circle-nav" id="btn-sound-prev" style="width:46px;height:46px;font-size:1.2rem;" title="Previous Sound">⬅️</button>
+        <span class="game-nav-counter" id="sound-counter">Round 1</span>
+        <button class="btn-circle-nav" id="btn-sound-next" style="width:46px;height:46px;font-size:1.2rem;" title="Next Sound">➡️</button>
+      </div>
       <h2 class="quiz-title">🔊 Guess the Animal!</h2>
       <p class="quiz-prompt">Tap the button to hear the sound, then choose the animal!</p>
       <button class="btn-listen-sound" id="btn-play-animal-sound" title="Play Animal Sound">
         <span>🔊</span>
       </button>
       <div class="sound-options-grid" id="sound-options-grid"></div>
+      <div class="quiz-nav-footer">
+        <button class="btn-quiz-next-action" id="btn-sound-next-action">Next Animal ➡️</button>
+      </div>
     </div>
   </section>
 
   <!-- 8. NUMBERS & COUNTING SCREEN -->
   <section class="app-screen" id="screen-numbers">
     <div class="numbers-card">
+      <div class="game-nav-bar">
+        <button class="btn-circle-nav" id="btn-numbers-prev" style="width:46px;height:46px;font-size:1.2rem;" title="Previous Number">⬅️</button>
+        <span class="game-nav-counter" id="numbers-counter">Question 1</span>
+        <button class="btn-circle-nav" id="btn-numbers-next" style="width:46px;height:46px;font-size:1.2rem;" title="Next Number">➡️</button>
+      </div>
       <h2 class="quiz-title">🔢 Numbers Adventure</h2>
       <p class="quiz-prompt" id="numbers-prompt">How many can you count?</p>
       <div class="numbers-display-area" id="numbers-display-area"></div>
       <div class="numbers-options-grid" id="numbers-options-grid"></div>
+      <div class="quiz-nav-footer">
+        <button class="btn-quiz-next-action" id="btn-numbers-next-action">Next ➡️</button>
+      </div>
     </div>
   </section>
 
   <!-- 9. MATCHING & CONNECT SCREEN -->
   <section class="app-screen" id="screen-matching">
-    <div style="text-align:center;margin-bottom:18px;">
-      <h2 class="quiz-title">🧩 Match & Connect</h2>
-      <p class="quiz-prompt">Tap an item on the left, then find its matching pair on the right!</p>
-    </div>
-    <div class="matching-board">
-      <div class="match-column" id="match-left-col"></div>
-      <div class="match-column" id="match-right-col"></div>
+    <div class="matching-container" style="max-width:680px;margin:0 auto;width:100%;">
+      <div class="game-nav-bar">
+        <button class="btn-circle-nav" id="btn-match-prev" style="width:46px;height:46px;font-size:1.2rem;" title="Previous Round">⬅️</button>
+        <span class="game-nav-counter" id="match-counter">Round 1</span>
+        <button class="btn-circle-nav" id="btn-match-next" style="width:46px;height:46px;font-size:1.2rem;" title="Next Round">➡️</button>
+      </div>
+      <div style="text-align:center;margin-bottom:18px;">
+        <h2 class="quiz-title">🧩 Match & Connect</h2>
+        <p class="quiz-prompt">Tap an item on the left, then find its matching pair on the right!</p>
+      </div>
+      <div class="matching-board">
+        <div class="match-column" id="match-left-col"></div>
+        <div class="match-column" id="match-right-col"></div>
+      </div>
+      <div class="quiz-nav-footer">
+        <button class="btn-quiz-next-action" id="btn-match-next-action">Next Round ➡️</button>
+      </div>
     </div>
   </section>
 
   <!-- 10. MEMORY FLIP CARDS SCREEN -->
   <section class="app-screen" id="screen-memory">
-    <div style="text-align:center;margin-bottom:18px;">
-      <h2 class="quiz-title">🃏 Memory Match</h2>
-      <p class="quiz-prompt">Flip cards and find the matching pairs!</p>
-    </div>
-    <div class="memory-board-wrap">
-      <div class="memory-cards-grid" id="memory-cards-grid"></div>
+    <div class="memory-container" style="max-width:580px;margin:0 auto;width:100%;">
+      <div class="game-nav-bar">
+        <button class="btn-circle-nav" id="btn-memory-prev" style="width:46px;height:46px;font-size:1.2rem;" title="Previous Game">⬅️</button>
+        <span class="game-nav-counter" id="memory-counter">Round 1</span>
+        <button class="btn-circle-nav" id="btn-memory-next" style="width:46px;height:46px;font-size:1.2rem;" title="Next Game">➡️</button>
+      </div>
+      <div style="text-align:center;margin-bottom:18px;">
+        <h2 class="quiz-title">🃏 Memory Match</h2>
+        <p class="quiz-prompt">Flip cards and find the matching pairs!</p>
+      </div>
+      <div class="memory-board-wrap">
+        <div class="memory-cards-grid" id="memory-cards-grid"></div>
+      </div>
+      <div class="quiz-nav-footer">
+        <button class="btn-quiz-next-action" id="btn-memory-next-action">Next Game ➡️</button>
+      </div>
     </div>
   </section>
 
   <!-- 11. TODAY'S DAILY CHALLENGE SCREEN -->
   <section class="app-screen" id="screen-daily">
     <div style="text-align:center;margin-bottom:18px;">
-      <h2 class="quiz-title">🌟 Today's 5-Mission Challenge</h2>
-      <p class="quiz-prompt" id="daily-challenge-step-text">Mission 1 of 5</p>
+      <div class="game-nav-bar" style="max-width:540px;margin:0 auto 10px;">
+        <button class="btn-circle-nav" id="btn-daily-prev" style="width:46px;height:46px;font-size:1.2rem;" title="Previous Mission">⬅️</button>
+        <span class="game-nav-counter" id="daily-counter">Mission 1 of 5</span>
+        <button class="btn-circle-nav" id="btn-daily-next" style="width:46px;height:46px;font-size:1.2rem;" title="Next Mission">➡️</button>
+      </div>
       <div class="draw-progress-bar" style="margin:10px auto;max-width:320px;">
         <div class="draw-progress-fill" id="daily-challenge-progress-fill" style="width:20%;"></div>
       </div>
@@ -421,9 +468,12 @@
     <div class="quiz-container" id="daily-interactive-container">
       <div class="quiz-card">
         <h2 class="quiz-title" id="daily-step-title">Mission</h2>
-        <p class="quiz-prompt" id="daily-step-prompt">Solve this activity!</p>
+        <p class="quiz-prompt" id="daily-step-prompt">Ready to learn?</p>
         <div class="quiz-display-emoji" id="daily-step-emoji">⭐</div>
         <div class="quiz-options-grid" id="daily-step-options"></div>
+        <div class="quiz-nav-footer">
+          <button class="btn-quiz-next-action" id="btn-daily-next-action">Next Mission ➡️</button>
+        </div>
       </div>
     </div>
   </section>
@@ -456,7 +506,8 @@
   <div class="app-modal" id="modal-parent-zone">
     <div class="modal-content-card">
       <button class="btn-modal-close" id="btn-close-parent-zone">✕</button>
-      <h2 class="quiz-title">👨‍👩‍👧 Parent Learning Dashboard</h2>
+      <div style="font-size:4rem;margin-bottom:6px;">👨‍👩‍👧‍👦 📊</div>
+      <h2 class="quiz-title">Grown-Up Dashboard</h2>
       <p class="quiz-prompt">Track your child's educational progress</p>
       <div class="parent-stats-list" id="parent-zone-stats-list"></div>
       <button class="btn-reset-danger" id="btn-parent-reset-progress">🗑️ Reset Learning Progress</button>
@@ -469,7 +520,10 @@
       <div style="font-size:5rem;margin-bottom:8px;">🌟 ⭐ 🌟</div>
       <h2 class="quiz-title" id="tracing-modal-title">Great Tracing!</h2>
       <p class="quiz-prompt" id="tracing-modal-sub">You earned 3 Stars!</p>
-      <button class="btn-big-play" id="btn-tracing-next" style="margin-top:14px;padding:14px 36px;font-size:1.3rem;">Next Letter ➡️</button>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+        <button class="btn-tool-action" id="btn-tracing-prev" style="padding:12px 24px;font-size:1.1rem;background:#64748B;color:#fff;">⬅️ Previous Letter</button>
+        <button class="btn-big-play" id="btn-tracing-next" style="padding:12px 30px;font-size:1.15rem;">Next Letter ➡️</button>
+      </div>
     </div>
   </div>
 
@@ -480,7 +534,10 @@
       <div class="assembly-letters-row" id="assembly-letters"></div>
       <div class="assembly-result-word" id="assembly-result">CAT</div>
       <p class="quiz-prompt" style="margin-top:10px;">C - A - T makes CAT!</p>
-      <button class="btn-big-play" id="btn-close-word-assembly" style="margin-top:16px;padding:14px 36px;font-size:1.3rem;">Superstar! Next Word ➡️</button>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+        <button class="btn-tool-action" id="btn-words-assembly-prev" style="padding:12px 24px;font-size:1.1rem;background:#64748B;color:#fff;">⬅️ Prev Word</button>
+        <button class="btn-big-play" id="btn-close-word-assembly" style="padding:12px 30px;font-size:1.15rem;">Next Word ➡️</button>
+      </div>
     </div>
   </div>
 

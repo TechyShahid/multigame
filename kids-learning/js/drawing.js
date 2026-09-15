@@ -32,6 +32,7 @@ window.DrawingEngine = (function () {
   // Stroke guide animation
   let guideAnimFrame = null;
   let guideAnimStep = 0;
+  let autoAdvanceTimer = null;
 
   function setCanvas(canvasId) {
     currentCanvasId = canvasId;
@@ -320,17 +321,31 @@ window.DrawingEngine = (function () {
       }
       showTracingCompleteModal(`Letter ${currentTargetLetter}!`, '3 Stars Earned!');
     } else if (currentTargetType === 'word') {
-      currentWordLetterIndex++;
       const wordObj = window.GameData.threeLetterWords.find(w => w.word === currentTargetWord);
+      const nextIndex = currentWordLetterIndex + 1;
 
-      if (currentWordLetterIndex < wordObj.letters.length) {
-        const nextLetter = wordObj.letters[currentWordLetterIndex];
+      if (nextIndex < wordObj.letters.length) {
+        const nextLetter = wordObj.letters[nextIndex];
+        const speechMsg = `Great! Next letter is ${nextLetter}!`;
         if (window.AudioSystem) {
-          window.AudioSystem.speak(`Great! Now trace ${nextLetter}!`);
+          window.AudioSystem.speak(speechMsg);
         }
-        setTimeout(() => {
+        if (window.Buddy) {
+          window.Buddy.celebrate(speechMsg);
+        }
+
+        // Pulse the Next Step button so user can advance when ready
+        const nextStepBtn = document.getElementById('btn-words-next-step');
+        if (nextStepBtn) {
+          nextStepBtn.classList.add('pulse-hint');
+        }
+
+        // Allow generous time for full narrator explanation before auto-advancing
+        if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = setTimeout(() => {
+          currentWordLetterIndex = nextIndex;
           loadWordLetter(currentTargetWord, currentWordLetterIndex);
-        }, 1200);
+        }, 3400);
       } else {
         assembleTracedWord(wordObj);
       }
@@ -449,6 +464,15 @@ window.DrawingEngine = (function () {
     currentStroke = [];
     hasCompletedCurrent = false;
 
+    if (autoAdvanceTimer) {
+      clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = null;
+    }
+    const nextStepBtn = document.getElementById('btn-words-next-step');
+    if (nextStepBtn) {
+      nextStepBtn.classList.remove('pulse-hint');
+    }
+
     const letter = word[index];
     setupCanvasSizing();
     generateGuideCheckpoints(letter);
@@ -481,6 +505,10 @@ window.DrawingEngine = (function () {
 
   function advanceWordLetter() {
     if (currentTargetType !== 'word') return;
+    if (autoAdvanceTimer) {
+      clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = null;
+    }
     const wordObj = window.GameData.threeLetterWords.find(w => w.word === currentTargetWord);
     if (!wordObj) return;
 
@@ -489,6 +517,18 @@ window.DrawingEngine = (function () {
       loadWordLetter(currentTargetWord, currentWordLetterIndex + 1);
     } else {
       assembleTracedWord(wordObj);
+    }
+  }
+
+  function prevWordLetter() {
+    if (currentTargetType !== 'word') return;
+    if (autoAdvanceTimer) {
+      clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = null;
+    }
+    if (currentWordLetterIndex > 0) {
+      if (window.AudioSystem) window.AudioSystem.playClick();
+      loadWordLetter(currentTargetWord, currentWordLetterIndex - 1);
     }
   }
 
@@ -571,6 +611,7 @@ window.DrawingEngine = (function () {
     loadWord,
     loadWordLetter,
     advanceWordLetter,
+    prevWordLetter,
     clearCanvas,
     undoLastStroke,
     setColor,

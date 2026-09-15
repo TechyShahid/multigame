@@ -200,20 +200,57 @@ window.GamesManager = (function () {
   const QuizEngine = {
     currentCategory: 'animals',
     currentQuestion: null,
+    history: [],
+    currentIndex: 0,
     answered: false,
     scoreInStreak: 0,
 
     start(category) {
       this.currentCategory = category;
       this.scoreInStreak = 0;
-      this.nextQuestion();
+      this.history = [];
+      this.currentIndex = 0;
+      this.loadQuestionAt(0);
     },
 
-    nextQuestion() {
+    loadQuestionAt(index) {
+      if (index >= this.history.length) {
+        const q = this.generateQuestion(this.currentCategory);
+        this.history.push(q);
+      }
+      this.currentIndex = index;
+      this.currentQuestion = this.history[this.currentIndex];
       this.answered = false;
-      const question = this.generateQuestion(this.currentCategory);
-      this.currentQuestion = question;
-      this.renderQuestion(question);
+      this.renderQuestion(this.currentQuestion);
+      this.updateNavigationUI();
+    },
+
+    next() {
+      if (window.AudioSystem) window.AudioSystem.playClick();
+      this.loadQuestionAt(this.currentIndex + 1);
+    },
+
+    prev() {
+      if (this.currentIndex > 0) {
+        if (window.AudioSystem) window.AudioSystem.playClick();
+        this.loadQuestionAt(this.currentIndex - 1);
+      }
+    },
+
+    updateNavigationUI() {
+      const counterEl = document.getElementById('quiz-counter');
+      if (counterEl) {
+        counterEl.textContent = `Question ${this.currentIndex + 1}`;
+      }
+      const prevBtn = document.getElementById('btn-quiz-prev');
+      if (prevBtn) {
+        prevBtn.style.opacity = this.currentIndex === 0 ? '0.4' : '1';
+        prevBtn.style.pointerEvents = this.currentIndex === 0 ? 'none' : 'auto';
+      }
+      const nextActionBtn = document.getElementById('btn-quiz-next-action');
+      if (nextActionBtn) {
+        nextActionBtn.classList.remove('pulse-hint');
+      }
     },
 
     generateQuestion(cat) {
@@ -222,6 +259,7 @@ window.GamesManager = (function () {
       let displayEmoji = '';
       let options = [];
       let badgeId = '';
+      let fact = '';
 
       switch (cat) {
         case 'animals': {
@@ -231,6 +269,7 @@ window.GamesManager = (function () {
           title = '🐾 Who is this?';
           prompt = 'What animal is this?';
           displayEmoji = target.emoji;
+          fact = target.fact || '';
           options = shuffle([
             { text: target.name, emoji: target.emoji, correct: true },
             { text: distractors[0].name, emoji: distractors[0].emoji, correct: false },
@@ -245,6 +284,7 @@ window.GamesManager = (function () {
           title = '🍎 Sweet Fruits!';
           prompt = 'What fruit is this?';
           displayEmoji = target.emoji;
+          fact = target.fact || '';
           options = shuffle([
             { text: target.name, emoji: target.emoji, correct: true },
             { text: distractors[0].name, emoji: distractors[0].emoji, correct: false },
@@ -259,6 +299,7 @@ window.GamesManager = (function () {
           title = '🥕 Tasty Veggies!';
           prompt = 'What vegetable is this?';
           displayEmoji = target.emoji;
+          fact = target.fact || '';
           options = shuffle([
             { text: target.name, emoji: target.emoji, correct: true },
             { text: distractors[0].name, emoji: distractors[0].emoji, correct: false },
@@ -273,6 +314,7 @@ window.GamesManager = (function () {
           title = '🎨 Colorful Fun!';
           prompt = `Which one is ${target.name.toUpperCase()}?`;
           displayEmoji = target.items.split(' ')[0] || target.emoji;
+          fact = target.items ? `Like ${target.items}!` : '';
           options = shuffle([
             { text: target.name, colorHex: target.hex, emoji: target.emoji, correct: true },
             { text: distractors[0].name, colorHex: distractors[0].hex, emoji: distractors[0].emoji, correct: false },
@@ -287,6 +329,7 @@ window.GamesManager = (function () {
           title = '🔺 Super Shapes!';
           prompt = `Find the ${target.name}!`;
           displayEmoji = target.emoji;
+          fact = target.fact || '';
           options = shuffle([
             { text: target.name, emoji: target.emoji, correct: true },
             { text: distractors[0].name, emoji: distractors[0].emoji, correct: false },
@@ -300,12 +343,13 @@ window.GamesManager = (function () {
           title = '🧠 Little Genius GK';
           prompt = target.question;
           displayEmoji = target.emoji;
+          fact = '';
           options = shuffle(target.options);
           break;
         }
       }
 
-      return { title, prompt, displayEmoji, options, badgeId, category: cat };
+      return { title, prompt, displayEmoji, options, badgeId, fact, category: cat };
     },
 
     renderQuestion(q) {
@@ -346,15 +390,20 @@ window.GamesManager = (function () {
         this.answered = true;
         btnEl.classList.add('correct-choice');
 
+        let explanation = `Yes! That is ${option.text}!`;
+        if (this.currentQuestion.fact) {
+          explanation += ` ${this.currentQuestion.fact}`;
+        }
+
         if (window.AudioSystem) {
           window.AudioSystem.playCorrect();
           setTimeout(() => {
-            window.AudioSystem.speak(`Yes! That is ${option.text}!`);
+            window.AudioSystem.speak(explanation);
           }, 350);
         }
 
         if (window.Buddy) {
-          window.Buddy.celebrate();
+          window.Buddy.celebrate(explanation);
         }
 
         if (window.RewardSystem) {
@@ -364,12 +413,12 @@ window.GamesManager = (function () {
 
         this.scoreInStreak++;
 
-        // Next question after friendly delay
-        setTimeout(() => {
-          this.nextQuestion();
-        }, 1600);
+        // Keep answer visible and pulse the Next button so user can advance when ready
+        const nextActionBtn = document.getElementById('btn-quiz-next-action');
+        if (nextActionBtn) {
+          nextActionBtn.classList.add('pulse-hint');
+        }
       } else {
-        // Soft encouraging wobble
         btnEl.classList.add('wrong-choice');
         setTimeout(() => btnEl.classList.remove('wrong-choice'), 600);
 
@@ -389,27 +438,66 @@ window.GamesManager = (function () {
      ============================================================= */
   const AnimalSoundGame = {
     currentTarget: null,
+    history: [],
+    currentIndex: 0,
     answered: false,
 
     init() {
-      this.nextRound();
+      this.history = [];
+      this.currentIndex = 0;
+      this.loadRoundAt(0);
     },
 
-    nextRound() {
+    loadRoundAt(index) {
+      if (index >= this.history.length) {
+        const target = window.GameData.animals[Math.floor(Math.random() * window.GameData.animals.length)];
+        const distractors = pickRandom(window.GameData.animals, 2, target);
+        const options = shuffle([
+          { text: target.name, emoji: target.emoji, correct: true },
+          { text: distractors[0].name, emoji: distractors[0].emoji, correct: false },
+          { text: distractors[1].name, emoji: distractors[1].emoji, correct: false }
+        ]);
+        this.history.push({ target, options });
+      }
+
+      this.currentIndex = index;
+      const round = this.history[this.currentIndex];
+      this.currentTarget = round.target;
       this.answered = false;
-      const target = window.GameData.animals[Math.floor(Math.random() * window.GameData.animals.length)];
-      const distractors = pickRandom(window.GameData.animals, 2, target);
-      this.currentTarget = target;
 
-      const options = shuffle([
-        { text: target.name, emoji: target.emoji, correct: true },
-        { text: distractors[0].name, emoji: distractors[0].emoji, correct: false },
-        { text: distractors[1].name, emoji: distractors[1].emoji, correct: false }
-      ]);
+      this.render(round.options);
+      this.updateNavigationUI();
 
-      this.render(options);
       // Play animal call
-      setTimeout(() => this.playSound(), 500);
+      setTimeout(() => this.playSound(), 400);
+    },
+
+    next() {
+      if (window.AudioSystem) window.AudioSystem.playClick();
+      this.loadRoundAt(this.currentIndex + 1);
+    },
+
+    prev() {
+      if (this.currentIndex > 0) {
+        if (window.AudioSystem) window.AudioSystem.playClick();
+        this.loadRoundAt(this.currentIndex - 1);
+      }
+    },
+
+    updateNavigationUI() {
+      const counterEl = document.getElementById('sound-counter');
+      if (counterEl) {
+        counterEl.textContent = `Round ${this.currentIndex + 1}`;
+      }
+      const prevBtn = document.getElementById('btn-sound-prev');
+      if (prevBtn) {
+        prevBtn.style.opacity = this.currentIndex === 0 ? '0.4' : '1';
+        prevBtn.style.pointerEvents = this.currentIndex === 0 ? 'none' : 'auto';
+      }
+      const nextActionBtn = document.getElementById('btn-sound-next-action');
+      if (nextActionBtn) {
+        nextActionBtn.classList.remove('pulse-hint');
+      }
     },
 
     playSound() {
@@ -448,15 +536,20 @@ window.GamesManager = (function () {
         this.answered = true;
         btnEl.classList.add('correct-choice');
 
+        let explanation = `Yes! That is a ${this.currentTarget.name}! ${this.currentTarget.soundName}!`;
+        if (this.currentTarget.fact) {
+          explanation += ` ${this.currentTarget.fact}`;
+        }
+
         if (window.AudioSystem) {
           window.AudioSystem.playCorrect();
           setTimeout(() => {
-            window.AudioSystem.speak(`Yes! That is a ${this.currentTarget.name}! ${this.currentTarget.soundName}!`);
-          }, 400);
+            window.AudioSystem.speak(explanation);
+          }, 350);
         }
 
         if (window.Buddy) {
-          window.Buddy.celebrate(`Wonderful! ${this.currentTarget.name} says ${this.currentTarget.soundName}! 🐾`);
+          window.Buddy.celebrate(explanation);
         }
 
         if (window.RewardSystem) {
@@ -464,7 +557,11 @@ window.GamesManager = (function () {
           window.RewardSystem.recordProgress('sound_master');
         }
 
-        setTimeout(() => this.nextRound(), 2000);
+        // Pulse next button so user can advance when ready
+        const nextActionBtn = document.getElementById('btn-sound-next-action');
+        if (nextActionBtn) {
+          nextActionBtn.classList.add('pulse-hint');
+        }
       } else {
         btnEl.classList.add('wrong-choice');
         setTimeout(() => btnEl.classList.remove('wrong-choice'), 600);
@@ -479,50 +576,66 @@ window.GamesManager = (function () {
      5. NUMBERS & COUNTING GAME CONTROLLER
      ============================================================= */
   const NumbersGame = {
-    currentMode: 'count', // 'count' or 'sequence'
     targetNumber: 5,
+    history: [],
+    currentIndex: 0,
     answered: false,
 
     init() {
-      this.nextQuestion();
+      this.history = [];
+      this.currentIndex = 0;
+      this.loadQuestionAt(0);
     },
 
-    nextQuestion() {
-      this.answered = false;
-      this.currentMode = Math.random() > 0.4 ? 'count' : 'sequence';
+    loadQuestionAt(index) {
+      if (index >= this.history.length) {
+        const isCount = index % 2 === 0;
+        const q = isCount ? this.createCountQuestion() : this.createSequenceQuestion();
+        this.history.push(q);
+      }
 
-      if (this.currentMode === 'count') {
-        this.setupCountMode();
-      } else {
-        this.setupSequenceMode();
+      this.currentIndex = index;
+      const q = this.history[this.currentIndex];
+      this.targetNumber = q.targetNumber;
+      this.answered = false;
+
+      this.renderQuestion(q);
+      this.updateNavigationUI();
+    },
+
+    next() {
+      if (window.AudioSystem) window.AudioSystem.playClick();
+      this.loadQuestionAt(this.currentIndex + 1);
+    },
+
+    prev() {
+      if (this.currentIndex > 0) {
+        if (window.AudioSystem) window.AudioSystem.playClick();
+        this.loadQuestionAt(this.currentIndex - 1);
       }
     },
 
-    setupCountMode() {
-      // Numbers 1 to 10 for counting
-      const num = Math.floor(Math.random() * 8) + 2; // 2 to 9
-      this.targetNumber = num;
+    updateNavigationUI() {
+      const counterEl = document.getElementById('numbers-counter');
+      if (counterEl) {
+        counterEl.textContent = `Question ${this.currentIndex + 1}`;
+      }
+      const prevBtn = document.getElementById('btn-numbers-prev');
+      if (prevBtn) {
+        prevBtn.style.opacity = this.currentIndex === 0 ? '0.4' : '1';
+        prevBtn.style.pointerEvents = this.currentIndex === 0 ? 'none' : 'auto';
+      }
+      const nextActionBtn = document.getElementById('btn-numbers-next-action');
+      if (nextActionBtn) {
+        nextActionBtn.classList.remove('pulse-hint');
+      }
+    },
 
+    createCountQuestion() {
+      const num = Math.floor(Math.random() * 8) + 2; // 2 to 9
       const emojis = ['⭐', '🍎', '🎈', '🍓', '🐶', '🐥', '🍬', '🚗'];
       const pickedEmoji = emojis[Math.floor(Math.random() * emojis.length)];
 
-      const displayContainer = document.getElementById('numbers-display-area');
-      const promptEl = document.getElementById('numbers-prompt');
-
-      if (promptEl) promptEl.textContent = 'How many can you count?';
-
-      if (displayContainer) {
-        displayContainer.innerHTML = Array.from({ length: num }).map((_, i) => `
-          <span class="counting-item" style="animation-delay:${i * 0.08}s">${pickedEmoji}</span>
-        `).join('');
-      }
-
-      // Voice instruction
-      if (window.AudioSystem) {
-        window.AudioSystem.speak('How many can you count? Let us count them!');
-      }
-
-      // Generate options
       const dist1 = num + (Math.random() > 0.5 ? 1 : -1);
       const dist2 = num + (dist1 > num ? -1 : 2);
       const options = shuffle([
@@ -531,34 +644,32 @@ window.GamesManager = (function () {
         { val: Math.max(1, dist2), correct: false }
       ]);
 
-      this.renderOptions(options);
+      const displayHtml = Array.from({ length: num }).map((_, i) => `
+        <span class="counting-item" style="animation-delay:${i * 0.08}s">${pickedEmoji}</span>
+      `).join('');
+
+      return {
+        mode: 'count',
+        targetNumber: num,
+        prompt: 'How many can you count?',
+        speech: 'How many can you count? Let us count them!',
+        displayHtml,
+        options
+      };
     },
 
-    setupSequenceMode() {
-      // Which number comes next? e.g. 1 -> 2 -> 3 -> ?
+    createSequenceQuestion() {
       const start = Math.floor(Math.random() * 6) + 1; // 1 to 6
       const seq = [start, start + 1, start + 2];
       const target = start + 3;
-      this.targetNumber = target;
 
-      const displayContainer = document.getElementById('numbers-display-area');
-      const promptEl = document.getElementById('numbers-prompt');
-
-      if (promptEl) promptEl.textContent = 'Which number comes next?';
-
-      if (displayContainer) {
-        displayContainer.innerHTML = `
-          <div class="number-sequence-row">
-            ${seq.map(n => `<span class="sequence-num-box">${n}</span>`).join('<span class="sequence-arrow">➔</span>')}
-            <span class="sequence-arrow">➔</span>
-            <span class="sequence-num-box mystery-box">?</span>
-          </div>
-        `;
-      }
-
-      if (window.AudioSystem) {
-        window.AudioSystem.speak(`What comes next? ${seq.join(', ')}?`);
-      }
+      const displayHtml = `
+        <div class="number-sequence-row">
+          ${seq.map(n => `<span class="sequence-num-box">${n}</span>`).join('<span class="sequence-arrow">➔</span>')}
+          <span class="sequence-arrow">➔</span>
+          <span class="sequence-num-box mystery-box">?</span>
+        </div>
+      `;
 
       const options = shuffle([
         { val: target, correct: true },
@@ -566,7 +677,28 @@ window.GamesManager = (function () {
         { val: target + 1, correct: false }
       ]);
 
-      this.renderOptions(options);
+      return {
+        mode: 'sequence',
+        targetNumber: target,
+        prompt: 'Which number comes next?',
+        speech: `What comes next? ${seq.join(', ')}?`,
+        displayHtml,
+        options
+      };
+    },
+
+    renderQuestion(q) {
+      const promptEl = document.getElementById('numbers-prompt');
+      const displayContainer = document.getElementById('numbers-display-area');
+
+      if (promptEl) promptEl.textContent = q.prompt;
+      if (displayContainer) displayContainer.innerHTML = q.displayHtml;
+
+      if (window.AudioSystem) {
+        window.AudioSystem.speak(q.speech);
+      }
+
+      this.renderOptions(q.options);
     },
 
     renderOptions(options) {
@@ -603,7 +735,7 @@ window.GamesManager = (function () {
             countWords.push(found ? found.word : `${i}`);
           }
           const speech = `${countWords.join(', ')}! Great! There are ${this.targetNumber}!`;
-          setTimeout(() => window.AudioSystem.speak(speech), 300);
+          setTimeout(() => window.AudioSystem.speak(speech), 350);
         }
 
         if (window.Buddy) {
@@ -615,7 +747,11 @@ window.GamesManager = (function () {
           window.RewardSystem.recordProgress('number_star');
         }
 
-        setTimeout(() => this.nextQuestion(), 2400);
+        // Pulse next button so user can advance when ready
+        const nextActionBtn = document.getElementById('btn-numbers-next-action');
+        if (nextActionBtn) {
+          nextActionBtn.classList.add('pulse-hint');
+        }
       } else {
         btnEl.classList.add('wrong-choice');
         setTimeout(() => btnEl.classList.remove('wrong-choice'), 600);
@@ -631,33 +767,81 @@ window.GamesManager = (function () {
      ============================================================= */
   const MatchingGame = {
     pairs: [],
+    history: [],
+    currentIndex: 0,
     selectedLeft: null,
     matchedCount: 0,
 
     init() {
-      this.selectedLeft = null;
-      this.matchedCount = 0;
-      this.setupPairs();
-      this.render();
+      this.history = [];
+      this.currentIndex = 0;
+      this.loadRoundAt(0);
     },
 
-    setupPairs() {
-      // Pick 4 diverse pairs
-      const allPool = [
-        { left: '🐶', right: 'Dog', label: 'Dog' },
-        { left: '🐱', right: 'Cat', label: 'Cat' },
-        { left: '🍎', right: 'Apple', label: 'Apple' },
-        { left: '🍌', right: 'Banana', label: 'Banana' },
-        { left: '🥕', right: 'Carrot', label: 'Carrot' },
-        { left: '🔺', right: 'Triangle', label: 'Triangle' },
-        { left: '⭐', right: 'Star', label: 'Star' },
-        { left: '⚪', right: 'Circle', label: 'Circle' },
-        { left: '3', right: '⭐⭐⭐', label: 'Three' },
-        { left: '2', right: '🍎🍎', label: 'Two' }
-      ];
+    loadRoundAt(index) {
+      if (index >= this.history.length) {
+        // Pick 4 diverse pairs
+        const allPool = [
+          { left: '🐶', right: 'Dog', label: 'Dog' },
+          { left: '🐱', right: 'Cat', label: 'Cat' },
+          { left: '🍎', right: 'Apple', label: 'Apple' },
+          { left: '🍌', right: 'Banana', label: 'Banana' },
+          { left: '🥕', right: 'Carrot', label: 'Carrot' },
+          { left: '🔺', right: 'Triangle', label: 'Triangle' },
+          { left: '⭐', right: 'Star', label: 'Star' },
+          { left: '⚪', right: 'Circle', label: 'Circle' },
+          { left: '3', right: '⭐⭐⭐', label: 'Three' },
+          { left: '2', right: '🍎🍎', label: 'Two' },
+          { left: '🦁', right: 'Lion', label: 'Lion' },
+          { left: '🍓', right: 'Berry', label: 'Berry' },
+          { left: '🚗', right: 'Car', label: 'Car' },
+          { left: '🟦', right: 'Square', label: 'Square' },
+          { left: '4', right: '🎈🎈🎈🎈', label: 'Four' }
+        ];
 
-      const chosen = shuffle(allPool).slice(0, 4);
-      this.pairs = chosen;
+        const chosen = shuffle(allPool).slice(0, 4);
+        this.history.push(chosen);
+      }
+
+      this.currentIndex = index;
+      this.pairs = this.history[this.currentIndex];
+      this.selectedLeft = null;
+      this.matchedCount = 0;
+
+      this.render();
+      this.updateNavigationUI();
+    },
+
+    next() {
+      if (window.AudioSystem) window.AudioSystem.playClick();
+      this.loadRoundAt(this.currentIndex + 1);
+    },
+
+    prev() {
+      if (this.currentIndex > 0) {
+        if (window.AudioSystem) window.AudioSystem.playClick();
+        this.loadRoundAt(this.currentIndex - 1);
+      }
+    },
+
+    updateNavigationUI() {
+      const counterEl = document.getElementById('match-counter');
+      if (counterEl) {
+        counterEl.textContent = `Round ${this.currentIndex + 1}`;
+      }
+      const prevBtn = document.getElementById('btn-match-prev');
+      if (prevBtn) {
+        prevBtn.style.opacity = this.currentIndex === 0 ? '0.4' : '1';
+        prevBtn.style.pointerEvents = this.currentIndex === 0 ? 'none' : 'auto';
+      }
+      const nextActionBtn = document.getElementById('btn-match-next-action');
+      if (nextActionBtn) {
+        nextActionBtn.classList.remove('pulse-hint');
+      }
+      const nextTopBtn = document.getElementById('btn-match-next');
+      if (nextTopBtn) {
+        nextTopBtn.classList.remove('pulse-hint');
+      }
     },
 
     render() {
@@ -726,15 +910,29 @@ window.GamesManager = (function () {
         this.matchedCount++;
 
         if (this.matchedCount === this.pairs.length) {
-          // All matched!
-          setTimeout(() => {
-            if (window.AudioSystem) window.AudioSystem.playCelebration();
-            if (window.Buddy) window.Buddy.celebrate('Incredible matching! You matched all pairs! 🎉');
-            if (window.RewardSystem) window.RewardSystem.addStars(4);
-            if (window.App && window.App.launchConfetti) window.App.launchConfetti();
+          // All matched in this round!
+          if (window.AudioSystem) window.AudioSystem.playCelebration();
+          if (window.RewardSystem) window.RewardSystem.addStars(4);
+          if (window.RewardSystem) window.RewardSystem.recordProgress('match_champ');
+          if (window.App && window.App.launchConfetti) window.App.launchConfetti();
 
-            setTimeout(() => this.init(), 2800);
-          }, 600);
+          const celebrationSpeech = 'Incredible matching! You matched all pairs! Tap Next Round to keep going!';
+          if (window.Buddy) window.Buddy.celebrate(celebrationSpeech);
+          if (window.AudioSystem) {
+            setTimeout(() => {
+              window.AudioSystem.speak(celebrationSpeech);
+            }, 300);
+          }
+
+          // Keep completed board visible and pulse the Next button so user can advance when ready
+          const nextActionBtn = document.getElementById('btn-match-next-action');
+          if (nextActionBtn) {
+            nextActionBtn.classList.add('pulse-hint');
+          }
+          const nextTopBtn = document.getElementById('btn-match-next');
+          if (nextTopBtn) {
+            nextTopBtn.classList.add('pulse-hint');
+          }
         }
       } else {
         // Wrong match
@@ -751,30 +949,73 @@ window.GamesManager = (function () {
      ============================================================= */
   const MemoryGame = {
     cards: [],
+    history: [],
+    currentIndex: 0,
     flippedCards: [],
     matchedPairs: 0,
     isLockBoard: false,
 
     init() {
+      this.history = [];
+      this.currentIndex = 0;
+      this.loadRoundAt(0);
+    },
+
+    loadRoundAt(index) {
+      if (index >= this.history.length) {
+        // 4 pairs = 8 cards (perfect for 3-6 age group)
+        const emojiPool = ['🐶', '🐱', '🍎', '🥕', '⭐', '🎈', '🚗', '🦁', '🍓', '🍌', '🐸', '🐼', '🍇', '🚀'];
+        const chosen = shuffle(emojiPool).slice(0, 4);
+        const cardList = [];
+
+        chosen.forEach((emoji, idx) => {
+          cardList.push({ id: idx, emoji });
+          cardList.push({ id: idx, emoji });
+        });
+
+        this.history.push(shuffle(cardList));
+      }
+
+      this.currentIndex = index;
+      this.cards = this.history[this.currentIndex].map(c => ({ ...c }));
       this.flippedCards = [];
       this.matchedPairs = 0;
       this.isLockBoard = false;
-      this.setupBoard();
+
+      this.render();
+      this.updateNavigationUI();
     },
 
-    setupBoard() {
-      // 4 pairs = 8 cards (perfect for 3-6 age group)
-      const emojiPool = ['🐶', '🐱', '🍎', '🥕', '⭐', '🎈', '🚗', '🦁', '🍓', '🍌'];
-      const chosen = shuffle(emojiPool).slice(0, 4);
-      const cardList = [];
+    next() {
+      if (window.AudioSystem) window.AudioSystem.playClick();
+      this.loadRoundAt(this.currentIndex + 1);
+    },
 
-      chosen.forEach((emoji, idx) => {
-        cardList.push({ id: idx, emoji });
-        cardList.push({ id: idx, emoji });
-      });
+    prev() {
+      if (this.currentIndex > 0) {
+        if (window.AudioSystem) window.AudioSystem.playClick();
+        this.loadRoundAt(this.currentIndex - 1);
+      }
+    },
 
-      this.cards = shuffle(cardList);
-      this.render();
+    updateNavigationUI() {
+      const counterEl = document.getElementById('memory-counter');
+      if (counterEl) {
+        counterEl.textContent = `Round ${this.currentIndex + 1}`;
+      }
+      const prevBtn = document.getElementById('btn-memory-prev');
+      if (prevBtn) {
+        prevBtn.style.opacity = this.currentIndex === 0 ? '0.4' : '1';
+        prevBtn.style.pointerEvents = this.currentIndex === 0 ? 'none' : 'auto';
+      }
+      const nextActionBtn = document.getElementById('btn-memory-next-action');
+      if (nextActionBtn) {
+        nextActionBtn.classList.remove('pulse-hint');
+      }
+      const nextTopBtn = document.getElementById('btn-memory-next');
+      if (nextTopBtn) {
+        nextTopBtn.classList.remove('pulse-hint');
+      }
     },
 
     render() {
@@ -832,15 +1073,29 @@ window.GamesManager = (function () {
         if (window.AudioSystem) window.AudioSystem.playCorrect();
 
         if (this.matchedPairs === 4) {
-          // Completed game!
-          setTimeout(() => {
-            if (window.AudioSystem) window.AudioSystem.playCelebration();
-            if (window.Buddy) window.Buddy.celebrate('You found all the matching cards! Superstar! 🌟');
-            if (window.RewardSystem) window.RewardSystem.addStars(4);
-            if (window.App && window.App.launchConfetti) window.App.launchConfetti();
+          // Completed game round!
+          if (window.AudioSystem) window.AudioSystem.playCelebration();
+          if (window.RewardSystem) window.RewardSystem.addStars(4);
+          if (window.RewardSystem) window.RewardSystem.recordProgress('memory_pro');
+          if (window.App && window.App.launchConfetti) window.App.launchConfetti();
 
-            setTimeout(() => this.init(), 3000);
-          }, 600);
+          const celebrationSpeech = 'You found all the matching cards! Superstar! Tap Next to play another game!';
+          if (window.Buddy) window.Buddy.celebrate(celebrationSpeech);
+          if (window.AudioSystem) {
+            setTimeout(() => {
+              window.AudioSystem.speak(celebrationSpeech);
+            }, 300);
+          }
+
+          // Keep board visible and pulse the Next button so user can advance when ready
+          const nextActionBtn = document.getElementById('btn-memory-next-action');
+          if (nextActionBtn) {
+            nextActionBtn.classList.add('pulse-hint');
+          }
+          const nextTopBtn = document.getElementById('btn-memory-next');
+          if (nextTopBtn) {
+            nextTopBtn.classList.add('pulse-hint');
+          }
         }
       } else {
         // Not a match: flip back gently
@@ -863,10 +1118,12 @@ window.GamesManager = (function () {
   const DailyChallenge = {
     currentStep: 0,
     steps: [],
+    questions: [],
     answered: false,
 
     init() {
       this.currentStep = 0;
+      this.questions = [];
       this.generate5Steps();
       this.loadStep();
     },
@@ -881,6 +1138,24 @@ window.GamesManager = (function () {
       ];
     },
 
+    next() {
+      if (window.AudioSystem) window.AudioSystem.playClick();
+      if (this.currentStep + 1 < 5) {
+        this.currentStep++;
+        this.loadStep();
+      } else {
+        this.completeChallenge();
+      }
+    },
+
+    prev() {
+      if (this.currentStep > 0) {
+        if (window.AudioSystem) window.AudioSystem.playClick();
+        this.currentStep--;
+        this.loadStep();
+      }
+    },
+
     loadStep() {
       this.answered = false;
       const step = this.steps[this.currentStep];
@@ -891,15 +1166,33 @@ window.GamesManager = (function () {
 
       const progressEl = document.getElementById('daily-challenge-progress-fill');
       const stepIndicator = document.getElementById('daily-challenge-step-text');
+      const counterEl = document.getElementById('daily-counter');
       const titleEl = document.getElementById('daily-step-title');
       const promptEl = document.getElementById('daily-step-prompt');
       const emojiEl = document.getElementById('daily-step-emoji');
       const optionsContainer = document.getElementById('daily-step-options');
+      const prevBtn = document.getElementById('btn-daily-prev');
+      const nextActionBtn = document.getElementById('btn-daily-next-action');
 
       if (progressEl) progressEl.style.width = `${((this.currentStep + 1) / 5) * 100}%`;
       if (stepIndicator) stepIndicator.textContent = `Mission ${this.currentStep + 1} of 5`;
+      if (counterEl) counterEl.textContent = `Mission ${this.currentStep + 1} of 5`;
 
-      const q = QuizEngine.generateQuestion(step.cat);
+      if (prevBtn) {
+        prevBtn.style.opacity = this.currentStep === 0 ? '0.4' : '1';
+        prevBtn.style.pointerEvents = this.currentStep === 0 ? 'none' : 'auto';
+      }
+
+      if (nextActionBtn) {
+        nextActionBtn.classList.remove('pulse-hint');
+        nextActionBtn.textContent = this.currentStep === 4 ? 'Finish Challenge 🏆' : 'Next Mission ➡️';
+      }
+
+      if (!this.questions[this.currentStep]) {
+        this.questions[this.currentStep] = QuizEngine.generateQuestion(step.cat);
+      }
+      const q = this.questions[this.currentStep];
+
       if (titleEl) titleEl.textContent = step.label;
       if (promptEl) promptEl.textContent = q.prompt;
       if (emojiEl) emojiEl.textContent = q.displayEmoji;
@@ -925,21 +1218,22 @@ window.GamesManager = (function () {
             if (opt.correct) {
               this.answered = true;
               btn.classList.add('correct-choice');
+
+              let explanation = `Yes! That is ${opt.text}!`;
+              if (q.fact) explanation += ` ${q.fact}`;
+
               if (window.AudioSystem) {
                 window.AudioSystem.playCorrect();
-                window.AudioSystem.speak(`Yes! That is ${opt.text}!`);
+                setTimeout(() => {
+                  window.AudioSystem.speak(explanation);
+                }, 350);
               }
-              if (window.Buddy) window.Buddy.celebrate();
+              if (window.Buddy) window.Buddy.celebrate(explanation);
               if (window.RewardSystem) window.RewardSystem.addStars(1);
 
-              setTimeout(() => {
-                this.currentStep++;
-                if (this.currentStep < 5) {
-                  this.loadStep();
-                } else {
-                  this.completeChallenge();
-                }
-              }, 1600);
+              if (nextActionBtn) {
+                nextActionBtn.classList.add('pulse-hint');
+              }
             } else {
               btn.classList.add('wrong-choice');
               setTimeout(() => btn.classList.remove('wrong-choice'), 600);
